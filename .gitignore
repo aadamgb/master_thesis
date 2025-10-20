@@ -1,1 +1,36 @@
-build/
+# LaTeX intermediate and auxiliary files
+*.aux
+*.bbl
+*.blg
+*.brf
+*.fls
+*.fdb_latexmk
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.lot
+*.lof
+*.run.xml
+*.idx
+*.ilg
+*.ind
+
+# Backup files
+*~
+*.bak
+
+# Editor or OS files
+.DS_Store
+Thumbs.db
+
+# Compiled PDFs — keep only main.pdf
+*.pdf
+!main.pdf
+
+# Bibliography files — keep only main.bib
+*.bib
+!main.bib
+
+# Keep the Makefile
+!Makefile
