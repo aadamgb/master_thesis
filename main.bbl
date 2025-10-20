@@ -1,0 +1,161 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated as
+% required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+\datalist[entry]{ydnt/global//global/global}
+  \entry{baca2021mrs}{article}{}
+    \name{author}{7}{}{%
+      {{hash=BT}{%
+         family={Baca},
+         familyi={B\bibinitperiod},
+         given={Tomas},
+         giveni={T\bibinitperiod},
+      }}%
+      {{hash=PM}{%
+         family={Petrlik},
+         familyi={P\bibinitperiod},
+         given={Matej},
+         giveni={M\bibinitperiod},
+      }}%
+      {{hash=VM}{%
+         family={Vrba},
+         familyi={V\bibinitperiod},
+         given={Matous},
+         giveni={M\bibinitperiod},
+      }}%
+      {{hash=SV}{%
+         family={Spurny},
+         familyi={S\bibinitperiod},
+         given={Vojtech},
+         giveni={V\bibinitperiod},
+      }}%
+      {{hash=PR}{%
+         family={Penicka},
+         familyi={P\bibinitperiod},
+         given={Robert},
+         giveni={R\bibinitperiod},
+      }}%
+      {{hash=HD}{%
+         family={Hert},
+         familyi={H\bibinitperiod},
+         given={Daniel},
+         giveni={D\bibinitperiod},
+      }}%
+      {{hash=SM}{%
+         family={Saska},
+         familyi={S\bibinitperiod},
+         given={Martin},
+         giveni={M\bibinitperiod},
+      }}%
+    }
+    \list{publisher}{1}{%
+      {Springer}%
+    }
+    \strng{namehash}{BTPMVM+1}
+    \strng{fullhash}{BTPMVMSVPRHDSM1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{sortinit}{7}
+    \field{sortinithash}{7}
+    \field{issue}{1}
+    \field{number}{26}
+    \field{pages}{1\bibrangedash 28}
+    \field{title}{{The MRS UAV System: Pushing the Frontiers of Reproducible Research, Real-world Deployment, and Education with Autonomous Unmanned Aerial Vehicles}}
+    \field{volume}{102}
+    \field{type}{article}
+    \field{journaltitle}{{Journal of Intelligent {\&} Robotic Systems}}
+    \field{month}{05}
+    \field{year}{2021}
+  \endentry
+
+  \entry{baca2016embedded}{inproceedings}{}
+    \name{author}{3}{}{%
+      {{hash=BT}{%
+         family={Baca},
+         familyi={B\bibinitperiod},
+         given={Tomas},
+         giveni={T\bibinitperiod},
+      }}%
+      {{hash=LG}{%
+         family={Loianno},
+         familyi={L\bibinitperiod},
+         given={Giuseppe},
+         giveni={G\bibinitperiod},
+      }}%
+      {{hash=SM}{%
+         family={Saska},
+         familyi={S\bibinitperiod},
+         given={Martin},
+         giveni={M\bibinitperiod},
+      }}%
+    }
+    \list{organization}{1}{%
+      {IEEE}%
+    }
+    \strng{namehash}{BTLGSM1}
+    \strng{fullhash}{BTLGSM1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{sortinit}{7}
+    \field{sortinithash}{7}
+    \field{booktitle}{{IEEE International Conference on Methods and Models in Automation and Robotics (MMAR)}}
+    \field{pages}{992\bibrangedash 997}
+    \field{title}{{Embedded Model Predictive Control of Unmanned Micro Aerial Vehicles}}
+    \field{type}{inproceedings}
+    \field{year}{2016}
+  \endentry
+
+  \entry{benallegue2008high}{article}{}
+    \name{author}{3}{}{%
+      {{hash=BA}{%
+         family={Benallegue},
+         familyi={B\bibinitperiod},
+         given={Abdelaziz},
+         giveni={A\bibinitperiod},
+      }}%
+      {{hash=MA}{%
+         family={Mokhtari},
+         familyi={M\bibinitperiod},
+         given={Abdellah},
+         giveni={A\bibinitperiod},
+      }}%
+      {{hash=FL}{%
+         family={Fridman},
+         familyi={F\bibinitperiod},
+         given={Leonid},
+         giveni={L\bibinitperiod},
+      }}%
+    }
+    \list{publisher}{1}{%
+      {Wiley Online Library}%
+    }
+    \strng{namehash}{BAMAFL1}
+    \strng{fullhash}{BAMAFL1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{sortinit}{7}
+    \field{sortinithash}{7}
+    \field{number}{4-5}
+    \field{pages}{427\bibrangedash 440}
+    \field{title}{{High-order sliding-mode observer for a quadrotor UAV}}
+    \field{volume}{18}
+    \field{type}{article}
+    \field{journaltitle}{International Journal of Robust and Nonlinear Control: IFAC-Affiliated Journal}
+    \field{year}{2008}
+  \endentry
+\enddatalist
+\endinput
