@@ -1,0 +1,74 @@
+%!TEX root = ../main.tex
+
+\chapter{Methodology\label{chap:how_to}}
+
+\section{Problem definition}
+We will define a domain as a subset of all the possible \ac{MDP} environments.
+A standard domain is characterized by a 4-tuple $\mathcal{D} = (S, A, P, R)$ where:
+
+\begin{itemize}
+    \item $\mathbf{S:}$ denotes a set of states called the state space.
+    \item $\mathbf{A:}$ is the set of actions called the action space.
+    \item $\mathbf{P(s'|s, a):}$ is the probability that a given action $a \subset A$, at state $s \subset S$ will lead to a new state $s' \subset S$. 
+    \item $\mathbf{R(s',s,a):}$ is the inmediate reward, or expected inmediate reward, recived for transitioning from $s$ to $s'$ after performing action $a$. 
+\end{itemize}
+From the source domain, $\mathcal{D}_s$, (i.e. simulation), we can control a set of N parameters of the variable aspects of each environment that define a configuration vector, $\vec{\xi} = [\xi_1, \xi_2, ..., \xi_N]$.
+Examples of $\xi$ can include:
+
+\begin{tabular}{c|c}
+
+    Physical properties & $\xi_{\text{mass}}, \ \xi_{\text{inertia}}, \ \xi_{\text{drag}}, \ \xi_{\text{gravity}}$ \\
+    Perception properties & $\xi_{\text{sensor\_noise}}, \ \xi_{\text{sensor\_latency}}$ \\
+    Viual properties & $\xi_{\text{lighting}}, \ \xi_{\text{texture}}, \ \xi_{\text{fov}}$ \\
+    Scene properties & $\xi_{\text{gate\_pos}}, \ \xi_{\text{gate\_size}}, , \ \xi_{\text{gate\_num}}$ \\
+    
+\end{tabular}
+
+Each configuration is sampled from a randomization space, $\vec{\xi} \in \Xi \subset \Re^N$, with a probability distribution $\vec{\xi} \sim p(\vec{\xi})$.
+Where the parameters are bounded to be within an interval $\xi_i \in [\xi_i^{\text{low}}, \xi_i^{\text{high}}]$ \cite{weng2019DR}. 
+
+At the start of every training episode, a new environment insance is created by sampling a new configuration vector $\vec{\xi}$ from the distribution $p(\vec{\xi})$. 
+Therefore, the agent will interact with a specific \ac{MDP} environment, that is to say, a specific domain $\mathcal{D}_{\vec{\xi}}$. 
+This way, the agent can collect data from a vareity of environments that otherwise would reamain unexplored. 
+\begin{figure}[H]
+  \centering
+
+  \begin{adjustbox}{max totalsize={0.5\textwidth}{0.4\textheight}, center}
+    \input{fig/tikz/DR.tex}
+  \end{adjustbox}
+
+  \caption{Red and green the source and target domains respectively. In blue, differents instances of the randomized source space (all represented domains with the same size, $N$). }
+  \label{fig:pgfplots_diagram}
+\end{figure}
+Hereby, during training, the neural network weights and biases $\theta$ are optimized to maximize the expected reward $R$ across a distribution of randomized domains.
+With th objective of finding the optimal, $\theta^*$.
+\begin{equation}
+    \theta ^* = \arg \max_{\theta} \mathbb{E}_{\vec{\xi}\sim\Xi} \left[\mathbb{E}_{\pi_\theta,\tau\sim D_\xi}[R(\tau)] \right]
+\end{equation}
+
+
+And it will be able to react to certain unseen variations of the randomization space.
+More specifically, from the 
+
+% Hereby, the policy will be exposed to a rich varaeity of environments 
+% Examples of randomization parameters could include physical properties such as $\xi_\text{mass},\ \xi_\text{inertia},\ \xi_\text{drag}$
+\section{Quadcopter model}
+
+
+\section{\ac{RL} set-up}
+
+
+
+\begin{figure}[h]
+  \centering
+
+  \begin{adjustbox}{max totalsize={0.5\textwidth}{1.0\textheight}, center}
+    \input{fig/tikz/nn.tex}
+  \end{adjustbox}
+
+  \caption{Red and green the source and target domains respectively. In blue, differents instances of the randomized source space (all represented domains with the same size, $N$). }
+  \label{fig:nn}
+\end{figure}
+
+\section{\ac{DR} configurations}
+
