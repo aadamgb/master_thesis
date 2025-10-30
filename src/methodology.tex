@@ -3,17 +3,22 @@
 \chapter{Methodology\label{chap:how_to}}
 
 \section{Problem definition}
-We will define a domain as a subset of all the possible \ac{MDP} environments.
-A standard domain is characterized by a 4-tuple $\mathcal{D} = (S, A, P, R)$ where:
+We define a domain as a specific subset of possible \ac{POMDP} environments. 
+While a complete \ac{POMDP} is formally characterized by an 8-tuple~\cite{}, 
+we focus on a reduced 6-tuple representation that captures the essential elements 
+for our domain definition. A standard domain is characterized by 
+$\mathcal{D} = (\mathcal{S}, \mathcal{A}, \mathcal{O}, P, O, R)$ where:
 
 \begin{itemize}
-    \item $\mathbf{S:}$ denotes a set of states called the state space.
-    \item $\mathbf{A:}$ is the set of actions called the action space.
-    \item $\mathbf{P(s'|s, a):}$ is the probability that a given action $a \subset A$, at state $s \subset S$ will lead to a new state $s' \subset S$. 
-    \item $\mathbf{R(s',s,a):}$ is the inmediate reward, or expected inmediate reward, recived for transitioning from $s$ to $s'$ after performing action $a$. 
+    \item $\mathbf{\mathcal{S}:}$ denotes a set of states called the state space.
+    \item $\mathbf{\mathcal{A}:}$ is the set of actions called the action space.
+    \item $\mathbf{\mathcal{O}:}$ is the set of observations called the observation space.
+    \item $\mathbf{P(s'|s, a):}$ is the probability that a given action $a \in A$, at state $s \in S$ will lead to a new state $s' \subset S$. 
+    \item $\mathbf{O(o|s', a):}$ is the observation probability, representing the probability of observing $o \in \mathcal{O}$ after taking action $a$ and transitioning to state $s'$.
+    \item $\mathbf{R(s',s,a):}$ is the immediate reward, or expected inmediate reward, received for transitioning from $s$ to $s'$ after performing action $a$. 
 \end{itemize}
-From the source domain, $\mathcal{D}_s$, (i.e. simulation), we can control a set of N parameters of the variable aspects of each environment that define a configuration vector, $\vec{\xi} = [\xi_1, \xi_2, ..., \xi_N]$.
-Examples of $\xi$ can include:
+From the source domain, $\mathcal{D}_s$, (i.e. simulation), we can control a set of N parameters of the variable aspects of each environment that define a configuration vector, $\boldsymbol{\xi} = [\xi_i, \xi_{i+1}, ..., \xi_N]$.
+Examples of $\xi_i$ can include:
 
 \begin{tabular}{c|c}
 
@@ -24,11 +29,11 @@ Examples of $\xi$ can include:
     
 \end{tabular}
 
-Each configuration is sampled from a randomization space, $\vec{\xi} \in \Xi \subset \Re^N$, with a probability distribution $\vec{\xi} \sim p(\vec{\xi})$.
-Where the parameters are bounded to be within an interval $\xi_i \in [\xi_i^{\text{low}}, \xi_i^{\text{high}}]$ \cite{weng2019DR}. 
+Each configuration is sampled from a randomization space, $\boldsymbol{\xi} \in \Xi \subset \mathbb{R}^N$, with a probability distribution $\boldsymbol{\xi} \sim p(\boldsymbol{\xi})$.
+Where the parameters are bounded to be within an interval $\xi_i \in [\xi_i^{\text{low}}, \xi_i^{\text{high}}]$. 
 
-At the start of every training episode, a new environment insance is created by sampling a new configuration vector $\vec{\xi}$ from the distribution $p(\vec{\xi})$. 
-Therefore, the agent will interact with a specific \ac{MDP} environment, that is to say, a specific domain $\mathcal{D}_{\vec{\xi}}$. 
+At the start of every training episode, a new environment insance is created by sampling a new configuration vector $\boldsymbol{\xi}$ from the distribution $p(\boldsymbol{\xi})$. 
+Therefore, the agent will interact with a specific \ac{POMDP} environment, that is to say, a specific domain $\mathcal{D}_{\boldsymbol{\xi}}$. 
 This way, the agent can collect data from a vareity of environments that otherwise would reamain unexplored. 
 \begin{figure}[H]
   \centering
@@ -38,37 +43,174 @@ This way, the agent can collect data from a vareity of environments that otherwi
   \end{adjustbox}
 
   \caption{Red and green the source and target domains respectively. In blue, differents instances of the randomized source space (all represented domains with the same size, $N$). }
-  \label{fig:pgfplots_diagram}
+  \label{domains}
 \end{figure}
-Hereby, during training, the neural network weights and biases $\theta$ are optimized to maximize the expected reward $R$ across a distribution of randomized domains.
-With th objective of finding the optimal, $\theta^*$.
+Hereby, during training, the neural network weights and biases $\theta$ are optimized to maximize the expected reward $R$ \textbf{across a distribution of randomized domains} \cite{weng2019DR}.
+With the aim of finding the optimal, $\theta^*$ that will lead to the optimal parametrized policy $\pi_{\theta}^*$.
+\begin{equation}\label{opt_theta}
+    \theta ^* = \arg \max_{\theta} \mathbb{E}_{\boldsymbol{\xi}\sim\Xi} \left[\mathbb{E}_{\pi_\theta,\tau\sim D_\xi}[R(\tau)] \right]
+\end{equation}
+Where $R(\tau) = \sum_{t=0}^{n} \gamma^t r_{t}$ is the cummulative discounted reward over a trajectory (or sequence) of states and actions $\tau = (s_0,a_0,s_1,a_1,...)$, for the episode length $n$.
+% $R(\tau)  = \sum_{t=0}^{n} \gamma^t r_{t}$
+
+% \[ R(\tau)  = \sum_{t=0}^{n} \gamma^t r_{t}\]
+As illustrated in \autoref{domains} and described in \autoref{opt_theta}, the policy is exposed to a variety of domains to promote generalization and improve robustness, thereby increasing the likelihood of successful transfer to the real environment. 
+However, this strategy further reduces the sample efficiency of \ac{RL} and increases training time. 
+Therefore, it is essential to properly bound the randomization space $\Xi$ so that it encompasses only the minimum necessary range required to include the real domain.
+
+\section{Quadcopter model}\label{QuadModel}
+In the simulated environments, the quadcopter is modeeld as a 6 \ac{dof}, rigid body. 
+The state of the quadcopter is defined by its position $\mathbf{p}$, velocity $\mathbf{v}$, orientation $\mathbf{q}$, body rates $\boldsymbol{\omega}$ and rotor speeds $\mathbf{\Omega}$.
+Namely, $\mathbf{x} = [\mathbf{p}, \mathbf{v}, \mathbf{q}, \boldsymbol{\omega}, \mathbf{\Omega}]^T$. 
+The position, velocity and acceleration are respresented in the world frame $\mathcal{W} \in \mathbb{R}^3$, while the body rates in the body frame $\mathcal{B} \in \mathbb{R}^3$.
+The orientation is described by an unit quaternion rotation $\mathbf{q} \in \mathbb{SO}(3)$. 
+Hence, the kinematics and dynamics of the drone are:
+\hspace{-5cm}
+\begin{minipage}{0.5\textwidth}
 \begin{equation}
-    \theta ^* = \arg \max_{\theta} \mathbb{E}_{\vec{\xi}\sim\Xi} \left[\mathbb{E}_{\pi_\theta,\tau\sim D_\xi}[R(\tau)] \right]
+  \dot{\mathbf{p}}^{\mathcal{W}} = \mathbf{v}^{\mathcal{W}}
+\end{equation}
+\begin{equation}
+  \dot{\mathbf{q}} = \tfrac{1}{2}\ \mathbf{q} \odot \begin{bmatrix} 0 & \boldsymbol{\omega}^{\mathcal{B}}\end{bmatrix}^T
+\end{equation}
+\begin{equation}
+  \dot{\mathbf{v}}^{\mathcal{W}} = \frac{R(\mathbf{q})}{m}\left(\mathbf{f}_T^{\mathcal{B}} + \mathbf{f}_D^{\mathcal{B}}\right) + \mathbf{g}^{\mathcal{W}}
+\end{equation}
+\end{minipage}%
+\begin{minipage}{0.5\textwidth}
+\begin{equation}
+  \dot{\boldsymbol{\omega}}^{\mathcal{B}} = J^{-1}\left(\boldsymbol{\tau}^{\mathcal{B}} - \boldsymbol{\omega}^{\mathcal{B}} \times J\boldsymbol{\omega}^{\mathcal{B}}\right)
+\end{equation}
+\begin{equation}
+  \dot{\mathbf{\Omega}} = \frac{1}{k_{\mathrm{m}}} \left(\mathbf{\Omega}_c - \mathbf{\Omega}\right)
+\end{equation}
+\end{minipage}
+Where, $\odot$ represents quaternion multiplication, 
+$R(\mathbf{q})$ is the rotational matrix from body frame $\mathcal{B}$ to world frame $\mathcal{W}$ at orientation $\mathbf{q}$,
+$J$ is the diagonal inertia matrix,
+$\mathbf{f}_T^\mathcal{B}$ and $\mathbf{f}_D^\mathcal{B}$ are the collective thrust and drag respectively, 
+$k_m$ the motor time constant,
+$m$ the qudcopter's mass and $\mathbf{g}$ is gravity.
+
+In the body frame $\mathcal{B}$, the individual motor thrusts $T_i, \ i=1,..,4$, are assumed to be perpendicular to the $\mathbf{xy}$ plane.
+The collective thrust $\mathbf{f}_T^\mathcal{B}$, and torques $\boldsymbol{\tau}^\mathcal{B}$, can be maped from the individual motor thrusts with the allocation matrix $\Gamma$.
+
+\begin{equation}
+  \begin{bmatrix}
+    \mathbf{f}^\mathcal{B}_T \\
+    \tau_x \\
+    \tau_y \\
+    \tau_z \\
+  \end{bmatrix} = \begin{bmatrix}
+    1 & 1 & 1 & 1 \\
+    -d/\sqrt{2} & d/\sqrt{2} &d/\sqrt{2} & -d/\sqrt{2} \\
+    -d/\sqrt{2} & d/\sqrt{2} &-d/\sqrt{2} & d/\sqrt{2} \\
+    c_{tf} & c_{tf} & c_{tf} & c_{tf} \\
+  \end{bmatrix} \begin{bmatrix}
+    T_1 \\ T_2 \\ T_3 \\ T_4
+  \end{bmatrix}
+\end{equation}
+Being $d$ the arm length and $c_{tf}$ the linear torque constant.
+Likewise, the indidual motror thrusts $T_i$, can be mapped from the rotor speeds $\Omega_i$ with the thrust map coefficents, $\mathbf{k_T} = [a_0,\ a_1,\ a_2]$ that are determined experimentally fitting a quadratic curve.
+
+\begin{equation}
+  T_i = \mathbf{k_T} \begin{bmatrix}
+    \Omega_i^2 \\ \Omega_i \\ 1
+  \end{bmatrix} = \begin{bmatrix}
+  a_2 & a_1 & a_0
+  \end{bmatrix} \begin{bmatrix}
+    \Omega_i^2 \\ \Omega_i \\ 1
+  \end{bmatrix}
+\end{equation}
+The total drag force, $\mathbf{f}_D^\mathcal{B}$ is calculated using a simplified aerodynamic model function of the dron's linear velocity and proportional to the drag coefficents.
+
+\begin{equation}
+    \mathbf{f}_{D}^\mathcal{B} = \begin{bmatrix}
+      C_{D_x} & 0 & 0 \\
+      0 & C_{D_y} & 0 \\
+      0 & 0 & C_{D_z} \\
+    \end{bmatrix} \begin{bmatrix}
+      v_x^\mathcal{B} \\ v_x^\mathcal{B} \\ v_x^\mathcal{B}
+    \end{bmatrix}
 \end{equation}
 
+\section{\ac{RL} Set-Up}
 
-And it will be able to react to certain unseen variations of the randomization space.
-More specifically, from the 
+Although the simplified quadcopter model defined in \ref{QuadModel} is used to represent the drone dynamics in simulation, the \ac{RL} setup employed in this project is \textbf{model-free}.
+Specifically, it consists of an \ac{AC} structure optimized using \ac{PPO}~\cite{}.
+The implementation relies on Stable-Baselines3~\cite{} to interface with a custom C++ Gymnasium environment (based on flightmare~\cite{}) and to train the \ac{AC} networks using \ac{PPO}.
 
-% Hereby, the policy will be exposed to a rich varaeity of environments 
-% Examples of randomization parameters could include physical properties such as $\xi_\text{mass},\ \xi_\text{inertia},\ \xi_\text{drag}$
-\section{Quadcopter model}
-
-
-\section{\ac{RL} set-up}
+The actor policy netwrok  $\pi_\theta$, is defined by a \ac{MLP} that takes an observation vector at time step $t$, \autoref{obs_vec} of 31 inputs. The observation vector is sampled from a bounded observation space $o_t\in \mathcal{O} \subset \mathbb{R}^{31}$.
 
 
+\begin{equation}\label{obs_vec}
+  o_t = \begin{bmatrix} \mathbf{p}_t & \mathbf{v}_t & \text{vec}R(\mathbf{q})_t & u_{t-1} & 
+    \mathbf{p_{g}}^{TL}_t & \mathbf{p_{g}}^{TR}_t & \mathbf{p_{g}}^{BL}_t & \mathbf{p_{g}}^{BL}_t
+    & \mathbf{p}_t^{\text{look}}
+  \end{bmatrix}^T
+\end{equation}
+Where $u_{t-1}$ is the throttle motor command at the prevous time step. 
+$\mathbf{p_{g}}^X_t$ are  relative positions of the corners of the target gate at time $t$ with respect the body frame $\mathcal{B}$.
+And, $\mathbf{p}_t^{\text{look}}$ is the look at position of the target gate at time $t$, also in the body frame.
+The input layer is followed by three hidden layers of 128 neurons each, and it outputs 4 neurons. 
+The outputs are the \ac{CTBR}, sampled from a bounded action space $a_t \in \mathcal{A} \subset \mathbb{R}^4$.
+\begin{equation}\label{act_vec}
+  a_t = \begin{bmatrix} \mathbf{f}_{Tt} & \boldsymbol{\omega}_t 
+  \end{bmatrix}^T
+\end{equation}
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
-
-  \begin{adjustbox}{max totalsize={0.5\textwidth}{1.0\textheight}, center}
-    \input{fig/tikz/nn.tex}
-  \end{adjustbox}
-
-  \caption{Red and green the source and target domains respectively. In blue, differents instances of the randomized source space (all represented domains with the same size, $N$). }
-  \label{fig:nn}
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \begin{adjustbox}{max totalsize={1.0\textwidth}{1.0\textheight}, center}
+      \input{fig/tikz/nn-pi.tex}
+    \end{adjustbox}
+    \caption{Actor network architecture}
+    \label{fig:nn_actor}
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \begin{adjustbox}{max totalsize={1.0\textwidth}{1.0\textheight}, center}
+      \input{fig/tikz/nn-vf.tex}
+    \end{adjustbox}
+    \caption{Critic network architecture}
+    \label{fig:nn_critic}
+  \end{minipage}
 \end{figure}
+On the other hand, the critic network aritecthure $V_f$, is formed also by 3 hidden layers but of 256 neurons each, it has the same input space and it oputs a single value based on the observation $o_t$.
+The hyperparameters used for tranning can be found in Appendix \ref{}
+
 
 \section{\ac{DR} configurations}
 
+The first randomiztion configuration condsidered has been to randomize the following dynamical parameters:
+
+\[\boldsymbol{\xi}_d = [m, J, C_D, k_m, \mathbf{k_T}, \Gamma ]\]
+
+\begin{table}[H]
+  \centering
+
+  \begin{tabular}{|c|c|c|} \hline
+  Parameter & Nominal Value & Randomization Distribution \\ \hline
+  m [\si{\kg}] & 0.916 & $\pm\mathcal{U}(0, 0.1)$ \\ \hline
+  $J_{xx},\ J_{yy}, J_{zz}$ [\si{\kg}] & 0.004, 0.008, 0.011 & $\cdot\mathcal{U}(0.8, 1.2)$ \\ \hline
+  $C_{D_x},\ C_{C_y}, C_{D_z}$  & 0.38, 0.47, 1.51 & $\pm\mathcal{U}(0, 0.14),\pm\mathcal{U}(0, 0.2), \pm\mathcal{U}(0, 0.5)$ \\ \hline
+  $k_m$ [\si{\kg}] & 0.916 & $\pm\mathcal{U}(0, 0.1)$ \\ \hline
+  $a_2, a_1, a_0$ [\si{\kg}] & 0.916 & $\pm\mathcal{U}(0, 0.1)$ \\ \hline
+  m [\si{\kg}] & 0.916 & $\pm\mathcal{U}(0, 0.1)$ \\ \hline
+  \end{tabular}
+  \caption{Desc}
+\end{table}
+
+
+
+\newpage
+{\color{red} To Do's}
+
+\begin{itemize}
+    \item Explain that ideally $\Xi$ should be similar to $\Theta$. \ac{DR} worsens sample efficency but improves robustness and adaptation
+    \item Explain that MDP is acually POMDP and that the randomization configurations only include the transition probability P, and maybe observation? Well acually it will be observation memory right?
+    \item Explain what trajectory is, reward is, 
+\end{itemize}

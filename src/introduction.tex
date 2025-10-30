@@ -9,10 +9,13 @@
 In the context of drone racing, where quadcopters are pushed to their physical and computational limits, there is a growing trend toward using neural networks for control.
 As demonstrated in \cite{baca2021mrs}, this approach has made it possible to outperform some of the world's most skilled human pilots.
 
-These neural networks controllers are tipically trained using \ac{RL} algorithms.
-Due to the sample ineffiency of \ac{RL} and the high cost of collecting real-world flight data, training is performed in simulated environments that provide a safe and scalable alternative.
-Despite this, the resulting control policies often perform worse than expected or fail to transfer to real-world scenarios altogether.
-This discrepancy in the policy's performance between simulation and reality is known as the sim-to-real gap, and it mainly arises from an undesired overfit of the learned policy to the simulated environment.
+These neural networks controllers are tipically optimized using \ac{RL} algorithms.
+However, despite many of the advantadges that \ac{RL} bring, it is still a hilghly sample inefficent algorithm that makes collecting data in the real world dangerous an expensive. 
+Because of this, training is often performed in simulated environments that provide a safe and scalable alternative.
+% Due to the sample ineffiency of \ac{RL} and the high cost of collecting real-world flight data, training is performed in simulated environments that provide a safe and scalable alternative.
+Nonetheless, this solution comes with other problems since the resulting policies, learned in simulations, often perform worse than expected or fail to transfer to real-world scenarios altogether.
+% Despite this, the resulting control policies often perform worse than expected or fail to transfer to real-world scenarios altogether.
+This discrepancy in the policy's performance between simulation and reality is known as the Sim2Real gap, and it mainly arises from an undesired overfit of the optimization process to the simulated scenario.
 
 % To mitigate this issue, improving the system's identification, using digital twins, or randomizing the domain, among other strategies, have shown to significantly reduce the sim-to-real gap.
 
@@ -21,16 +24,11 @@ This discrepancy in the policy's performance between simulation and reality is k
 % Finally, {\color{red}{X}} randomized policies are analyzed and compared to non-randomized ones. Their performance is evaluated to assess how DR improves adaptability and transferability to real-world scenarios.
 
 \section{Related works}
-
-This section should contain related state-of-the-art works and their relation to the author's work.
-We usually cite the original works like this \cite{benallegue2008high}.
-You can also cite multiple papers at once like this \cite{baca2016embedded, baca2021mrs}.
-
 Demonstrating that Domain Randomization (DR) can significantly increase the adaptability and robustness of autonomous systems, the work of Ferede et al. \cite{ferede2025} serves as the direct inspiration for this project. 
 Their research showed that a DR-trained neural network controller could successfully generalize across various quadcopter platforms.
 \section{Contributions}
 
-(Note: rather than contribute this work aims to reproduce the results from \cite{ferede2025})
+({\color{red} Note:} rather than contribute this work aims to reproduce the results from \cite{ferede2025})
 
 \section{Mathematical notation}
 
