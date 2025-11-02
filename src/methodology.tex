@@ -6,7 +6,7 @@
 We define a domain as a specific subset of possible \ac{POMDP} environments. 
 While a complete \ac{POMDP} is formally characterized by an 8-tuple~\cite{}, 
 we focus on a reduced 6-tuple representation that captures the essential elements 
-for our domain definition. A standard domain is characterized by 
+for our domain definition. A standard domain is then characterized by 
 $\mathcal{D} = (\mathcal{S}, \mathcal{A}, \mathcal{O}, P, O, R)$ where:
 
 \begin{itemize}
@@ -18,7 +18,7 @@ $\mathcal{D} = (\mathcal{S}, \mathcal{A}, \mathcal{O}, P, O, R)$ where:
     \item $\mathbf{R(s',s,a):}$ is the immediate reward, or expected inmediate reward, received for transitioning from $s$ to $s'$ after performing action $a$. 
 \end{itemize}
 From the source domain, $\mathcal{D}_s$, (i.e. simulation), we can control a set of N parameters that define a configuration vector, $\boldsymbol{\xi} = [\xi_i, \xi_{i+1}, ..., \xi_N]$.
-These parameters will affect the transition probability $P$ of the domain.
+These parameters will affect the transition probability $\mathbf{P(s'|s,a)}$ of the domain.
 Examples of $\xi_i$ can include:
 
 \begin{tabular}{c|c}
@@ -30,7 +30,7 @@ Examples of $\xi_i$ can include:
     
 \end{tabular}
 
-When \ac{DR} is applied, each configuration $\mathbf{\xi}$ is sampled from a bounded randomization space $\Xi$ with a probability distribution. 
+When \ac{DR} is applied, each configuration $\boldsymbol{\xi}$ is sampled from a bounded randomization space $\Xi$ with a probability distribution. 
 That is to say, $\boldsymbol{\xi} \in \Xi \subset \mathbb{R}^N$,  $\boldsymbol{\xi} \sim p(\boldsymbol{\xi})$.
 Where $\xi_i \in [\xi_i^{\text{low}}, \xi_i^{\text{high}}]$. 
 At the start of every training episode, a new environment insance is created by sampling a new configuration vector $\boldsymbol{\xi}$ from the distribution $p(\boldsymbol{\xi})$. 
