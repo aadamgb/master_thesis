@@ -141,7 +141,7 @@ Although the simplified quadcopter model defined in \ref{QuadModel} is used to r
 Specifically, it consists of an \ac{AC} structure optimized using \ac{PPO}~\cite{}.
 The implementation relies on Stable-Baselines3~\cite{} to interface with a custom C++ Gymnasium environment (based on flightmare~\cite{}) and to train the \ac{AC} networks using \ac{PPO}.
 
-The actor policy netwrok  $\pi_\theta$, is defined by a \ac{MLP} that takes an observation vector at time step $t$, \autoref{obs_vec} of 31 inputs. The observation vector is sampled from a bounded observation space $o_t\in \mathcal{O} \subset \mathbb{R}^{31}$.
+The actor policy netwrok  $\pi_\theta$, is defined by a \ac{MLP} that takes an observation vector at time step $t$, of 31 inputs (see \autoref{obs_vec}). The observation vector is sampled from a bounded observation space $o_t\in \mathcal{O} \subset \mathbb{R}^{31}$.
 
 
 \begin{equation}\label{obs_vec}
