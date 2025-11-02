@@ -31,7 +31,6 @@ Examples of $\xi_i$ can include:
 
 Each configuration is sampled from a randomization space, $\boldsymbol{\xi} \in \Xi \subset \mathbb{R}^N$, with a probability distribution $\boldsymbol{\xi} \sim p(\boldsymbol{\xi})$.
 Where the parameters are bounded to be within an interval $\xi_i \in [\xi_i^{\text{low}}, \xi_i^{\text{high}}]$. 
-
 At the start of every training episode, a new environment insance is created by sampling a new configuration vector $\boldsymbol{\xi}$ from the distribution $p(\boldsymbol{\xi})$. 
 Therefore, the agent will interact with a specific \ac{POMDP} environment, that is to say, a specific domain $\mathcal{D}_{\boldsymbol{\xi}}$. 
 This way, the agent can collect data from a vareity of environments that otherwise would reamain unexplored. 
@@ -42,7 +41,7 @@ This way, the agent can collect data from a vareity of environments that otherwi
     \input{fig/tikz/DR.tex}
   \end{adjustbox}
 
-  \caption{Red and green the source and target domains respectively. In blue, differents instances of the randomized source space (all represented domains with the same size, $N$). }
+  \caption{In red, the source domain randomization configuration. In light blue, ranodimized instance of the source configuration. In green, the target domain configuration. }
   \label{domains}
 \end{figure}
 Hereby, during training, the neural network weights and biases $\theta$ are optimized to maximize the expected reward $R$ \textbf{across a distribution of randomized domains} \cite{weng2019DR}.
@@ -117,7 +116,7 @@ Likewise, the indidual motror thrusts $T_i$, can be mapped from the rotor speeds
   T_i = \mathbf{k_T} \begin{bmatrix}
     \Omega_i^2 \\ \Omega_i \\ 1
   \end{bmatrix} = \begin{bmatrix}
-  a_2 & a_1 & a_0
+  a_0 & a_1 & a_2
   \end{bmatrix} \begin{bmatrix}
     \Omega_i^2 \\ \Omega_i \\ 1
   \end{bmatrix}
@@ -159,26 +158,27 @@ The outputs are the \ac{CTBR}, sampled from a bounded action space $a_t \in \mat
   \end{bmatrix}^T
 \end{equation}
 
-\begin{figure}[H]
-  \centering
-  \begin{minipage}{0.48\textwidth}
-    \centering
-    \begin{adjustbox}{max totalsize={1.0\textwidth}{1.0\textheight}, center}
-      \input{fig/tikz/nn-pi.tex}
-    \end{adjustbox}
-    \caption{Actor network architecture}
-    \label{fig:nn_actor}
-  \end{minipage}%
-  \hfill
-  \begin{minipage}{0.48\textwidth}
-    \centering
-    \begin{adjustbox}{max totalsize={1.0\textwidth}{1.0\textheight}, center}
-      \input{fig/tikz/nn-vf.tex}
-    \end{adjustbox}
-    \caption{Critic network architecture}
-    \label{fig:nn_critic}
-  \end{minipage}
-\end{figure}
+% \begin{figure}[H]
+%   \centering
+%   \begin{minipage}{0.48\textwidth}
+%     \centering
+%     \begin{adjustbox}{max totalsize={1.0\textwidth}{1.0\textheight}, center}
+%       \input{fig/tikz/nn-pi.tex}
+%     \end{adjustbox}
+%     \caption{Actor network architecture}
+%     \label{fig:nn_actor}
+%   \end{minipage}%
+%   \hfill
+%   \begin{minipage}{0.48\textwidth}
+%     \centering
+%     \begin{adjustbox}{max totalsize={1.0\textwidth}{1.0\textheight}, center}
+%       \input{fig/tikz/nn-vf.tex}
+%     \end{adjustbox}
+%     \caption{Critic network architecture}
+%     \label{fig:nn_critic}
+%   \end{minipage}
+% \end{figure}
+
 On the other hand, the critic network aritecthure $V_f$, is formed also by 3 hidden layers but of 256 neurons each, it has the same input space and it oputs a single value based on the observation $o_t$.
 The hyperparameters used for tranning can be found in Appendix \ref{}
 
@@ -188,29 +188,37 @@ The hyperparameters used for tranning can be found in Appendix \ref{}
 The first randomiztion configuration condsidered has been to randomize the following dynamical parameters:
 
 \[\boldsymbol{\xi}_d = [m, J, C_D, k_m, \mathbf{k_T}, \Gamma ]\]
-
-\begin{table}[H]
-  \centering
-
-  \begin{tabular}{|c|c|c|} \hline
-  Parameter & Nominal Value & Randomization Distribution \\ \hline
-  m [\si{\kg}] & 0.916 & $\pm\mathcal{U}(0, 0.1)$ \\ \hline
-  $J_{xx},\ J_{yy}, J_{zz}$ [\si{\kg}] & 0.004, 0.008, 0.011 & $\cdot\mathcal{U}(0.8, 1.2)$ \\ \hline
-  $C_{D_x},\ C_{C_y}, C_{D_z}$  & 0.38, 0.47, 1.51 & $\pm\mathcal{U}(0, 0.14),\pm\mathcal{U}(0, 0.2), \pm\mathcal{U}(0, 0.5)$ \\ \hline
-  $k_m$ [\si{\kg}] & 0.916 & $\pm\mathcal{U}(0, 0.1)$ \\ \hline
-  $a_2, a_1, a_0$ [\si{\kg}] & 0.916 & $\pm\mathcal{U}(0, 0.1)$ \\ \hline
-  m [\si{\kg}] & 0.916 & $\pm\mathcal{U}(0, 0.1)$ \\ \hline
-  \end{tabular}
-  \caption{Desc}
-\end{table}
+Every parameter is relatively randomized (multiplicative randomization) with an uniform distribution $\mathcal{U}(1-p,1+p)$ where p indicates the randomization percentage.
 
 
+Try with other randomization configs? Maybe sensor noise, gate detection?
 
-\newpage
-{\color{red} To Do's}
 
-\begin{itemize}
-    \item Explain that ideally $\Xi$ should be similar to $\Theta$. \ac{DR} worsens sample efficency but improves robustness and adaptation
-    \item Explain that MDP is acually POMDP and that the randomization configurations only include the transition probability P, and maybe observation? Well acually it will be observation memory right?
-    \item Explain what trajectory is, reward is, 
-\end{itemize}
+% \begin{table}[H]
+%   \centering
+%   \begin{tabular}{|c|c|} \hline
+%   Parameter & Randomization Distribution \\ \hline
+%   $m$ [\si{\kg}] & $\pm\mathcal{U}(0, 0.1)$ \\ \hline
+%   $J$ & $\cdot\mathcal{U}(0.8, 1.2)$ \\ \hline
+%   $C_{D_x}$ & $\pm\mathcal{U}(0, 0.14)$ \\ \hline
+%   $C_{D_y}$ & $\pm\mathcal{U}(0, 0.2)$ \\ \hline
+%   $C_{D_z}$ & $\pm\mathcal{U}(0, 0.5)$ \\ \hline
+%   $k_m$ & $\pm\mathcal{U}(0.75, 1.25)$ \\ \hline
+%   $a_0, a_1, a_2$ & $\pm\mathcal{U}(0.9, 1.1)$ \\ \hline
+%   $\Gamma_{1,j}$ & $\pm\mathcal{U}(0.9, 1.1)$ \\ 
+%   $\Gamma_{2,j},\Gamma_{3,j}$ & $\pm\mathcal{U}(0.9, 1.1)$ \\ 
+%   $\Gamma_{4,j}$ & $\pm\mathcal{U}(0.9, 1.1)$ \\ \hline
+%   \end{tabular}
+%   \caption{Desc}
+% \end{table}
+
+% The $\pm$ indicates that the randomization is additive to the nominal value, otherwie it is multiplicative.
+
+% \newpage
+% {\color{red} To Do's}
+
+% \begin{itemize}
+%     \item Explain that ideally $\Xi$ should be similar to $\Theta$. \ac{DR} worsens sample efficency but improves robustness and adaptation
+%     \item Explain that MDP is acually POMDP and that the randomization configurations only include the transition probability P, and maybe observation? Well acually it will be observation memory right?
+%     \item Explain what trajectory is, reward is, 
+% \end{itemize}
