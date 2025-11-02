@@ -17,7 +17,8 @@ $\mathcal{D} = (\mathcal{S}, \mathcal{A}, \mathcal{O}, P, O, R)$ where:
     \item $\mathbf{O(o|s', a):}$ is the observation probability, representing the probability of observing $o \in \mathcal{O}$ after taking action $a$ and transitioning to state $s'$.
     \item $\mathbf{R(s',s,a):}$ is the immediate reward, or expected inmediate reward, received for transitioning from $s$ to $s'$ after performing action $a$. 
 \end{itemize}
-From the source domain, $\mathcal{D}_s$, (i.e. simulation), we can control a set of N parameters of the variable aspects of each environment that define a configuration vector, $\boldsymbol{\xi} = [\xi_i, \xi_{i+1}, ..., \xi_N]$.
+From the source domain, $\mathcal{D}_s$, (i.e. simulation), we can control a set of N parameters that define a configuration vector, $\boldsymbol{\xi} = [\xi_i, \xi_{i+1}, ..., \xi_N]$.
+These parameters will affect the transition probability $P$ of the domain.
 Examples of $\xi_i$ can include:
 
 \begin{tabular}{c|c}
@@ -29,10 +30,11 @@ Examples of $\xi_i$ can include:
     
 \end{tabular}
 
-Each configuration is sampled from a randomization space, $\boldsymbol{\xi} \in \Xi \subset \mathbb{R}^N$, with a probability distribution $\boldsymbol{\xi} \sim p(\boldsymbol{\xi})$.
-Where the parameters are bounded to be within an interval $\xi_i \in [\xi_i^{\text{low}}, \xi_i^{\text{high}}]$. 
+When \ac{DR} is applied, each configuration $\mathbf{\xi}$ is sampled from a bounded randomization space $\Xi$ with a probability distribution. 
+That is to say, $\boldsymbol{\xi} \in \Xi \subset \mathbb{R}^N$,  $\boldsymbol{\xi} \sim p(\boldsymbol{\xi})$.
+Where $\xi_i \in [\xi_i^{\text{low}}, \xi_i^{\text{high}}]$. 
 At the start of every training episode, a new environment insance is created by sampling a new configuration vector $\boldsymbol{\xi}$ from the distribution $p(\boldsymbol{\xi})$. 
-Therefore, the agent will interact with a specific \ac{POMDP} environment, that is to say, a specific domain $\mathcal{D}_{\boldsymbol{\xi}}$. 
+Therefore, the agent will interact with a new \ac{POMDP} environment, a new domain $\mathcal{D}_{\boldsymbol{\xi}}$. 
 This way, the agent can collect data from a vareity of environments that otherwise would reamain unexplored. 
 \begin{figure}[H]
   \centering
@@ -44,7 +46,7 @@ This way, the agent can collect data from a vareity of environments that otherwi
   \caption{In red, the source domain randomization configuration. In light blue, ranodimized instance of the source configuration. In green, the target domain configuration. }
   \label{domains}
 \end{figure}
-Hereby, during training, the neural network weights and biases $\theta$ are optimized to maximize the expected reward $R$ \textbf{across a distribution of randomized domains} \cite{weng2019DR}.
+Hereby, during training, the neural network weights and biases $\theta$ are optimized to maximize the expected reward $R$ \textbf{across a distribution of randomized domains}~\cite{} .
 With the aim of finding the optimal, $\theta^*$ that will lead to the optimal parametrized policy $\pi_{\theta}^*$.
 \begin{equation}\label{opt_theta}
     \theta ^* = \arg \max_{\theta} \mathbb{E}_{\boldsymbol{\xi}\sim\Xi} \left[\mathbb{E}_{\pi_\theta,\tau\sim D_\xi}[R(\tau)] \right]
@@ -53,9 +55,9 @@ Where $R(\tau) = \sum_{t=0}^{n} \gamma^t r_{t}$ is the cummulative discounted re
 % $R(\tau)  = \sum_{t=0}^{n} \gamma^t r_{t}$
 
 % \[ R(\tau)  = \sum_{t=0}^{n} \gamma^t r_{t}\]
-As illustrated in \autoref{domains} and described in \autoref{opt_theta}, the policy is exposed to a variety of domains to promote generalization and improve robustness, thereby increasing the likelihood of successful transfer to the real environment. 
+As illustrated in \autoref{domains} and described in \autoref{opt_theta}, the policy is exposed to a variety of domains to promote generalization and improve robustness, increasing the likelihood of successful transfer to the real environment. 
 However, this strategy further reduces the sample efficiency of \ac{RL} and increases training time. 
-Therefore, it is essential to properly bound the randomization space $\Xi$ so that it encompasses only the minimum necessary range required to include the real domain.
+Therefore, it is essential to properly bound the randomization space $\Xi$ so that it encompasses only the minimum necessary range to include the real domain.
 
 \section{Quadcopter model}\label{QuadModel}
 In the simulated environments, the quadcopter is modeeld as a 6 \ac{dof}, rigid body. 
