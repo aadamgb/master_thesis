@@ -104,9 +104,9 @@ The collective thrust $\mathbf{f}_T^\mathcal{B}$, and torques $\boldsymbol{\tau}
     \tau_z \\
   \end{bmatrix} = \begin{bmatrix}
     1 & 1 & 1 & 1 \\
-    -d/\sqrt{2} & d/\sqrt{2} &d/\sqrt{2} & -d/\sqrt{2} \\
-    -d/\sqrt{2} & d/\sqrt{2} &-d/\sqrt{2} & d/\sqrt{2} \\
-    c_{tf} & c_{tf} & c_{tf} & c_{tf} \\
+    d/\sqrt{2} & -d/\sqrt{2} &-d/\sqrt{2} & d/\sqrt{2} \\
+    -d/\sqrt{2} & -d/\sqrt{2} &d/\sqrt{2} & d/\sqrt{2} \\
+    c_{tf} & -c_{tf} & c_{tf} & -c_{tf} \\
   \end{bmatrix} \begin{bmatrix}
     T_1 \\ T_2 \\ T_3 \\ T_4
   \end{bmatrix}
@@ -131,7 +131,7 @@ The total drag force, $\mathbf{f}_D^\mathcal{B}$ is calculated using a simplifie
       0 & C_{D_y} & 0 \\
       0 & 0 & C_{D_z} \\
     \end{bmatrix} \begin{bmatrix}
-      v_x^\mathcal{B} \\ v_x^\mathcal{B} \\ v_x^\mathcal{B}
+      v_x^\mathcal{B} \\ v_y^\mathcal{B} \\ v_z^\mathcal{B}
     \end{bmatrix}
 \end{equation}
 
@@ -193,7 +193,7 @@ The first randomiztion configuration condsidered has been to randomize the follo
 Every parameter is relatively randomized (multiplicative randomization) with an uniform distribution $\mathcal{U}(1-p,1+p)$ where p indicates the randomization percentage.
 
 
-Try with other randomization configs? Maybe sensor noise, gate detection?
+{\color{red} Try with other randomization configs? Maybe sensor noise, gate detection?}
 
 
 % \begin{table}[H]

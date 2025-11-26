@@ -2,4 +2,140 @@
 
 \chapter{Results\label{chap:results}}
 
+The simlated drone's dynamical parameters can be found in \autoref{uav_types}.
+
+\section{Simulation Results}
 Show comparison in sim and real of 0\%, 10\%, 20\% and 30\% randomization percentage. 
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.7\linewidth, height=0.25\linewidth]{fig/photos/sim_results_10DR.png} 
+    \includegraphics[scale=0.5]{fig/photos/lap_times_0DR.eps} 
+    \label{sim:10DR}
+    \caption{10DR simulation results} 
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.7\linewidth, height=0.25\linewidth]{fig/photos/sim_results_10DR.png} 
+    \includegraphics[scale=0.5]{fig/photos/lap_times_10DR.eps} 
+    \label{sim:10DR}
+    \caption{10DR simulation results} 
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.7\linewidth, height=0.25\linewidth]{fig/photos/sim_results_10DR.png} 
+    \includegraphics[scale=0.5]{fig/photos/lap_times_20DR.eps} 
+    \label{sim:10DR}
+    \caption{10DR simulation results} 
+\end{figure}
+
+
+\section{Sim to Real Results}
+
+
+% \begin{table}[H]
+%     \centering
+% \begin{tabular}{|c|c|cc|cc|cc|cc|}
+% \hline
+% \multirow{2}{*}{Policy}    & \multirow{2}{*}{UAV} & \multicolumn{2}{c|}{Success Rate [\%]} & \multicolumn{2}{c|}{Number of Laps \#} & \multicolumn{2}{c|}{Avg Lap Time [s]} & \multicolumn{2}{c|}{Fatal Crash} \\ \cline{3-10} 
+%                            &                        & \multicolumn{1}{c|}{Sim}  & Real  & \multicolumn{1}{c|}{Sim}   & Real   & \multicolumn{1}{c|}{Sim}  & Real  & \multicolumn{1}{c|}{Sim}  & Real \\ \hline
+% \multirow{4}{*}{0\% DR}    & a300                   & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}      &        & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}     &      \\ \cline{2-10} 
+%                            & uav1                   & \multicolumn{1}{c|}{52.31}   &       & \multicolumn{1}{c|}{34}    &        & \multicolumn{1}{c|}{4.11} &       & \multicolumn{1}{c|}{No}   &      \\ \cline{2-10} 
+%                            & uav2                   & \multicolumn{1}{c|}{20.37}     &       & \multicolumn{1}{c|}{}      &        & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}     &      \\ \cline{2-10} 
+%                            & uav3                   & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}      &        & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}     &      \\ \hline
+% \multirow{4}{*}{10\% DR}   & a300                   & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}      &        & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}     &      \\ \cline{2-10} 
+%                            & uav1                   & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}      &        & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}     &      \\ \cline{2-10} 
+%                            & uav2                   & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}      &        & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}     &      \\ \cline{2-10} 
+%                            & uav3                   & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}      &        & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}     &      \\ \hline
+% \multirow{4}{*}{20\% DR}   & a300                   & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}      &        & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}     &      \\ \cline{2-10} 
+%                            & uav1                   & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}      &        & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}     &      \\ \cline{2-10} 
+%                            & uav2                   & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}      &        & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}     &      \\ \cline{2-10} 
+%                            & uav3                   & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}      &        & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}     &      \\ \hline
+% \multirow{4}{*}{30\% DR}   & a300                   & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}      &        & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}     &      \\ \cline{2-10} 
+%                            & uav1                   & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}      &        & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}     &      \\ \cline{2-10} 
+%                            & uav2                   & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}      &        & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}     &      \\ \cline{2-10} 
+%                            & uav3                   & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}      &        & \multicolumn{1}{c|}{}     &       & \multicolumn{1}{c|}{}     &      \\ \hline
+% \end{tabular}
+% \caption{(sim time 5 min)}
+% \end{table}
+
+\begin{table}[H]
+    \centering
+    \small
+\begin{tabular}{|c|c|cc|cc|cc|cc|}
+\hline
+\multirow{2}{*}{Policy}    & \multirow{2}{*}{UAV} & \multicolumn{2}{c|}{\textbf{Success Rate}[\%]} & \multicolumn{2}{c|}{\textbf{Number of Laps}\#} & \multicolumn{2}{c|}{\textbf{Avg Lap Time}[s]} & \multicolumn{2}{c|}{\textbf{Fatal Crash}} \\ \cline{3-10} 
+                           &                        & \multicolumn{1}{c|}{Sim}  & Real  & \multicolumn{1}{c|}{Sim}   & Real   & \multicolumn{1}{c|}{Sim}  & Real  & \multicolumn{1}{c|}{Sim}  & Real \\ \hline
+
+% ====================== 0% DR ======================
+\multirow{4}{*}{0\% DR}    
+& a300 & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & \\ \cline{2-10}
+
+& uav1 & \multicolumn{1}{c|}{52.31} & & 
+\multicolumn{1}{c|}{34} & & 
+\multicolumn{1}{c|}{4.11} & & 
+\multicolumn{1}{c|}{No} & \\ \cline{2-10}
+
+& uav2 & \multicolumn{1}{c|}{20.37} & & 
+\multicolumn{1}{c|}{11} & & 
+\multicolumn{1}{c|}{4.09} & & 
+\multicolumn{1}{c|}{Yes} & \\ \cline{2-10}
+
+& uav3 & \multicolumn{1}{c|}{69.23} & & 
+\multicolumn{1}{c|}{46} & & 
+\multicolumn{1}{c|}{4.18} & & 
+\multicolumn{1}{c|}{No} & \\ \hline
+
+% ====================== 10% DR ======================
+\multirow{4}{*}{10\% DR}   
+& a300 & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & \\ \cline{2-10}
+
+& uav1 & \multicolumn{1}{c|}{97.92} & & 
+\multicolumn{1}{c|}{48} & & 
+\multicolumn{1}{c|}{5.72} & & 
+\multicolumn{1}{c|}{No} & \\ \cline{2-10}
+
+& uav2 & \multicolumn{1}{c|}{70.00} & & 
+\multicolumn{1}{c|}{36} & & 
+\multicolumn{1}{c|}{5.45} & & 
+\multicolumn{1}{c|}{No} & \\ \cline{2-10}
+
+& uav3 & \multicolumn{1}{c|}{100.00} & & 
+\multicolumn{1}{c|}{48} & & 
+\multicolumn{1}{c|}{5.84} & & 
+\multicolumn{1}{c|}{No} & \\ \hline
+
+% ====================== 20% DR ======================
+\multirow{4}{*}{20\% DR}   
+& a300 & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & \\ \cline{2-10}
+
+& uav1 & \multicolumn{1}{c|}{98.11} & & 
+\multicolumn{1}{c|}{53} & & 
+\multicolumn{1}{c|}{5.26} & & 
+\multicolumn{1}{c|}{No} & \\ \cline{2-10}
+
+& uav2 & \multicolumn{1}{c|}{100.00} & & 
+\multicolumn{1}{c|}{52} & & 
+\multicolumn{1}{c|}{5.36} & & 
+\multicolumn{1}{c|}{No} & \\ \cline{2-10}
+
+& uav3 & \multicolumn{1}{c|}{100.00} & & 
+\multicolumn{1}{c|}{51} & & 
+\multicolumn{1}{c|}{5.54} & & 
+\multicolumn{1}{c|}{No} & \\ \hline
+
+% ====================== 30% DR ======================
+\multirow{4}{*}{30\% DR}   
+& a300 & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & \\ \cline{2-10}
+
+& uav1 & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & \\ \cline{2-10}
+
+& uav2 & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & \\ \cline{2-10}
+
+& uav3 & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & \\ \hline
+
+\end{tabular}
+\caption{(sim time 5 min)}
+\end{table}
