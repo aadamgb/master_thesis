@@ -3,7 +3,7 @@
 \chapter{Results\label{chap:results}}
 
 To investigate how \ac{DR} affects the transferability of controllers learned in simulation to different environments, the following experiments were designed.
-First, three randomized drone instances were initialized in simulation, and a common policy was executed concurrently in Gazebo to measure lap times and success rates.
+First, three randomized drone instances were initialized in simulation, and a common policy was executed concurrently in Gazebo during 5 minutes to measure the uav's lap times and success rates.
 The policies were trained to race in a simple eight-figure track (see \autoref{t:track}) and their dynamical parameters can be found in \autoref{uav_types}.
 This procedure was performed for four distinct policies trained at randomization levels of 0\%, 10\%, 20\%, and 30\%.
 The results of this first experiment are presented in \autoref{simres}.
@@ -21,12 +21,16 @@ Following successful validation in the simulated environment, the experiments we
 
 \section{Simulation to Simulation Results}\label{simres}
 
+As depicted in \autoref{sim:0DR}, the baseline configuration with 0\% randimization yields to the fastest avarage lap time of 4.13s.
+However, this speed comes with a significat cost in realaiability.
+More than half of the laps resulted in a crash with a gate and two of the drones 
+
 \begin{figure}[H]
     \centering
     % \includegraphics[width=0.7\linewidth, height=0.25\linewidth]{fig/photos/sim_results_10DR.png} 
     \includegraphics[scale=0.35]{fig/photos/lap_times_0DR.eps} 
-    \label{sim:10DR}
     \caption{10DR simulation results} 
+    \label{sim:0DR}
 \end{figure}
 
 \begin{figure}[H]
@@ -41,7 +45,7 @@ Following successful validation in the simulated environment, the experiments we
     \centering
     % \includegraphics[width=0.7\linewidth, height=0.25\linewidth]{fig/photos/sim_results_10DR.png} 
     \includegraphics[scale=0.35]{fig/photos/lap_times_20DR.eps} 
-    \label{sim:10DR}
+    \label{sim:20DR}
     \caption{10DR simulation results} 
 \end{figure}
 
@@ -49,7 +53,7 @@ Following successful validation in the simulated environment, the experiments we
     \centering
     % \includegraphics[width=0.7\linewidth, height=0.25\linewidth]{fig/photos/sim_results_10DR.png} 
     \includegraphics[scale=0.35]{fig/photos/lap_times_30DR.eps} 
-    \label{sim:10DR}
+    \label{sim:30DR}
     \caption{10DR simulation results} 
 \end{figure}
 
