@@ -2,17 +2,29 @@
 
 \chapter{Results\label{chap:results}}
 
-To have an
+To investigate how \ac{DR} affects the transferability of controllers learned in simulation to different environments, the following experiments were designed.
+First, three randomized drone instances were initialized in simulation, and a common policy was executed concurrently in Gazebo to measure lap times and success rates.
+The policies were trained to race in a simple eight-figure track (see \autoref{t:track}) and their dynamical parameters can be found in \autoref{uav_types}.
+This procedure was performed for four distinct policies trained at randomization levels of 0\%, 10\%, 20\%, and 30\%.
+The results of this first experiment are presented in \autoref{simres}.
 
-The simulated drone's dynamical parameters can be found in \autoref{uav_types}.
-
-\section{Simulation Results}
-Show comparison in sim and real of 0\%, 10\%, 20\% and 30\% randomization percentage. 
+Following successful validation in the simulated environment, the experiments were replicated on physical hardware with.....
 
 \begin{figure}[H]
     \centering
     % \includegraphics[width=0.7\linewidth, height=0.25\linewidth]{fig/photos/sim_results_10DR.png} 
-    \includegraphics[scale=0.5]{fig/photos/lap_times_0DR.eps} 
+    \includegraphics[scale=0.35]{fig/photos/sim-exp-setup.png} 
+    \caption{Three randomized drones racing in Gazebo.}
+    \label{t:track}
+\end{figure}
+
+
+\section{Simulation to Simulation Results}\label{simres}
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.7\linewidth, height=0.25\linewidth]{fig/photos/sim_results_10DR.png} 
+    \includegraphics[scale=0.35]{fig/photos/lap_times_0DR.eps} 
     \label{sim:10DR}
     \caption{10DR simulation results} 
 \end{figure}
@@ -20,7 +32,7 @@ Show comparison in sim and real of 0\%, 10\%, 20\% and 30\% randomization percen
 \begin{figure}[H]
     \centering
     % \includegraphics[width=0.7\linewidth, height=0.25\linewidth]{fig/photos/sim_results_10DR.png} 
-    \includegraphics[scale=0.5]{fig/photos/lap_times_10DR.eps} 
+    \includegraphics[scale=0.35]{fig/photos/lap_times_10DR.eps} 
     \label{sim:10DR}
     \caption{10DR simulation results} 
 \end{figure}
@@ -28,7 +40,7 @@ Show comparison in sim and real of 0\%, 10\%, 20\% and 30\% randomization percen
 \begin{figure}[H]
     \centering
     % \includegraphics[width=0.7\linewidth, height=0.25\linewidth]{fig/photos/sim_results_10DR.png} 
-    \includegraphics[scale=0.5]{fig/photos/lap_times_20DR.eps} 
+    \includegraphics[scale=0.35]{fig/photos/lap_times_20DR.eps} 
     \label{sim:10DR}
     \caption{10DR simulation results} 
 \end{figure}
@@ -36,13 +48,13 @@ Show comparison in sim and real of 0\%, 10\%, 20\% and 30\% randomization percen
 \begin{figure}[H]
     \centering
     % \includegraphics[width=0.7\linewidth, height=0.25\linewidth]{fig/photos/sim_results_10DR.png} 
-    \includegraphics[scale=0.5]{fig/photos/lap_times_30DR.eps} 
+    \includegraphics[scale=0.35]{fig/photos/lap_times_30DR.eps} 
     \label{sim:10DR}
     \caption{10DR simulation results} 
 \end{figure}
 
 
-\section{Sim to Real Results}
+\section{Simulation to Reality Results}
 
 
 \begin{table}[H]

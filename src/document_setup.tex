@@ -168,8 +168,14 @@
 
 %% | ------------------------ biblatex ------------------------ |
 
-\usepackage[backend=bibtex,defernumbers=true,style=ieee,sorting=none,sortcites=true]{biblatex}
-
+\usepackage[
+  backend=bibtex,
+  style=numeric,
+  sorting=none,
+  sortcites=false,
+  defernumbers=false
+]{biblatex}
+% \usepackage{notoccite}
 % define the source file with bibliography
 \addbibresource{main.bib}
 
@@ -177,14 +183,14 @@
 
 % add suffix "a" to publications containing the keyword "mine"
 % add suffix "c" to publications containing the keyword "mine" && "core"
-\DeclareFieldFormat{labelnumber}{%
-  \ifkeyword{mine}
-    {\ifkeyword{core}
-      {{\number\numexpr#1}c}%
-      {{\number\numexpr#1}a}%
-    }%
-    {#1}%
-}
+% \DeclareFieldFormat{labelnumber}{%
+%   \ifkeyword{mine}
+%     {\ifkeyword{core}
+%       {{\number\numexpr#1}c}%
+%       {{\number\numexpr#1}a}%
+%     }%
+%     {#1}%
+% }
 
 \DeclareCiteCommand{\tabcite}%[\mkbibbrackets]
   {\usebibmacro{cite:init}%

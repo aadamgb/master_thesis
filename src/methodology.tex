@@ -4,7 +4,7 @@
 
 \section{Problem definition}
 We define a domain as a specific subset of possible \ac{POMDP} environments. 
-While a complete \ac{POMDP} is formally characterized by an 8-tuple~\cite{}, 
+While a complete \ac{POMDP} is formally characterized by an 8-tuple~\cite{ASTROM1965174}, 
 we focus on a reduced 6-tuple representation that captures the essential elements 
 for our domain definition. A standard domain is then characterized by 
 $\mathcal{D} = (\mathcal{S}, \mathcal{A}, \mathcal{O}, P, O, R)$ where:
@@ -31,8 +31,7 @@ Examples of $\xi_i$ can include:
 \end{tabular}
 
 When \ac{DR} is applied, each configuration $\boldsymbol{\xi}$ is sampled from a bounded randomization space $\Xi$ with a probability distribution. 
-That is to say, $\boldsymbol{\xi} \in \Xi \subset \mathbb{R}^N$,  $\boldsymbol{\xi} \sim p(\boldsymbol{\xi})$.
-Where $\xi_i \in [\xi_i^{\text{low}}, \xi_i^{\text{high}}]$. 
+That is to say, $\boldsymbol{\xi} \in \Xi \subset \mathbb{R}^N$,  $\boldsymbol{\xi} \sim p(\boldsymbol{\xi})$ where $\xi_i \in [\xi_i^{\text{low}}, \xi_i^{\text{high}}]$. 
 At the start of every training episode, a new environment insance is created by sampling a new configuration vector $\boldsymbol{\xi}$ from the distribution $p(\boldsymbol{\xi})$. 
 Therefore, the agent will interact with a new \ac{POMDP} environment, a new domain $\mathcal{D}_{\boldsymbol{\xi}}$. 
 This way, the agent can collect data from a vareity of environments that otherwise would reamain unexplored. 
@@ -46,7 +45,7 @@ This way, the agent can collect data from a vareity of environments that otherwi
   \caption{In red, the source domain randomization configuration. In light blue, ranodimized instance of the source configuration. In green, the target domain configuration. }
   \label{domains}
 \end{figure}
-Hereby, during training, the neural network weights and biases $\theta$ are optimized to maximize the expected reward $R$ \textbf{across a distribution of randomized domains}~\cite{} .
+Hereby, during training, the neural network weights and biases $\theta$ are optimized to maximize the expected reward $R$ \textbf{across a distribution of randomized domains}~\cite{weng2019DR}.
 With the aim of finding the optimal, $\theta^*$ that will lead to the optimal parametrized policy $\pi_{\theta}^*$.
 \begin{equation}\label{opt_theta}
     \theta ^* = \arg \max_{\theta} \mathbb{E}_{\boldsymbol{\xi}\sim\Xi} \left[\mathbb{E}_{\pi_\theta,\tau\sim D_\xi}[R(\tau)] \right]
@@ -135,11 +134,12 @@ The total drag force, $\mathbf{f}_D^\mathcal{B}$ is calculated using a simplifie
     \end{bmatrix}
 \end{equation}
 
-\section{\ac{RL} Set-Up}
+\section{\ac{RL} Set Up}
 
 Although the simplified quadcopter model defined in \ref{QuadModel} is used to represent the drone dynamics in simulation, the \ac{RL} setup employed in this project is \textbf{model-free}.
-Specifically, it consists of an \ac{AC} structure optimized using \ac{PPO}~\cite{}.
-The implementation relies on Stable-Baselines3~\cite{} to interface with a custom C++ Gymnasium environment (based on flightmare~\cite{}) and to train the \ac{AC} networks using \ac{PPO}.
+Specifically, it consists of an \ac{AC} structure optimized using \ac{PPO}~\cite{ppo}.
+The implementation relies on Stable-Baselines3~\cite{sb3} to interface with a custom C++ Gymnasium environment (based on flightmare~\cite{Flightmare}).
+To train the \ac{AC} networks \ac{PPO} is used.
 
 The actor policy netwrok  $\pi_\theta$, is defined by a \ac{MLP} that takes an observation vector at time step $t$, of 31 inputs (see \autoref{obs_vec}). The observation vector is sampled from a bounded observation space $o_t\in \mathcal{O} \subset \mathbb{R}^{31}$.
 
@@ -182,19 +182,24 @@ The outputs are the \ac{CTBR}, sampled from a bounded action space $a_t \in \mat
 % \end{figure}
 
 On the other hand, the critic network aritecthure $V_f$, is formed also by 3 hidden layers but of 256 neurons each, it has the same input space and it oputs a single value based on the observation $o_t$.
-The hyperparameters used for tranning can be found in Appendix \ref{}
+% The hyperparameters used for tranning can be found in Appendix \ref{}
 
-\subsection{Training parameters}
+% \subsection{Training parameters}
+
+
+\subsection{Reward System}
+% The reinforcement learning agent is guided by a composite reward function, $R_t$, designed to balance goal-oriented progress, flight stability, and perceptual accuracy. The total reward at each timestep $t$ is defined as the sum of several distinct components:1. Primary Task and Termination RewardsThe agent receives a sparse penalty for terminal states and a dense reward for forward progress along the trajectory.
+
 
 \section{\ac{DR} configuration}
 
-The first randomiztion configuration condsidered has been to randomize the following dynamical parameters:
+The randomiztion configuration condsidered for this semestral project has been the following:
 
 \[\boldsymbol{\xi}_d = [m, J, C_D, k_m, \mathbf{k_T}, \Gamma ]\]
-Every parameter is relatively randomized (multiplicative randomization) with an uniform distribution $\mathcal{U}(1-p,1+p)$ where p indicates the randomization percentage.
+Every parameter is relatively randomized (multiplicative randomization) by a constant sampled from an uniform distribution $\mathcal{U}(1-p,1+p)$ parametrized by the parameter $p$ which indicates the randomization percentage.
 
 
-{\color{red} Try with other randomization configs? Maybe sensor noise, gate detection?}
+% {\color{red} Try with other randomization configs? Maybe sensor noise, gate detection?}
 
 
 % \begin{table}[H]
