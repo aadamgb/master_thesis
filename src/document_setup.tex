@@ -54,7 +54,7 @@
 \usepackage{multicol}
 \usepackage{subfig}
 \usepackage[export]{adjustbox}
-
+\usepackage{array}
 
 \usepackage{amsmath} % for aligned
 \usepackage{listofitems} % for \readlist to create arrays
@@ -168,7 +168,7 @@
 
 %% | ------------------------ biblatex ------------------------ |
 
-\usepackage[backend=bibtex,defernumbers=true,style=ieee,sorting=ydnt,sortcites=true]{biblatex}
+\usepackage[backend=bibtex,defernumbers=true,style=ieee,sorting=none,sortcites=true]{biblatex}
 
 % define the source file with bibliography
 \addbibresource{main.bib}
@@ -251,6 +251,7 @@
 \newcommand{\minus}{\scalebox{0.75}[1.0]{$-$}}
 \newcommand{\plus}{\scalebox{0.8}[0.8]{$+$}}
 \newcommand{\figvspace}{\vspace{-1em}}
+\newcolumntype{?}{!{\vrule width 2pt}}
 
 % referencing
 \newcommand{\reffig}[1]{Fig.~\ref{#1}}
