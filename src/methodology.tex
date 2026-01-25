@@ -160,26 +160,26 @@ The outputs are the \ac{CTBR}, sampled from a bounded action space $a_t \in \mat
   \end{bmatrix}^T
 \end{equation}
 
-% \begin{figure}[H]
-%   \centering
-%   \begin{minipage}{0.48\textwidth}
-%     \centering
-%     \begin{adjustbox}{max totalsize={1.0\textwidth}{1.0\textheight}, center}
-%       \input{fig/tikz/nn-pi.tex}
-%     \end{adjustbox}
-%     \caption{Actor network architecture}
-%     \label{fig:nn_actor}
-%   \end{minipage}%
-%   \hfill
-%   \begin{minipage}{0.48\textwidth}
-%     \centering
-%     \begin{adjustbox}{max totalsize={1.0\textwidth}{1.0\textheight}, center}
-%       \input{fig/tikz/nn-vf.tex}
-%     \end{adjustbox}
-%     \caption{Critic network architecture}
-%     \label{fig:nn_critic}
-%   \end{minipage}
-% \end{figure}
+\begin{figure}[H]
+  \centering
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \begin{adjustbox}{max totalsize={1.0\textwidth}{1.0\textheight}, center}
+      \input{fig/tikz/nn-pi.tex}
+    \end{adjustbox}
+    \caption{Actor network architecture}
+    \label{fig:nn_actor}
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \begin{adjustbox}{max totalsize={1.0\textwidth}{1.0\textheight}, center}
+      \input{fig/tikz/nn-vf.tex}
+    \end{adjustbox}
+    \caption{Critic network architecture}
+    \label{fig:nn_critic}
+  \end{minipage}
+\end{figure}
 
 On the other hand, the critic network aritecthure $V_f$, is formed also by 3 hidden layers but of 256 neurons each, it has the same input space and it oputs a single value based on the observation $o_t$.
 % The hyperparameters used for tranning can be found in Appendix \ref{}
@@ -187,10 +187,10 @@ On the other hand, the critic network aritecthure $V_f$, is formed also by 3 hid
 % \subsection{Training parameters}
 
 
-\subsection{Reward System}
-% The reinforcement learning agent is guided by a composite reward function, $R_t$, designed to balance goal-oriented progress, flight stability, and perceptual accuracy. The total reward at each timestep $t$ is defined as the sum of several distinct components:1. Primary Task and Termination RewardsThe agent receives a sparse penalty for terminal states and a dense reward for forward progress along the trajectory.
+% \subsection{Reward System}
+% % The reinforcement learning agent is guided by a composite reward function, $R_t$, designed to balance goal-oriented progress, flight stability, and perceptual accuracy. The total reward at each timestep $t$ is defined as the sum of several distinct components:1. Primary Task and Termination RewardsThe agent receives a sparse penalty for terminal states and a dense reward for forward progress along the trajectory.
 
-- mention also training steps, time and so on
+% - mention also training steps, time and so on
 \section{\ac{DR} configuration}
 
 The randomiztion configuration condsidered for this semestral project has been the following:

@@ -5,14 +5,14 @@
 This work investigated the effectiveness of Domain Randomization (DR) in bridging the simulation-to-reality gap for learning-based quadcopter racing controllers. 
 By systematically varying the randomization level of key drone dynamics parameters, we demonstrated that DR significantly improves policy robustness and transferability across different vehicle platforms.
 
-Our simulated experiments revealed a clear trade-off between control performance and reliability. 
+Our simulated experiments revealed trade-off between performance and reliability. 
 The baseline policy trained without randomization (0\% DR) achieved the fastest lap times of 4.13s but suffered from poor stability, with over 50\% of laps resulting in gate collisions and two fatal crashes among the three tested drone instances. 
 In contrast, policies trained with moderate randomization (10\% and 20\% DR) exhibited substantially improved success rates exceeding 97\%, while maintaining competitive lap times of 5.73s and 5.38s respectively. 
 The 20\% DR configuration emerged as the optimal balance, achieving a perfect 100\% success rate across all three simulated drones without sacrificing significant performance.
 
 However, our results also indicate diminishing returns and potential instability at higher randomization levels. 
-The 30\% DR policy showed degraded performance, particularly for UAV3, suggesting that excessive parameter randomization can destabilize the learning process and reduce sample efficiency. 
-This aligns with our hypothesis that the randomization space must be carefully bounded to encompass the real domain characteristics without introducing unnecessary variability that impedes convergence.
+The 30\% DR policy showed degraded performance, particularly for UAV3, suggesting that excessive randomization can destabilize the learning process and reduce sample efficiency. 
+This aligns with our hypothesis that the randomization space must be carefully bounded to encompass the real domain characteristics without introducing unnecessary variability that difficults convergence.
 
 % A key finding from this work is that uniform randomization across all dynamical parameters may be suboptimal. 
 % Critical parameters such as the thrust map coefficients require more restrictive bounds to avoid physically infeasible configurations. 
