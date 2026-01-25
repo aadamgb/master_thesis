@@ -2,12 +2,13 @@
 
 \chapter{Results\label{chap:results}}
 
-To investigate how \ac{DR} affects the transferability of controllers learned in simulation to different environments, the following experiments were designed.
-First, three randomized drone instances were initialized in simulation, and a common policy was executed concurrently in Gazebo during 5 minutes to measure the uav's lap times and success rates.
+To investigate how \ac{DR} affects the transferability of controllers learned in simulation to different environments, the following experiment was designed.
+First, three randomized drone instances were initialized in simulation, and a common policy was executed concurrently in Gazebo during 5 minutes to< measure the \acp{UAV} lap times and success rates.
 The policies were trained to race in a simple eight-figure track (see \autoref{t:track}) and their dynamical parameters can be found in \autoref{uav_types}.
 This procedure was performed for four distinct policies trained at randomization levels of 0\%, 10\%, 20\%, and 30\%.
 The results of this first experiment are presented in \autoref{simres}.
-Following successful validation in the simulated environment, the experiments were replicated on physical hardware with.....
+
+% Following successful validation in the simulated environment, the experiments were replicated on physical hardware with.....
 
 \begin{figure}[H]
     \centering
@@ -18,11 +19,11 @@ Following successful validation in the simulated environment, the experiments we
 \end{figure}
 
 
-\section{Simulation to Simulation Results}\label{simres}
+\section{Training to Simulation Results}\label{simres}
 
-As depicted in \autoref{sim:0DR}, the baseline configuration with 0\% randimization yields to the fastest avarage lap time of 4.13s.
+As depicted in \autoref{sim:0DR}, the baseline configuration with 0\% randimization yields to the fastest avarage lap time of 4.13 s.
 However, this speed comes with a significat cost in realaiability.
-More than half of the laps resulted in gate crash and two of the drones fatally crashed druing the experiment.
+More than half of the laps resulted in a gate crash and two of the drones fatally crashed druing the experiment.
 
 \begin{figure}[H]
     \centering
@@ -32,7 +33,7 @@ More than half of the laps resulted in gate crash and two of the drones fatally 
     \label{sim:0DR}
 \end{figure}
 
-Randomizing the dynamical parameters at 10\% produced a notable increase in average lap times to 5.79s, \autoref{sim:10DR}.
+Randomizing the dynamical parameters at 10\% produced a notable increase in average lap times to 5.79 s, \autoref{sim:10DR}.
 Nonetheless, reliability and robustness improved significantly, with all three drones completing the experiment without fatal crashes and success rates exceeding 97\%.
 
 \begin{figure}[H]
@@ -45,7 +46,7 @@ Nonetheless, reliability and robustness improved significantly, with all three d
 
 A further increase in randomization to 20\% resulted in slightly reduced lap times. 
 It is worth noting that training is a stochastic process; training two policies with identical initialization parameters yield to different results. 
-Among all trained policies, the 20\% randomized policy achieved the best overall performance with an average lap time of 5.38s and a perfect success rate across all three drones, as shown in \autoref{sim:20DR}.
+Among all trained policies, the 20\% randomized policy achieved the best overall performance with an average lap time of 5.38 s and a perfect success rate across all three drones, as shown in \autoref{sim:20DR}.
 \begin{figure}[H]
     \centering
     % \includegraphics[width=0.7\linewidth, height=0.25\linewidth]{fig/photos/sim_results_10DR.png} 
@@ -54,9 +55,9 @@ Among all trained policies, the 20\% randomized policy achieved the best overall
     \label{sim:20DR}
 \end{figure}
 
-Finally, training with 30\% randomization yielded acceptable results for UAV1 and UAV2, as shown in \autoref{sim:30DR}.
+Finally, training with 30\% randomization achieved acceptable results for UAV1 and UAV2, as shown in \autoref{sim:30DR}.
 However, for UAV3, the policy failed to reliably control the drone.
-As discussed in the Methodology section, we hypothesize that excessive randomization can destabilize training, worsening sample efficiency and requiring more convergence time.
+As discussed in \autoref{how_to}, we hypothesize that excessive randomization can destabilize training, worsening sample efficiency and requiring more convergence time.
 
 
 \begin{figure}[H]
@@ -67,94 +68,49 @@ As discussed in the Methodology section, we hypothesize that excessive randomiza
     \label{sim:30DR}
 \end{figure}
 
-Additionally, the selected randomization methodology randomizes all dynamical parameters uniformly, but some critical parameters such as the thrust map may require more restrictive bounds to prevent physically infeasible configurations.
-\section{Simulation to Reality Results}
+The selected randomization methodology randomizes all dynamical parameters uniformly, but some critical parameters such as the thrust map may require more restrictive bounds to prevent physically infeasible configurations.
+% \section{Simulation to Reality Results}
 
 
 \begin{table}[H]
     \centering
     \small
-\begin{tabular}{|c|c|cc|cc|cc|cc|}
+\begin{tabular}{|c|c|c|c|c|}
 \hline
-\multirow{2}{*}{Policy}    & \multirow{2}{*}{UAV} & \multicolumn{2}{c|}{\textbf{Success Rate}[\%]} & \multicolumn{2}{c|}{\textbf{Number of Laps}\#} & \multicolumn{2}{c|}{\textbf{Avg Lap Time}[s]} & \multicolumn{2}{c|}{\textbf{Fatal Crash}} \\ \cline{3-10} 
-                           &                        & \multicolumn{1}{c|}{Sim}  & Real  & \multicolumn{1}{c|}{Sim}   & Real   & \multicolumn{1}{c|}{Sim}  & Real  & \multicolumn{1}{c|}{Sim}  & Real \\ \hline
+Policy    & UAV & \textbf{Success Rate}[\%] & \textbf{Number of Laps}\# & \textbf{Avg Lap Time}[s] \\ \hline
 
 % ====================== 0% DR ======================
-\multirow{4}{*}{0\% DR}    
-& a300 & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & \\ \cline{2-10}
+\multirow{3}{*}{0\% DR}    
+& uav1 & 54.55 & 36 & 4.08 \\ \cline{2-5}
 
-& uav1 & \multicolumn{1}{c|}{54.55} & & 
-\multicolumn{1}{c|}{36} & & 
-\multicolumn{1}{c|}{4.08} & & 
-\multicolumn{1}{c|}{No} & \\ \cline{2-10}
+& uav2 & 23.81 & 5 & 4.17 \\ \cline{2-5}
 
-& uav2 & \multicolumn{1}{c|}{23.81} & & 
-\multicolumn{1}{c|}{5} & & 
-\multicolumn{1}{c|}{4.17} & & 
-\multicolumn{1}{c|}{\textbf{Yes}} & \\ \cline{2-10}
-
-& uav3 & \multicolumn{1}{c|}{67.74} & & 
-\multicolumn{1}{c|}{42} & & 
-\multicolumn{1}{c|}{4.15} & & 
-\multicolumn{1}{c|}{\textbf{Yes}} & \\ \hline
+& uav3 & 67.74 & 42 & 4.15 \\ \hline
 
 % ====================== 10% DR ======================
-\multirow{4}{*}{10\% DR}   
-& a300 & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & \\ \cline{2-10}
+\multirow{3}{*}{10\% DR}   
+& uav1 & 100 & 47 & 5.76 \\ \cline{2-5}
 
-& uav1 & \multicolumn{1}{c|}{100} & & 
-\multicolumn{1}{c|}{47} & & 
-\multicolumn{1}{c|}{5.76} & & 
-\multicolumn{1}{c|}{No} & \\ \cline{2-10}
+& uav2 & 97.92 & 47 & 5.73 \\ \cline{2-5}
 
-& uav2 & \multicolumn{1}{c|}{97.92} & & 
-\multicolumn{1}{c|}{47} & & 
-\multicolumn{1}{c|}{5.73} & & 
-\multicolumn{1}{c|}{No} & \\ \cline{2-10}
-
-& uav3 & \multicolumn{1}{c|}{100} & & 
-\multicolumn{1}{c|}{46} & & 
-\multicolumn{1}{c|}{5.87} & & 
-\multicolumn{1}{c|}{No} & \\ \hline
+& uav3 & 100 & 46 & 5.87 \\ \hline
 
 % ====================== 20% DR ======================
-\multirow{4}{*}{20\% DR}   
-& a300 & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & \\ \cline{2-10}
+\multirow{3}{*}{20\% DR}   
+& uav1 & 100 & 52 & 5.24 \\ \cline{2-5}
 
-& uav1 & \multicolumn{1}{c|}{100} & & 
-\multicolumn{1}{c|}{52} & & 
-\multicolumn{1}{c|}{5.24} & & 
-\multicolumn{1}{c|}{No} & \\ \cline{2-10}
+& uav2 & 100 & 52 & 5.35 \\ \cline{2-5}
 
-& uav2 & \multicolumn{1}{c|}{100} & & 
-\multicolumn{1}{c|}{52} & & 
-\multicolumn{1}{c|}{5.35} & & 
-\multicolumn{1}{c|}{No} & \\ \cline{2-10}
-
-& uav3 & \multicolumn{1}{c|}{100} & & 
-\multicolumn{1}{c|}{50} & & 
-\multicolumn{1}{c|}{5.55} & & 
-\multicolumn{1}{c|}{No} & \\ \hline
+& uav3 & 100 & 50 & 5.55 \\ \hline
 
 % ====================== 30% DR ======================
-\multirow{4}{*}{30\% DR}   
-& a300 & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & & \multicolumn{1}{c|}{} & \\ \cline{2-10}
+\multirow{3}{*}{30\% DR}   
+& uav1 & 90 & 45 & 5.44 \\ \cline{2-5}
 
-& uav1 & \multicolumn{1}{c|}{90} & & 
-  \multicolumn{1}{c|}{45} & & 
-  \multicolumn{1}{c|}{5.44} & & 
-  \multicolumn{1}{c|}{No} & \\ \cline{2-10}
+& uav2 & 78 & 39 & 5.49 \\ \cline{2-5}
 
-& uav2 & \multicolumn{1}{c|}{78} & & 
-  \multicolumn{1}{c|}{39} & & 
-  \multicolumn{1}{c|}{5.49} & & 
-  \multicolumn{1}{c|}{No} & \\ \cline{2-10}
-
-& uav3 & \multicolumn{1}{c|}{5.88} & & 
-  \multicolumn{1}{c|}{3} & & 
-  \multicolumn{1}{c|}{5.44} & & 
-  \multicolumn{1}{c|}{No} & \\ \hline
+& uav3 & 5.88 & 3 & 5.44 \\ \hline
 
 \end{tabular}
-\caption{real test to be done  (sim time 5 min)}
+\caption{Table indicating the results of the simulated experiment.}
 \end{table}

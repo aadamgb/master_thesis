@@ -2,12 +2,12 @@
 
 \chapter{Conclusion\label{chap:conclusion}}
 
-This work investigated the effectiveness of Domain Randomization (DR) in bridging the simulation-to-reality gap for learning-based quadcopter racing controllers. 
-By systematically varying the randomization level of key drone dynamics parameters, we demonstrated that DR significantly improves policy robustness and transferability across different vehicle platforms.
+This work investigated the effectiveness of \ac{DR} in bridging the \ac{s2r} gap for learning-based quadcopter racing controllers. 
+By varying the randomization level of key drone physical parameters, we demonstrated that \ac{DR} significantly improves policy robustness and transferability across different vehicle platforms.
 
 Our simulated experiments revealed trade-off between performance and reliability. 
-The baseline policy trained without randomization (0\% DR) achieved the fastest lap times of 4.13s but suffered from poor stability, with over 50\% of laps resulting in gate collisions and two fatal crashes among the three tested drone instances. 
-In contrast, policies trained with moderate randomization (10\% and 20\% DR) exhibited substantially improved success rates exceeding 97\%, while maintaining competitive lap times of 5.73s and 5.38s respectively. 
+The baseline policy trained without randomization (0\% \ac{DR}) achieved the fastest lap times of 4.13 s but suffered from poor stability, with over 50\% of laps resulting in gate collisions and two fatal crashes among the three tested drone instances. 
+In contrast, policies trained with moderate randomization (10\% and 20\% \ac{DR}) exhibited substantially improved success rates exceeding 97\%, while maintaining competitive lap times of 5.73 s and 5.38 s respectively. 
 The 20\% DR configuration emerged as the optimal balance, achieving a perfect 100\% success rate across all three simulated drones without sacrificing significant performance.
 
 However, our results also indicate diminishing returns and potential instability at higher randomization levels. 

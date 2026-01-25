@@ -1,6 +1,6 @@
 %!TEX root = ../main.tex
 
-\chapter{Methodology\label{chap:how_to}}
+\chapter{Methodology\label{how_to}}
 
 \section{Problem definition}
 We define a domain as a specific subset of possible \ac{POMDP} environments. 
@@ -17,7 +17,7 @@ $\mathcal{D} = (\mathcal{S}, \mathcal{A}, \mathcal{O}, P, O, R)$ where:
     \item $\mathbf{O(o|s', a):}$ is the observation probability, representing the probability of observing $o \in \mathcal{O}$ after taking action $a$ and transitioning to state $s'$.
     \item $\mathbf{R(s',s,a):}$ is the immediate reward, or expected inmediate reward, received for transitioning from $s$ to $s'$ after performing action $a$. 
 \end{itemize}
-From the source domain, $\mathcal{D}_s$, (i.e. simulation), we can control a set of N parameters that define a configuration vector, $\boldsymbol{\xi} = [\xi_i, \xi_{i+1}, ..., \xi_N]$.
+From the source domain, $\mathcal{D}_{\xi_s}$, (i.e. simulation), we can control a set of N parameters that define a configuration vector, $\boldsymbol{\xi} = [\xi_i, \xi_{i+1}, ..., \xi_N]$.
 These parameters will affect the transition probability $\mathbf{P(s'|s,a)}$ of the domain.
 Examples of $\xi_i$ can include:
 
@@ -46,7 +46,7 @@ This way, the agent can collect data from a vareity of environments that otherwi
   \label{domains}
 \end{figure}
 Hereby, during training, the neural network weights and biases $\theta$ are optimized to maximize the expected reward $R$ \textbf{across a distribution of randomized domains}~\cite{weng2019DR}.
-With the aim of finding the optimal, $\theta^*$ that will lead to the optimal parametrized policy $\pi_{\theta}^*$.
+With the aim of finding the optimal, $\theta^*$ that will lead to the optimal policy $\pi_{\theta}^*$.
 \begin{equation}\label{opt_theta}
     \theta ^* = \arg \max_{\theta} \mathbb{E}_{\boldsymbol{\xi}\sim\Xi} \left[\mathbb{E}_{\pi_\theta,\tau\sim D_\xi}[R(\tau)] \right]
 \end{equation}
@@ -56,7 +56,7 @@ Where $R(\tau) = \sum_{t=0}^{n} \gamma^t r_{t}$ is the cummulative discounted re
 % \[ R(\tau)  = \sum_{t=0}^{n} \gamma^t r_{t}\]
 As illustrated in \autoref{domains} and described in \autoref{opt_theta}, the policy is exposed to a variety of domains to promote generalization and improve robustness, increasing the likelihood of successful transfer to the real environment. 
 However, this strategy further reduces the sample efficiency of \ac{RL} and increases training time. 
-Therefore, it is essential to properly bound the randomization space $\Xi$ so that it encompasses only the minimum necessary range to include the real domain.
+Therefore, it is essential to properly bound the randomization space $\Xi$, so that it encompasses only the minimum necessary range to include the target domain.
 
 \section{Quadcopter model}\label{QuadModel}
 In the simulated environments, the quadcopter is modeeld as a 6 \ac{dof}, rigid body. 
@@ -137,9 +137,9 @@ The total drag force, $\mathbf{f}_D^\mathcal{B}$ is calculated using a simplifie
 \section{\ac{RL} Set Up}
 
 Although the simplified quadcopter model defined in \ref{QuadModel} is used to represent the drone dynamics in simulation, the \ac{RL} setup employed in this project is \textbf{model-free}.
-Specifically, it consists of an \ac{AC} structure optimized using \ac{PPO}~\cite{ppo}.
+Specifically, it consists of an \ac{AC} architecture optimized using \ac{PPO}~\cite{ppo}.
 The implementation relies on Stable-Baselines3~\cite{sb3} to interface with a custom C++ Gymnasium environment (based on flightmare~\cite{Flightmare}).
-To train the \ac{AC} networks \ac{PPO} is used.
+
 
 The actor policy netwrok  $\pi_\theta$, is defined by a \ac{MLP} that takes an observation vector at time step $t$, of 31 inputs (see \autoref{obs_vec}). The observation vector is sampled from a bounded observation space $o_t\in \mathcal{O} \subset \mathbb{R}^{31}$.
 
@@ -150,9 +150,7 @@ The actor policy netwrok  $\pi_\theta$, is defined by a \ac{MLP} that takes an o
     & \mathbf{p}_t^{\text{look}}
   \end{bmatrix}^T
 \end{equation}
-Where $u_{t-1}$ is the throttle motor command at the prevous time step. 
-$\mathbf{p_{g}}^X_t$ are  relative positions of the corners of the target gate at time $t$ with respect the body frame $\mathcal{B}$.
-And, $\mathbf{p}_t^{\text{look}}$ is the look at position of the target gate at time $t$, also in the body frame.
+Where $u_{t-1}$ is the throttle motor command at the prevous time step, $\mathbf{p_{g}}^X_t$ are  relative positions of the corners of the target gate at time $t$ with respect the body frame $\mathcal{B}$ and, $\mathbf{p}_t^{\text{look}}$ is the look at position of the target gate at time $t$, also in the body frame.
 The input layer is followed by three hidden layers of 128 neurons each, and it outputs 4 neurons. 
 The outputs are the \ac{CTBR}, sampled from a bounded action space $a_t \in \mathcal{A} \subset \mathbb{R}^4$.
 \begin{equation}\label{act_vec}
@@ -160,26 +158,26 @@ The outputs are the \ac{CTBR}, sampled from a bounded action space $a_t \in \mat
   \end{bmatrix}^T
 \end{equation}
 
-\begin{figure}[H]
-  \centering
-  \begin{minipage}{0.48\textwidth}
-    \centering
-    \begin{adjustbox}{max totalsize={1.0\textwidth}{1.0\textheight}, center}
-      \input{fig/tikz/nn-pi.tex}
-    \end{adjustbox}
-    \caption{Actor network architecture}
-    \label{fig:nn_actor}
-  \end{minipage}%
-  \hfill
-  \begin{minipage}{0.48\textwidth}
-    \centering
-    \begin{adjustbox}{max totalsize={1.0\textwidth}{1.0\textheight}, center}
-      \input{fig/tikz/nn-vf.tex}
-    \end{adjustbox}
-    \caption{Critic network architecture}
-    \label{fig:nn_critic}
-  \end{minipage}
-\end{figure}
+% \begin{figure}[H]
+%   \centering
+%   \begin{minipage}{0.48\textwidth}
+%     \centering
+%     \begin{adjustbox}{max totalsize={1.0\textwidth}{1.0\textheight}, center}
+%       \input{fig/tikz/nn-pi.tex}
+%     \end{adjustbox}
+%     \caption{Actor network architecture}
+%     \label{fig:nn_actor}
+%   \end{minipage}%
+%   \hfill
+%   \begin{minipage}{0.48\textwidth}
+%     \centering
+%     \begin{adjustbox}{max totalsize={1.0\textwidth}{1.0\textheight}, center}
+%       \input{fig/tikz/nn-vf.tex}
+%     \end{adjustbox}
+%     \caption{Critic network architecture}
+%     \label{fig:nn_critic}
+%   \end{minipage}
+% \end{figure}
 
 On the other hand, the critic network aritecthure $V_f$, is formed also by 3 hidden layers but of 256 neurons each, it has the same input space and it oputs a single value based on the observation $o_t$.
 % The hyperparameters used for tranning can be found in Appendix \ref{}
@@ -196,7 +194,7 @@ On the other hand, the critic network aritecthure $V_f$, is formed also by 3 hid
 The randomiztion configuration condsidered for this semestral project has been the following:
 
 \[\boldsymbol{\xi}_d = [m, J, C_D, k_m, \mathbf{k_T}, \Gamma ]\]
-Every parameter is relatively randomized (multiplicative randomization) by a constant sampled from an uniform distribution $\mathcal{U}(1-p,1+p)$ parametrized by the parameter $p$ which indicates the randomization percentage.
+Every parameter is relatively randomized (multiplicative randomization) by a constant sampled from an uniform distribution $\mathcal{U}(1-p,1+p)$ parametrized by $p$, which indicates the randomization percentage.
 
 
 % {\color{red} Try with other randomization configs? Maybe sensor noise, gate detection?}

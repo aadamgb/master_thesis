@@ -31,10 +31,39 @@ Moreover in \cite{JiayuChen2025}, the authors show how an appropiate system iden
 
 % ({\color{red} Note:} rather than contribute this work aims to reproduce the results from \cite{ferede2025})
 
-% \section{Mathematical notation}
+\section{Mathematical notation}
 
-% It is a good practice to define basic mathematical notation in the introduction.
-% See \reftab{tab:mathematical_notation} for an example.
+
+
+\begin{table*}[!h]
+  \scriptsize
+  \centering
+  \noindent\rule{\textwidth}{0.5pt}
+  \begin{tabular}{lll}
+    $\bm{\xi}$, $\xi_i$ & configuration vector, configuration parameter \\
+    $\theta, \theta^*$& weights and bias of a neural network, optimal weights and bias\\
+    $R(\tau) $& cummulative reward over a trajectory \\
+    $\mathbf{p}, \mathbf{v},\bm{\omega}, \mathbf{q}, \bm{\Omega} $ & position, velocity, body rates, orientation quaternion, rotor speeds \\
+    $\mathbf{J}$ & inertia matrix \\
+    $\mathbf{\Gamma}$ & allocation matrix \\
+    $\mathbf{f}$ & force\\
+    $T$ & individual rotor thrust\\
+    $\tau_x, \tau_y, \tau_z$ & body torques\\
+    $c_{tf}$ & motor torque constant\\
+    $k_{m}$ & motor time constant\\
+    $\mathbf{k_{T}}$ & thrust map\\
+    $C_D$ & drag coefficient\\
+    $g$ & gravity constant\\
+    $\mathcal{U}$ & uniform distibution\\
+    \emph{SO(3)} & 3D special orthogonal group of rotations\\
+    $\odot$ & quatrnion multiplication\\
+  \end{tabular}
+  \noindent\rule{\textwidth}{0.5pt}
+  \caption{Mathematical notation, nomenclature and notable symbols.}
+  \label{tab:mathematical_notation}
+\end{table*}
+
+
 
 % \begin{table*}[!h]
 %   \scriptsize
