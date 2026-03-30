@@ -3,8 +3,9 @@
 \chapter{Results\label{chap:results}}
 
 To investigate how \ac{DR} affects the transferability of controllers learned in simulation to different environments, the following experiment was designed.
-First, three randomized drone instances were initialized in simulation, and a common policy was executed concurrently in Gazebo during 5 minutes to< measure the \acp{UAV} lap times and success rates.
-The policies were trained to race in a simple eight-figure track (see \autoref{t:track}) and their dynamical parameters can be found in \autoref{uav_types}.
+First, three randomized drone instances were initialized in simulation, and a common policy was executed concurrently in Gazebo during 5 minutes.
+The \acp{UAV} lap times and success rates were measured.
+The policies were trained to race in a simple eight-figure track (see \autoref{t:track}) and the randomized dynamical parameters can be found in \autoref{uav_types}.
 This procedure was performed for four distinct policies trained at randomization levels of 0\%, 10\%, 20\%, and 30\%.
 The results of this first experiment are presented in \autoref{simres}.
 
@@ -33,7 +34,7 @@ More than half of the laps resulted in a gate crash and two of the drones fatall
     \label{sim:0DR}
 \end{figure}
 
-Randomizing the dynamical parameters at 10\% produced a notable increase in average lap times to 5.79 s, \autoref{sim:10DR}.
+Randomizing the dynamical parameters at 10\% produced an increase in average lap times to 5.79 s, \autoref{sim:10DR}.
 Nonetheless, reliability and robustness improved significantly, with all three drones completing the experiment without fatal crashes and success rates exceeding 97\%.
 
 \begin{figure}[H]
