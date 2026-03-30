@@ -1,117 +1,13 @@
 %!TEX root = ../main.tex
 
-\chapter{Results\label{chap:results}}
+\chapter{Results \label{chap:results}}
 
-To investigate how \ac{DR} affects the transferability of controllers learned in simulation to different environments, the following experiment was designed.
-First, three randomized drone instances were initialized in simulation, and a common policy was executed concurrently in Gazebo during 5 minutes.
-The \acp{UAV} lap times and success rates were measured.
-The policies were trained to race in a simple eight-figure track (see \autoref{t:track}) and the randomized dynamical parameters can be found in \autoref{uav_types}.
-This procedure was performed for four distinct policies trained at randomization levels of 0\%, 10\%, 20\%, and 30\%.
-The results of this first experiment are presented in \autoref{simres}.
+\section{Evaluation Criteria}
 
-% Following successful validation in the simulated environment, the experiments were replicated on physical hardware with.....
+\section{Baseline Performance}
 
-\begin{figure}[H]
-    \centering
-    % \includegraphics[width=0.7\linewidth, height=0.25\linewidth]{fig/photos/sim_results_10DR.png} 
-    \includegraphics[scale=0.35]{fig/photos/sim-exp-setup.png} 
-    \caption{Three randomized drones racing an "eight-figure" track in simulation.}
-    \label{t:track}
-\end{figure}
+\section{Ablation Study}
 
+\section{Transferability to MRS UAV System}
 
-\section{Training to Simulation Results}\label{simres}
-
-As depicted in \autoref{sim:0DR}, the baseline configuration with 0\% randimization yields to the fastest avarage lap time of 4.13 s.
-However, this speed comes with a significat cost in realaiability.
-More than half of the laps resulted in a gate crash and two of the drones fatally crashed druing the experiment.
-
-\begin{figure}[H]
-    \centering
-    % \includegraphics[width=0.7\linewidth, height=0.25\linewidth]{fig/photos/sim_results_10DR.png} 
-    \includegraphics[scale=0.35]{fig/photos/lap_times_0DR.eps} 
-    \caption{0\% randomized policy simulated results.} 
-    \label{sim:0DR}
-\end{figure}
-
-Randomizing the dynamical parameters at 10\% produced an increase in average lap times to 5.79 s, \autoref{sim:10DR}.
-Nonetheless, reliability and robustness improved significantly, with all three drones completing the experiment without fatal crashes and success rates exceeding 97\%.
-
-\begin{figure}[H]
-    \centering
-    % \includegraphics[width=0.7\linewidth, height=0.25\linewidth]{fig/photos/sim_results_10DR.png} 
-    \includegraphics[scale=0.35]{fig/photos/lap_times_10DR.eps}
-    \caption{10\% randomized policy simulated results.}  
-    \label{sim:10DR}
-\end{figure}
-
-A further increase in randomization to 20\% resulted in slightly reduced lap times. 
-It is worth noting that training is a stochastic process; training two policies with identical initialization parameters yield to different results. 
-Among all trained policies, the 20\% randomized policy achieved the best overall performance with an average lap time of 5.38 s and a perfect success rate across all three drones, as shown in \autoref{sim:20DR}.
-\begin{figure}[H]
-    \centering
-    % \includegraphics[width=0.7\linewidth, height=0.25\linewidth]{fig/photos/sim_results_10DR.png} 
-    \includegraphics[scale=0.35]{fig/photos/lap_times_20DR.eps}
-    \caption{20\% randomized policy simulated results.}  
-    \label{sim:20DR}
-\end{figure}
-
-Finally, training with 30\% randomization achieved acceptable results for UAV1 and UAV2, as shown in \autoref{sim:30DR}.
-However, for UAV3, the policy failed to reliably control the drone.
-As discussed in \autoref{how_to}, we hypothesize that excessive randomization can destabilize training, worsening sample efficiency and requiring more convergence time.
-
-
-\begin{figure}[H]
-    \centering
-    % \includegraphics[width=0.7\linewidth, height=0.25\linewidth]{fig/photos/sim_results_10DR.png} 
-    \includegraphics[scale=0.35]{fig/photos/lap_times_30DR.eps}
-    \caption{30\% randomized policy simulated results.}  
-    \label{sim:30DR}
-\end{figure}
-
-The selected randomization methodology randomizes all dynamical parameters uniformly, but some critical parameters such as the thrust map may require more restrictive bounds to prevent physically infeasible configurations.
-% \section{Simulation to Reality Results}
-
-
-\begin{table}[H]
-    \centering
-    \small
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-Policy    & UAV & \textbf{Success Rate}[\%] & \textbf{Number of Laps}\# & \textbf{Avg Lap Time}[s] \\ \hline
-
-% ====================== 0% DR ======================
-\multirow{3}{*}{0\% DR}    
-& uav1 & 54.55 & 36 & 4.08 \\ \cline{2-5}
-
-& uav2 & 23.81 & 5 & 4.17 \\ \cline{2-5}
-
-& uav3 & 67.74 & 42 & 4.15 \\ \hline
-
-% ====================== 10% DR ======================
-\multirow{3}{*}{10\% DR}   
-& uav1 & 100 & 47 & 5.76 \\ \cline{2-5}
-
-& uav2 & 97.92 & 47 & 5.73 \\ \cline{2-5}
-
-& uav3 & 100 & 46 & 5.87 \\ \hline
-
-% ====================== 20% DR ======================
-\multirow{3}{*}{20\% DR}   
-& uav1 & 100 & 52 & 5.24 \\ \cline{2-5}
-
-& uav2 & 100 & 52 & 5.35 \\ \cline{2-5}
-
-& uav3 & 100 & 50 & 5.55 \\ \hline
-
-% ====================== 30% DR ======================
-\multirow{3}{*}{30\% DR}   
-& uav1 & 90 & 45 & 5.44 \\ \cline{2-5}
-
-& uav2 & 78 & 39 & 5.49 \\ \cline{2-5}
-
-& uav3 & 5.88 & 3 & 5.44 \\ \hline
-
-\end{tabular}
-\caption{Table indicating the results of the simulated experiment.}
-\end{table}
+\section{Real World Validation}
