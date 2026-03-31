@@ -1,22 +1,4 @@
 %!TEX root = ../main.tex
 
-\chapter{Conclusion\label{chap:conclusion}}
-
-This work investigated the effectiveness of \ac{DR} in bridging the \ac{s2r} gap for learning-based quadcopter racing controllers. 
-By varying the randomization level of key drone physical parameters, we demonstrated that \ac{DR} significantly improves policy robustness and transferability across different vehicle platforms.
-
-Our simulated experiments revealed trade-off between performance and reliability. 
-The baseline policy trained without randomization (0\% \ac{DR}) achieved the fastest lap times of 4.13 s but suffered from poor stability, with over 50\% of laps resulting in gate collisions and two fatal crashes among the three tested drone instances. 
-In contrast, policies trained with moderate randomization (10\% and 20\% \ac{DR}) exhibited substantially improved success rates exceeding 97\%, while maintaining competitive lap times of 5.73 s and 5.38 s respectively. 
-The 20\% DR configuration emerged as the optimal balance, achieving a perfect 100\% success rate across all three simulated drones without sacrificing significant performance.
-
-However, our results also indicate diminishing returns and potential instability at higher randomization levels. 
-The 30\% DR policy showed degraded performance, particularly for UAV3, suggesting that excessive randomization can destabilize the learning process and reduce sample efficiency. 
-This aligns with our hypothesis that the randomization space must be carefully bounded to encompass the real domain characteristics without introducing unnecessary variability that difficults convergence.
-
-% A key finding from this work is that uniform randomization across all dynamical parameters may be suboptimal. 
-% Critical parameters such as the thrust map coefficients require more restrictive bounds to avoid physically infeasible configurations. 
-% Future work should investigate adaptive or selective randomization strategies that allocate randomization budgets more intelligently across different parameter groups.
-
-% While our simulation-to-simulation results are promising, full validation on physical hardware remains incomplete. The preliminary findings suggest that moderate domain randomization (10-20\%) is a practical approach to improve policy generalization for quadcopter racing controllers, though continued validation on real platforms is essential to confirm these results and assess the true sim-to-real transfer performance.
+\chapter{Conclusion \label{chap:conclusion}}
 

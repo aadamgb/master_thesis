@@ -1,13 +1,23 @@
 %!TEX root = ../main.tex
 
 \chapter{Methodology\label{how_to}}
+This chapter presents the methodology used in this thesis to train the neural network policies.
+% Section~\ref{sec:sys_overview}, provides an overview of the control and training pipeline.
+In~\autoref{sec:sim_frame}, we adress the core elements of the simulation architecture, define the quadrotor model, and explain how the \ac{s2r} gap is minimized by using \ac{DR}.
+Furthermore, we introduce the implemented control abstraction levels.
+Section~\ref{sec:tasks}, outlines the training objectives used for \ac{ADR}.
+Lastly, \autoref{sec:diff_opt} details how differentiability is leveraged to optimize the policies in order to minimize the training task's cost function.
 
-\section{System Overview}
 
-\section{Simulation Framework}
+% \section{System Overview}\label{sec:sys_overview}
+% {\color{blue}Insert cool diagram}
+
+\section{Simulation Framework}\label{sec:sim_frame}
+{\color{blue}Insert cool diagram}
+
 \subsection{Quadrotor Model}
 \subsection{Domain Randomization}
-\subsection{Supported Control Modes}
+\subsection{Control Modes}
 
-\section{Training Tasks}
-\section{Differentiable Optimization}
+\section{Training Tasks} \label{sec:tasks}
+\section{Differentiable Optimization} \label{sec:diff_opt}
