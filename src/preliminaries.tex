@@ -1,22 +1,115 @@
 %!TEX root = ../main.tex
 
 \chapter{Preliminaries \label{pre}}
+This chapter covers important theoretical aspects on which this thesis is constructed.
+Section \ref{sec:ocp} formulates the \ac{OCP} of drone racing and presents a theoretical solution based on the application of \ac{PMP}.
+The optimal solution derived from \ac{PMP} serves primarily as an upper theoretical bound, as many of its underlying assumptions do not hold in real-world scenarios.
+Practical implementations must account for model uncertainties, disturbances, and system constraints that deviate from the idealized formulation.
 
-\section{Optimal Control Problem}
+In this context, Sections \ref{sec:classical} and \ref{sec:learned} review the state-of-the-art control approaches used to achieve high-performance drone racing, covering both classical control techniques and modern learning-based methods.
+\section{Optimal Control Problem} \label{sec:ocp} 
+{\color{red}cite hurak, or well...some OC textbook}
 
-Formulate the optimal control problem, and
 
-\subsection{Pontryagin's Maximum Principle}
+\subsection{General Discrete-Time \ac{OCP}}
+In general, a nonlinear discrete-time \ac{OCP} can be formulated as the optimization of a running cost (or loss) function $L_{k}()$, plus a terminal cost function $\phi()$, subject to the system's dynamics $\mathbf{f}_k()$, and the set of permitted states $\mathcal{X}_k$, and controls $\mathcal{U}_k$. 
+
+
+\begin{equation}
+\begin{aligned}
+% & \underset{\boldsymbol{u}_{i}, \dots, \boldsymbol{u}_{N-1}, \boldsymbol{x}_{i}, \dots, \boldsymbol{x}_{N}}{\text{minimize}} & & \left( \phi(\boldsymbol{x}_{N}, N) + \sum_{k=i}^{N-1} L_{k}(\boldsymbol{x}_{k}, \boldsymbol{u}_{k}) \right) \\
+& \underset{\mathbf{X},\ \mathbf{U}}{\text{minimize}} & & \left( \phi(\boldsymbol{x}_{N}, N) + \sum_{k=0}^{N-1} L_{k}(\boldsymbol{x}_{k}, \boldsymbol{u}_{k}) \right) \\
+& \text{subject to} & & \boldsymbol{x}_{k+1} = \mathbf{f}_{k}(\boldsymbol{x}_{k}, \boldsymbol{u}_{k}), \quad k = 0, \dots, N-1, \\
+& & & \boldsymbol{u}_{k} \in \mathcal{U}_{k}, \quad k = 0, \dots, N-1, \\
+& & & \boldsymbol{x}_{k} \in \mathcal{X}_{k}, \quad k = 0, \dots, N,
+\end{aligned}
+\end{equation}
+
+
+\noindent Where
+\begin{itemize}
+\item[] $N$ is the final discrete time,
+\item[] $\boldsymbol{x}_k \in \mathbb{R}^n$ is the state at the discrete time $k \in \mathbb{Z}$,
+\item[] $\boldsymbol{u}_k \in \mathbb{R}^m$ is the control at the discrete time $k \in \mathbb{Z}$,
+\item[] $\mathbf{X} = [\boldsymbol{x}_{0}, \dots, \boldsymbol{x}_{N}]$ is the trajectory of states,
+\item[] $\mathbf{U} = [\boldsymbol{u}_{0}, \dots, \boldsymbol{u}_{N-1}]$ is the trajectory of control actions.
+
+\end{itemize}
+
+\subsection{Minimum-Time \ac{OCP}}\label{subsec:minOCP}
+This formulation of an \ac{OCP} can be further specified for the case of drone racing in several manners.
+Since the main objective is to complete a lap through the racing track as fast as possible, this problem can be written as minimum-time problem.
+
+
+\begin{equation}
+\begin{aligned}
+% & \underset{\boldsymbol{u}_{i}, \dots, \boldsymbol{u}_{N-1}, \boldsymbol{x}_{i}, \dots, \boldsymbol{x}_{N}}{\text{minimize}} & & \left( \phi(\boldsymbol{x}_{N}, N) + \sum_{k=i}^{N-1} L_{k}(\boldsymbol{x}_{k}, \boldsymbol{u}_{k}) \right) \\
+ & \underset{\mathbf{U},\ N}{\text{minimize}} & & \qquad \qquad \sum_{k=0}^{N-1} 1 \\
+ & \text{subject to} & & \boldsymbol{x}_{k+1} = \mathbf{f}_{k}(\boldsymbol{x}_{k}, \boldsymbol{u}_{k}), \quad k = 0, \dots, N-1, & \\
+& & & \boldsymbol{u}_{k} \in \mathcal{U}_{k}, \quad k = 0, \dots, N-1, \\
+& & & \boldsymbol{x}_{k} \in \mathcal{X}_{k}, \quad k = 0, \dots, N,
+\end{aligned}
+\end{equation}
+
+The racing track restrictions, i.e. passing through a sequence of gates while avoiding
+obstacles, can be introduced as hard constraints under the set of permitted states
+$\mathcal{X}_k$ as
+
+\begin{equation}
+    \mathcal{X}_k = \left\{ \boldsymbol{x}_k \in \mathbb{R}^n \;\middle|\;
+        \boldsymbol{p}_k \in \mathcal{G}_{g(k)}, \quad
+        \boldsymbol{p}_k \notin \mathcal{O}_j, \quad
+        \forall\, j \in \{1, \dots, M\}
+    \right\},
+\end{equation}
+
+\noindent where
+\begin{itemize}
+    \item[] $\boldsymbol{p}_k \in \mathbb{R}^3$ is the position of the drone at time step $k$,
+    \item[] $\mathcal{G}_{g(k)}$ is the feasible region defined by gate $g$ at time step $k$,
+            with $g(k) \in \{1, \dots, G\}$ denoting the index of the gate to be passed
+            at $k$,
+    \item[] $G$ is the total number of gates in the racing track,
+    \item[] $\mathcal{O}_j$ is the region occupied by the $j$-th obstacle,
+    \item[] $M$ is the total number of obstacles.
+\end{itemize}
+
+\subsection{Simplified Minimum-Time \ac{OCP}}
+The anterior problem formulation (\autoref{subsec:minOCP}), is rather complex. 
+It has to solve simultaneously for an optimal trajectory that passes through all the gates and avoids obstacles.
+And, find the optimal control sequence achivable by the drone given its dynamics and actuator constrains.
+% The state transition function $\mathbf{f}_{k}(\boldsymbol{x}_{k}, \boldsymbol{u}_{k})$, which is indeed the quadrotor model, is specified in \autoref{sec:quad_model}. 
+To simplify this problem, throughout this thesis, either an optimal trajectory or an optimal path will be assumed to be given by an external source. 
+Thereafter, the \ac{OCPs} that we adress are 
+
+\subsubsection{Trajectory Tracking \ac{OCP}}
+
+\begin{equation}
+\begin{aligned}
+ & \underset{\mathbf{U}}{\text{minimize}} & & \sum_{k=0}^{N-1} \left\| \boldsymbol{x}_k - 
+        \boldsymbol{x}_k^{\text{ref}} \right\|_{\mathbf{Q}}^{2} \\%+         \left\| \boldsymbol{u}_k \right\|_{\mathbf{R}}^{2} \\
+ & \text{subject to} & & \boldsymbol{x}_{k+1} = \mathbf{f}_{k}(\boldsymbol{x}_{k}, 
+        \boldsymbol{u}_{k}), \quad k = 0, \dots, N-1, \\
+& & & \boldsymbol{u}_{k} \in \mathcal{U}_{k}, \quad k = 0, \dots, N-1, \\
+& & & \boldsymbol{x}_{k} \in \mathcal{X}_{k}, \quad k = 0, \dots, N,
+\end{aligned}
+\end{equation}
+
+
+\subsubsection{Path Progress \ac{OCP}}
+
+
+\section{Pontryagin's Maximum Principle}
  maybe solve it using a pmm and Pontryagin's Maximum Principle
 
 Since it is impossible to perfectly model the state transition equation, and the state estimation is not perfect, 
 the optimal solution breaks under real world conditions.
 
-\section{Classical Control approaches}
+\section{Classical Control approaches}\label{sec:classical}
 \subsection{Differential Flatness Based Control}
 \subsection{Model Predictive Control}
 
-\section{Learning-Based approaches}
+\section{Learning-Based approaches}\label{sec:learned}
 \subsection{Model-Free Reinforcement Learning}
 \subsection{Model-Based Reinforcement Learning}
 

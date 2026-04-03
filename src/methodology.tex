@@ -15,9 +15,107 @@ Lastly, \autoref{sec:diff_opt} details how differentiability is leveraged to opt
 \section{Simulation Framework}\label{sec:sim_frame}
 {\color{blue}Insert cool diagram}
 
-\subsection{Quadrotor Model}
+\begin{figure}[!ht]
+\centering
+\resizebox{1\textwidth}{!}{%
+\begin{circuitikz}
+\tikzstyle{every node}=[font=\fontsize{4.0pt}{5.2pt}\selectfont]
+\draw [ fill={rgb,255:red,245; green,245; blue,245}, fill opacity=1, line width=1pt , rounded corners = 32.4, dashed] (4.625,10.375) rectangle  (15,2.875);
+\draw [ rounded corners = 21.6] (8.25,16.75) rectangle (12.125,13.625);
+\draw (6.25,9.125) to[normal open switch] (6.25,7.875);
+\draw (13.75,9.125) to[normal open switch] (13.75,7.875);
+\draw (10,9.125) to[normal open switch] (10,7.875);
+\draw [ fill={rgb,255:red,95; green,156; blue,241}, fill opacity=1, rounded corners = 15.0] (8.875,7.875) rectangle (11.125,6.875);
+\node[anchor=north, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (10,7.725) {\fontsize{15.9pt}{20.7pt}\selectfont $CTBR$};
+\draw [ fill={rgb,255:red,241; green,194; blue,133}, fill opacity=1, rounded corners = 15.0] (5.125,7.875) rectangle (7.375,6.875);
+\node[anchor=north, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (6.25,7.725) {\fontsize{15.9pt}{20.7pt}\selectfont LVYR};
+\draw [ fill={rgb,255:red,117; green,255; blue,140}, fill opacity=1, rounded corners = 13.2] (12.5,7.875) rectangle (14.75,6.875);
+\node[anchor=north, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (13.625,7.725) {\fontsize{15.9pt}{20.7pt}\selectfont $SRT$};
+\draw [short] (10,13.625) -- (10,8.75);
+\draw [short] (9.875,9.125) -- (13.75,9.125);
+\draw [short] (10,9.125) -- (6.25,9.125);
+\draw [ fill={rgb,255:red,154; green,220; blue,234}, fill opacity=1, rounded corners = 10.8] (9.125,5) rectangle (11,3.375);
+\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (10.0625,4.1875) {\fontsize{15.9pt}{20.7pt}\selectfont $\Gamma^{-1}$};
+\draw [ fill={rgb,255:red,154; green,220; blue,234}, fill opacity=1, rounded corners = 11.4] (5.375,5) rectangle (7.25,3.375);
+\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (6.3125,4.1875) {\fontsize{14.8pt}{19.2pt}\selectfont SO(3)};
+\node (tikzmaker) [shift={(0.4375, -0.4375)}] at (14.125,3.625) {\includegraphics[width=0.875cm]{joystick}};
+\draw [ fill={rgb,255:red,245; green,245; blue,245}, fill opacity=1, line width=1pt , rounded corners = 25.2, dashed] (17.5,10.375) rectangle  (26.125,4.5);
+\draw [ fill={rgb,255:red,154; green,220; blue,234}, fill opacity=1, rounded corners = 12.6] (18.75,10) rectangle (20.375,8.5);
+\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (19.5625,9.25) {\fontsize{17.1pt}{22.2pt}\selectfont $F_i/k$};
+\draw [ fill={rgb,255:red,218; green,221; blue,228}, fill opacity=1](21.25,9.125) to[lamp] (21.25,7.125);
+\draw [ fill={rgb,255:red,154; green,220; blue,234}, fill opacity=1, rounded corners = 9.6] (18.25,6) rectangle (25.375,4.875);
+\node[anchor=center, align=center, fill={rgb,255:red,154; green,220; blue,234}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (21.8125,5.4375) {\fontsize{15.9pt}{20.7pt}\selectfont $\Omega_k = \Omega_{k-1} + \Omega_c-\Omega_{k-1}$};
+\draw [ fill={rgb,255:red,218; green,221; blue,228}, fill opacity=1] (20.5,7.25) rectangle (22,6.5);
+\node[anchor=center, align=center, fill={rgb,255:red,218; green,221; blue,228}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (21.25,6.875) {\fontsize{13.1pt}{17.0pt}\selectfont PID};
+\draw [short] (21.25,6.5) -- (21.25,6);
+\node (tikzmaker) [shift={(0.625, -0.625)}] at (25.5,5.5) {\includegraphics[width=1.25cm]{joystick}};
+\draw [ fill={rgb,255:red,154; green,220; blue,234}, fill opacity=1, rounded corners = 9.0] (27.5,8.625) rectangle (28.75,6.75);
+\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (28.125,7.6875) {\fontsize{13.1pt}{17.0pt}\selectfont $\Gamma$};
+\draw [ fill={rgb,255:red,245; green,245; blue,245}, fill opacity=1, line width=1pt , rounded corners = 27.0, dashed] (31.25,10.375) rectangle  (41.25,2.875);
+\draw [line width=1pt, -{Stealth[scale=1.5]}, ] (28.75,7.875) -- (31.25,7.875);
+\node [font=\fontsize{15.9pt}{20.7pt}\selectfont, fill={rgb,255:red,245; green,245; blue,245}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (33.625,8.5) {$\Omega_{k+1} =...$};
+\node [font=\fontsize{18.2pt}{23.7pt}\selectfont, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (24.375,10.375) {\textbf{Motor Dynamics}};
+\node [font=\fontsize{18.2pt}{23.7pt}\selectfont, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (6.75,10.25) {\textbf{Control Abstraction}};
+\draw [-{Stealth[scale=1.5]}, ] (25.5,7.875) -- (27.375,7.875);
+\draw [short] (23.25,6) -- (23.25,7.75);
+\draw [-{Stealth[scale=1.5]}, ] (19.25,8.125) -- (20.875,8.125);
+\draw [short] (23.25,7.75) -- (24.125,7.75);
+\node [font=\fontsize{15.9pt}{20.7pt}\selectfont, fill={rgb,255:red,245; green,245; blue,245}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (33.625,7.375) {$q_{k+1} =...$};
+\node [font=\fontsize{15.9pt}{20.7pt}\selectfont, fill={rgb,255:red,245; green,245; blue,245}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (33.625,6.125) {$v_{k+1} =...$};
+\node [font=\fontsize{15.9pt}{20.7pt}\selectfont, fill={rgb,255:red,245; green,245; blue,245}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (33.625,4.75) {$p_{k+1} =...$};
+\draw [ fill={rgb,255:red,254; green,127; blue,76}, fill opacity=1, rounded corners = 14.4] (32.375,13.375) rectangle (34.875,12.25);
+\node[anchor=center, align=center, fill={rgb,255:red,254; green,127; blue,76}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (33.625,12.8125) {\fontsize{21.1pt}{27.4pt}\selectfont $L()$};
+\draw [line width=1pt, short] (40.25,10.375) -- (40.25,15.375);
+\draw [line width=1pt, -{Stealth[scale=1.5]}, ] (40.25,15.375) -- (12.125,15.375);
+\node [font=\fontsize{11.9pt}{15.5pt}\selectfont, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (9.875,17.25) {Control Policy};
+\node [font=\fontsize{15.9pt}{20.7pt}\selectfont, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (33.375,13.75) {Loss Function};
+\draw [line width=1pt, -{Stealth[scale=1.5]}, ] (33.75,10.375) -- (33.75,12.25);
+\draw [ color={rgb,255:red,255; green,0; blue,0}, draw opacity=1, line width=1pt, -{Stealth[scale=1.5]}, ] (33.375,12.25) -- (33.375,10.375);
+\draw [ color={rgb,255:red,255; green,0; blue,0}, draw opacity=1, line width=1pt, -{Stealth[scale=1.5]}, ] (31.125,7.375) -- (28.75,7.375);
+\draw [ color={rgb,255:red,255; green,0; blue,0}, draw opacity=1, line width=1pt, ] (28.125,3.75) -- (28.125,6.75);
+\draw [ color={rgb,255:red,255; green,0; blue,0}, draw opacity=1, line width=1pt, -{Stealth[scale=1.5]}, ] (10.375,10.375) -- (10.375,13.625);
+\draw [ color={rgb,255:red,255; green,0; blue,0}, draw opacity=1, line width=1pt, -{Stealth[scale=1.5]}, ] (28.125,3.75) -- (15,3.75);
+\draw [short] (17.5,9.125) -- (18.75,9.125);
+\draw [line width=1pt, -{Stealth[scale=1.5]}, ] (15,7.125) -- (17.375,7.125);
+\draw [short] (20.375,9.125) .. controls (20.75,9.125) and (20.75,9.125) .. (21.125,9.125);
+\draw [short] (19.25,6) -- (19.25,8.125);
+\node [font=\fontsize{14.2pt}{18.5pt}\selectfont, fill={rgb,255:red,245; green,245; blue,245}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (21.625,9.125) {$\Omega_{ik}^{cmd}$};
+\draw [-{Stealth[scale=1.5]}, ] (7.25,4.125) -- (9.125,4.125);
+\draw [-{Stealth[scale=1.5]}, ] (6.25,6.875) -- (6.25,4.875);
+\draw [-{Stealth[scale=1.5]}, ] (10,6.875) -- (10,5);
+\node [font=\fontsize{14.2pt}{18.5pt}\selectfont, fill={rgb,255:red,245; green,245; blue,245}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (10,6) {$T_c ,  \omega$};
+\node [font=\fontsize{15.9pt}{20.7pt}\selectfont, fill={rgb,255:red,245; green,245; blue,245}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (6.25,6) {$v ,  \psi$};
+\draw [short] (13.75,6.875) -- (13.75,4.125);
+\draw [short] (11,4.125) -- (13.75,4.125);
+\draw [short] (13.75,5.875) -- (15,5.875);
+\node [font=\fontsize{14.2pt}{18.5pt}\selectfont, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (16.375,7.25) {$T_i^{cmd}$};
+\node [font=\fontsize{14.2pt}{18.5pt}\selectfont, fill={rgb,255:red,245; green,245; blue,245}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (26.25,7.875) {$T_i$};
+\node [font=\fontsize{14.2pt}{18.5pt}\selectfont, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (29.875,7.875) {$T_c ,  \omega$};
+\draw [-{Stealth[scale=1.5]}, ] (14.125,14.125) -- (12.125,14.125);
+\node [font=\fontsize{18.2pt}{23.7pt}\selectfont, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (15.625,14.125) {$Task Observation$};
+\draw [ fill={rgb,255:red,154; green,220; blue,234}, fill opacity=1, rounded corners = 7.2] (24.125,8.5) rectangle (25.625,7.125);
+\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (24.875,7.8125) {\fontsize{15.9pt}{20.7pt}\selectfont $k\Omega_k^2$};
+\node [font=\fontsize{18.2pt}{23.7pt}\selectfont, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (37.25,10.5) {\textbf{Quadrotor Dynamics}};
+\end{circuitikz}
+}%
+\caption{Your Caption}
+\label{fig:my_label}
+\end{figure}
+
+\subsection{Quadrotor Model}\label{sec:quad_model}
 \subsection{Domain Randomization}
 \subsection{Control Modes}
 
+\subsubsection{Single Rotor Thrust}
+\subsubsection{Collective Thrust and Body Rates}
+\subsubsection{Linear Velocities and Yaw Rate}
+\subsubsection{Adaptive Linear Velocities and Yaw Rate}
+
 \section{Training Tasks} \label{sec:tasks}
+
+
+\subsection{Trajectory Tracking}
+\subsection{Path Progress}
+
 \section{Differentiable Optimization} \label{sec:diff_opt}
+
