@@ -1,0 +1,29 @@
+    \tdplotsetmaincoords{80}{120}
+%
+    \begin{tikzpicture}[tdplot_main_coords]
+
+        % Define constants
+        \pgfmathsetmacro{\a}{2.5}
+        
+        % Use a more robust arrow style
+        \tikzset{>=Stealth}
+
+        % 1. DRAW CURRENT FRAME (b) - with reduced opacity
+        \draw[thick, red!40, dashed, ->] (0,0,0) -- (\a,0,0) node[anchor=north east, red!40] {$\hat{\mathbf{b}}_1$}; 
+        \draw[thick, green!40, dashed, ->] (0,0,0) -- (0,\a,0) node[anchor=north west, green!40] {$\hat{\mathbf{b}}_2$};
+        \draw[thick, blue!40, dashed, ->] (0,0,0) -- (0,0,\a) node[anchor=south east, blue!40] {$\hat{\mathbf{b}}_3$};
+
+        % 2. DEFINE & DRAW COMMANDED FRAME (c)
+        \tdplotsetrotatedcoords{10}{30}{20}
+        
+        \draw[thick, red, ->, tdplot_rotated_coords] (0,0,0) -- (\a,0,0) 
+            node[anchor=north east] {$\hat{\mathbf{b}}_1$};
+        \draw[thick, green, ->, tdplot_rotated_coords] (0,0,0) -- (0,\a,0) 
+            node[anchor=west] {$\hat{\mathbf{b}}_2$};
+        \draw[thick, blue, ->, tdplot_rotated_coords] (0,0,0) -- (0,0,\a) 
+            node[anchor=south] {$\hat{\mathbf{b}}_3$};
+
+        % 3. THE SPHERE
+        \shade[ball color=cyan, opacity=0.2] (0,0,0) circle (\a cm);
+
+    \end{tikzpicture}

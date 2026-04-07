@@ -11,7 +11,7 @@ In this context, Sections \ref{sec:classical} and \ref{sec:learned} review the s
 {\color{red}cite hurak, or well...some OC textbook}
 
 
-\subsection{General Discrete-Time \ac{OCP}}
+\subsection{General Discrete-Time OCP}
 In general, a nonlinear discrete-time \ac{OCP} can be formulated as the optimization of a running cost (or loss) function $L_{k}()$, plus a terminal cost function $\phi()$, subject to the system's dynamics $\mathbf{f}_k()$, and the set of permitted states $\mathcal{X}_k$, and controls $\mathcal{U}_k$. 
 
 
@@ -36,7 +36,7 @@ In general, a nonlinear discrete-time \ac{OCP} can be formulated as the optimiza
 
 \end{itemize}
 
-\subsection{Minimum-Time \ac{OCP}}\label{subsec:minOCP}
+\subsection{Minimum-Time OCP} \label{subsec:minOCP}
 This last formulation of an \ac{OCP} can be further specified for the case of drone racing in several manners.
 Since the main objective is to complete a lap through the racing track as fast as possible, this problem can be written as minimum-time problem.
 
@@ -74,7 +74,7 @@ $\mathcal{X}_k$ as
     \item[] $M$ is the total number of obstacles.
 \end{itemize}
 
-\subsection{Simplified Minimum-Time \ac{OCP}}
+\subsection{Simplified Minimum-Time OCP}
 The anterior problem formulation (\autoref{subsec:minOCP}), is rather complex. 
 It has to solve simultaneously for an optimal trajectory that passes through all the gates and avoids obstacles.
 And, find the optimal control sequence achivable by the drone given its dynamics and actuator constrains.
@@ -82,7 +82,7 @@ And, find the optimal control sequence achivable by the drone given its dynamics
 To simplify this problem, throughout this thesis, either an optimal trajectory or an optimal path will be assumed to be given by an external source. 
 Thereafter, the \ac{OCPs} that we adress are 
 
-\subsubsection{Trajectory Tracking \ac{OCP}}
+\subsubsection{Trajectory Tracking OCP}
 
 \begin{equation}
 \begin{aligned}

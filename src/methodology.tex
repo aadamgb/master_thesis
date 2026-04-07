@@ -16,22 +16,207 @@ Lastly, \autoref{sec:diff_opt} details how differentiability is leveraged to opt
 {\color{blue}Insert cool diagram}
 
 \begin{figure}[!ht]
-\centering
-\resizebox{1\textwidth}{!}{%
-\includegraphics{fig/tikz/example_diagram}
-}%
-\caption{Your Caption}
-\label{fig:my_label}
+    \centering
+    \resizebox{1\textwidth}{!}{\input{fig/tikz/sim_arch_diagram.tex}}
+    \caption{Your Caption}
+    \label{fig:my_label}
 \end{figure}
 
 \subsection{Quadrotor Model}\label{sec:quad_model}
-\subsection{Domain Randomization}
-\subsection{Control Modes}
 
-\subsubsection{Single Rotor Thrust}
+
+\subsection{Domain Randomization}
+\subsection{Control Abstraction}
+The control abstraction refers to the modality of the policy outputs used to control the quadrotor.
+The choice of control abstraction affects both the performance of the controller for a given task and the sample efficiency during training.
+For this reason, it is worthwhile to investigate and implement multiple control abstractions.
+
+In this thesis, three control modalities are considered.
+The policy output layer employs a sigmoid activation function for all control modalities, ensuring that the action space is bounded, which facilitates stable learning.
+The lowest level of abstraction consists of directly outputting \ac{SRT} for each motor.
+An intermediate level of abstraction outputs the collective thrust and the desired body rates, which are subsequently mapped to individual rotor thrusts through a control allocation matrix.
+The highest level of abstraction outputs desired linear velocities and yaw rate, which are converted into a wrench using an $\mathrm{SO}(3)$ geometric controller \todo{: Cite Lee}, and subsequently mapped to rotor thrusts in a manner analogous to the collective thrust and body rate formulation.
+The mathematical formulation of these transformations is presented next.
+
+\subsubsection{Single Rotor Thrust} \label{sec:srt}
+When the \ac{SRT} control mode is choosen, the only transformation to be applied is scaling the policy output $\boldsymbol{u} \in [0, 1]\in \real^4$ to the maximum thrust that can be produced by the motors, $T_{\text{max}}$.
+Therefore, the transformation is as simple as: 
+
+\begin{equation}
+    \boldsymbol{T}_{\text{cmd}} = \boldsymbol{u} \cdot T_{\text{max}}
+\end{equation}
+
+\todo{: Add min thrust mapping xd}
+
+Once the scaling is applied, to better emulate the behaviour of a real motor, a first order model with rotor speed saturation is implemented.
+First, the commanded motor thrust $\boldsymbol{T}_{\text{cmd}}$ are converted to commaned rotor speed.
+This mapping can be obtained experimentally by fitting a quadratic curve to the experimental data.
+In most cases the following mapping apprixmation is good enough.
+
+\begin{equation} \label{eq:motspd}
+    \boldsymbol{T}_{\text{cmd}} \approx k \boldsymbol{\Omega}_{\text{cmd}}^2
+\end{equation}
+
+Then the commanded rotor speeds $\boldsymbol{\Omega}_{\text{cmd}}$, are passed through the following first order motor model \autoref{eq:motmod}, and saturated according to the maximum rotor spee rate, $\dot{\Omega}_{\text{cmd}}$ given by the manufacturer.
+
+\begin{equation}\label{eq:motmod}
+    H(s) = \frac{1}{k_m + s}
+\end{equation}
+
+Finally, the rotor speeds obtained after the described process are mapped again to single rotor thurst values using \autoref{eq:motspd} and then converted to collective force and torques with \autoref{eq:alloc}, to calculate the next state through the quadrotor dynamics model.
+
+\begin{equation} \label{eq:alloc}
+    \begin{bmatrix}
+        T_c \\
+        \tau_1 \\ 
+        \tau_2 \\ 
+        \tau_3 \\ 
+    \end{bmatrix} = \begin{bmatrix}
+        1 & 1 & 1 & 1 \\
+        1 & 1 & 1 & 1 \\
+        1 & 1 & 1 & 1 \\
+        1 & 1 & 1 & 1 \\
+    \end{bmatrix}     
+    \begin{bmatrix}
+        T_1 \\
+        T_2 \\
+        T_3 \\
+        T_4 \\
+    \end{bmatrix}
+\end{equation}
+
+Modeling the motor dynamics presents more realistic data which the policy will encounter at deployement.
+However, for training purposes it has been decided to skip the motor dynamics during the backporopagation pass as it significantly destabilizes the gradients computation.
+Particularly, the mapping of \autoref{eq:motspd} produces high variations on the gradient, degrading the training performance and sample efficiency.  
+
 \subsubsection{Collective Thrust and Body Rates}
+When \ac{CTBR} control mode is selected, the normalized outputs of the policy $\boldsymbol{u} \in [0, 1]\in \real^4$, are mapped to collective thrust and body rates. 
+The scaling is as follows,
+
+\begin{equation}
+    T_{c, \text{cmd}} = u_1 \cdot (T_{\text{max}} - T_{\text{min}}) + T_{\text{min}} 
+\end{equation}
+\begin{equation}
+    \omega_{i, \text{cmd}} = (2u_{i+1} - 1) \cdot \omega_{i, \text{max}}, \quad i \in \{1, 2, 3\}
+\end{equation}
+
+\noindent where $\omega_{i, \text{max}}$ indicates the maximum body rate of the respective axis, (roll, pitch, yaw).
+Once the rates are calculated, they can be converted to torque values,
+
+\begin{equation}
+    \boldsymbol{\tau}_\text{cmd} = k_p \cdot\frac{(\boldsymbol{\omega_{\text{cmd}}} - \boldsymbol{\omega})}{dt}J    
+\end{equation}
+aditionally, a proportinal gain $k_p$ can be introduced to adjust the stiffness of the conversion.
+Given the commanded collective thrust and torques, the motor thursts can be obtained from \autoref{eq:alloc} and then the same procudeure of \autoref{sec:srt} is applied during the forward and backward passes.
 \subsubsection{Linear Velocities and Yaw Rate}
-\subsubsection{Adaptive Linear Velocities and Yaw Rate}
+
+Lastly, the highest level of abstraction that is implement consists on commanding \ac{LVYR}. With this control mode, the policy outputs are scaled as,
+
+\begin{equation}
+    v_{i, \text{cmd}} = (2u_{i} - 1) \cdot v_{i, \text{max}}, \quad i \in \{1, 2, 3\}
+\end{equation}
+\begin{equation}
+    \omega_{3, \text{cmd}} = \dot{\psi}_{\text{cmd}} = (2u_{4} - 1) \cdot \dot{\psi}_{ \text{max}}
+\end{equation}
+
+\noindent where $\psi$ denotes the yaw angle and $v_{i,\text{cmd}}$ represents the commanded linear velocity along each body axis. 
+Mapping these control commands to thrust commands is less straightforward than in the previous two methods. 
+Instead, the collective thrust and torques are obtained by applying a transformation in the Special Orthogonal group $\mathrm{SO}(3)$.
+The transfomations proceed in the following manner.
+
+First, the acceleration vector is computed as
+\begin{equation}
+    \mathbf{a}_{\text{cmd}} = k_v \cdot (\mathbf{v}_{\text{cmd}} - \mathbf{v}) + g \mathbf{\hat{b}}_3
+\end{equation}
+
+\noindent where $k_v$ is a proportional gain on the velocity. 
+Note that the acceleration along the third body axis is compensated for gravity; $\mathbf{\hat{b}}_3$ denotes the unit vector along this axis.
+Then the commanded collective thrust is the \ac{UAV}'s mass times the acceleration vector.
+
+\todo{Correct this...}
+\begin{equation}
+    T_{c, \text{cmd}} = m \mathbf{a}_{\text{cmd}} 
+\end{equation}
+
+\todo{Double check wether projecting the heading angle is actually correct}
+
+ To obtain the commanded bodytorques, the heading vector is obtained by projecting the yaw angle into the world plane defined by span$\{\hat{e}_1, \hat{e}_2\}$.
+The heading vector, serves an auxiliary vector to compute $\mathbf{\hat{b}}_2$ and $\mathbf{\hat{b}}_1$.
+
+\begin{equation} \mathbf{h} = \begin{bmatrix} \cos{\psi} & \sin{\psi} & 0 \end{bmatrix} ^T \end{equation} 
+
+\begin{equation}
+    \hat{\mathbf{b}}_2 = \frac{\hat{\mathbf{b}}_3 \times \mathbf{h}}{\|\hat{\mathbf{b}}_3 \times \mathbf{h}\|}
+\end{equation}
+
+\begin{equation}
+    \hat{\mathbf{b}}_1 = \hat{\mathbf{b}}_2 \times \hat{\mathbf{b}}_3
+\end{equation}
+
+\noindent In this way, the commanded orientation is defined by $\mathbf{R}_{\text{cmd}} = \begin{bmatrix}
+    \hat{\mathbf{b}}_1 & \hat{\mathbf{b}}_2 & \hat{\mathbf{b}}_3
+\end{bmatrix}$ and the error between the commanded orientation and the current orientation is computed as in \todo{Cite Lee}.
+
+\begin{equation}\label{eq:atterr}
+    \mathbf{e}_R = \frac{1}{2} \left( \mathbf{R}_{\text{cmd}}^T \mathbf{R} - \mathbf{R}^T \mathbf{R}_{\text{cmd}} \right)^\vee 
+\end{equation}
+
+\noindent The complete derivation of \autoref{eq:atterr} can be found in the original paper, \cite{Lee}. 
+To provide intuition, note that if $\mathbf{R}_{\text{cmd}} = \mathbf{R}$, then $\mathbf{R}_{\text{cmd}}^T \mathbf{R} = \mathbf{I}$ and the error is zero. 
+Otherwise, the matrix $\mathbf{R}_{\text{cmd}}^T \mathbf{R}$ represents the relative rotation between the current and desired orientations. 
+The skew-symmetric part of this matrix, given by $\frac{1}{2}(\mathbf{R}_{\text{cmd}}^T \mathbf{R} - \mathbf{R}^T \mathbf{R}_{\text{cmd}})$, encodes the axis and magnitude of the rotation error. 
+The vee map $(\cdot)^\vee$ then converts this skew-symmetric matrix into a vector in $\mathbb{R}^3$, corresponding to the rotation error expressed in the Lie algebra $\mathfrak{so}(3)$, that is to say, $^\vee \colon \mathfrak{so}(3) \to \mathbb{R}^3$.
+Then, the factor $\frac{1}{2}$ ensures consistency with the standard definition of the vee operator and avoids double counting of the off-diagonal terms.
+
+
+Adittionally, an error on the angular velocity of the rotation is introduced as,
+
+\begin{equation}\label{eq:geo_ang}
+    \mathbf{e}_{\boldsymbol{\omega}} = \boldsymbol{\omega} - \mathbf{R}^T \mathbf{R}_{\text{cmd}}\boldsymbol{\omega}_{\text{cmd}}
+\end{equation}
+where $\boldsymbol{\omega}_{\text{cmd}} = \begin{bmatrix}
+    0 & 0 & \dot{\psi}_{\text{cmd}}\end{bmatrix}^T$. 
+Note that the error between the desired rotational velocity and the current rotational velocity line on different tangent planes to the unit sphere, 
+$\dot{\mathbf{R}} \in \mathrm{T}_{\mathbf{R}} SO(3)$ and $\dot{\mathbf{R}}_{\text{cmd}} \in \mathrm{T}_{\mathbf{R}_{\text{cmd}}} SO(3)$.
+For this reason, as explained in \cite{Lee}, $\dot{\mathbf{R}}_{\text{cmd}}$ is transformed into a vector in the $\mathrm{T}_{\mathbf{R}} SO(3)$ space to be able to compare it to $\dot{\mathbf{R}}$ and obtain the error;\autoref{eq:geo_ang}.
+
+
+\begin{figure}[H]
+    \centering
+    \scalebox{0.9}{%
+        \begin{minipage}{\textwidth}
+            \centering
+            \subfloat[Projection of the drone's yaw angle $\psi$.]{
+                \input{fig/tikz/drone_simp}
+                \label{fig:simp_drone}
+            }
+            \hfill
+            \subfloat[Representation of the $SO(3)$ rotation space.]{
+                \input{fig/tikz/so3}
+                \label{fig:so3_sphere}
+            }
+        \end{minipage}
+    }
+    \caption{Geometric interpretation of Equations 3.12--3.15}
+\end{figure}
+
+
+% \begin{figure}[h]
+%     \centering
+% \include{fig/tikz/so3}
+% \end{figure}
+
+
+
+% \begin{figure}[!ht]
+% \centering
+% \include{fig/tikz/drone_simp}
+% \caption{Projection of the drone's yaw angle $\psi$ into the $\{\hat{\mathbf{e}}_1, \hat{\mathbf{e}}_2\}$ plane.}
+% \label{fig:simp_drone}
+% \end{figure}
+
+
+
 
 \section{Training Tasks} \label{sec:tasks}
 
