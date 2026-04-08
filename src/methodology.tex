@@ -16,7 +16,7 @@ Lastly, \autoref{sec:diff_opt} details how differentiability is leveraged to opt
 % {\color{blue}Insert cool diagram}
 
 \section{Simulation Framework}\label{sec:sim_frame}
-{\color{blue}Insert cool diagram}
+{\color{blue}Make cool diagram}
 
 \begin{figure}[!ht]
     \centering
@@ -97,17 +97,17 @@ When \ac{CTBR} control mode is selected, the normalized outputs of the policy $\
 The scaling is as follows,
 
 \begin{equation}
-    T_{c, \text{cmd}} = u_1 \cdot (T_{\text{max}} - T_{\text{min}}) + T_{\text{min}} 
+    T_{c, \text{cmd}} = u_1  (T_{\text{max}} - T_{\text{min}}) + T_{\text{min}} 
 \end{equation}
 \begin{equation}
-    \omega_{i, \text{cmd}} = (2u_{i+1} - 1) \cdot \omega_{i, \text{max}}, \quad i \in \{1, 2, 3\}
+    \omega_{i, \text{cmd}} = (2u_{i+1} - 1)  \omega_{i, \text{max}}, \quad i \in \{1, 2, 3\}
 \end{equation}
 
 \noindent where $\omega_{i, \text{max}}$ indicates the maximum body rate of the respective axis, (roll, pitch, yaw).
 Once the rates are calculated, they can be converted to torque values,
 
 \begin{equation}
-    \boldsymbol{\tau}_\text{cmd} = k_p \cdot\frac{(\boldsymbol{\omega_{\text{cmd}}} - \boldsymbol{\omega})}{dt}J    
+    \boldsymbol{\tau}_\text{cmd} = k_p \frac{(\boldsymbol{\omega_{\text{cmd}}} - \boldsymbol{\omega})}{dt}J    
 \end{equation}
 aditionally, a proportinal gain $k_p$ can be introduced to adjust the stiffness of the conversion.
 Given the commanded collective thrust and torques, the motor thursts can be obtained from \autoref{eq:alloc} and then the same procudeure of \autoref{sec:srt} is applied during the forward and backward passes.
@@ -116,10 +116,10 @@ Given the commanded collective thrust and torques, the motor thursts can be obta
 The highest level of abstraction that is implement consists on commanding \ac{LVYR}. With this control mode, the policy outputs are scaled as,
 
 \begin{equation}\label{eq:geo_vel}
-    v_{i, \text{cmd}} = (2u_{i} - 1) \cdot v_{i, \text{max}}, \quad i \in \{1, 2, 3\}
+    v_{i, \text{cmd}} = (2u_{i} - 1)  v_{i, \text{max}}, \quad i \in \{1, 2, 3\}
 \end{equation}
 \begin{equation}\label{eq:geo_omega}
-    \omega_{3, \text{cmd}} = \dot{\psi}_{\text{cmd}} = (2u_{4} - 1) \cdot \dot{\psi}_{ \text{max}}
+    \omega_{3, \text{cmd}} = \dot{\psi}_{\text{cmd}} = (2u_{4} - 1)  \dot{\psi}_{ \text{max}}
 \end{equation}
 
 \noindent where $\psi$ denotes the yaw angle and $v_{i,\text{cmd}}$ represents the commanded linear velocity along each body axis. 
@@ -129,7 +129,7 @@ The transfomations proceed in the following manner.
 
 First, the acceleration vector is computed as
 \begin{equation}
-    \mathbf{a}_{\text{cmd}} = k_v \cdot (\mathbf{v}_{\text{cmd}} - \mathbf{v}) + g \mathbf{\hat{b}}_3
+    \mathbf{a}_{\text{cmd}} = k_v (\mathbf{v}_{\text{cmd}} - \mathbf{v}) + g \mathbf{\hat{b}}_3
 \end{equation}
 
 \noindent where $k_v$ is a proportional gain on the velocity. 
