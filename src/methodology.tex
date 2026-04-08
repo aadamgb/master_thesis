@@ -1,6 +1,9 @@
 %!TEX root = ../main.tex
 
 \chapter{Methodology\label{how_to}}
+
+\todo{Review}
+
 This chapter presents the methodology used in this thesis to train the neural network policies.
 % Section~\ref{sec:sys_overview}, provides an overview of the control and training pipeline.
 In~\autoref{sec:sim_frame}, we adress the core elements of the simulation architecture, define the quadrotor model, and explain how the \ac{s2r} gap is minimized by using \ac{DR}.
@@ -25,7 +28,7 @@ Lastly, \autoref{sec:diff_opt} details how differentiability is leveraged to opt
 \subsection{Quadrotor Model}\label{sec:quad_model}
 
 
-\subsection{Domain Randomization}
+
 \subsection{Control Abstraction}
 The control abstraction refers to the modality of the policy outputs used to control the quadrotor.
 The choice of control abstraction affects both the performance of the controller for a given task and the sample efficiency during training.
@@ -43,7 +46,7 @@ When the \ac{SRT} control mode is choosen, the only transformation to be applied
 Therefore, the transformation is as simple as: 
 
 \begin{equation}
-    \boldsymbol{T}_{\text{cmd}} = \boldsymbol{u} \cdot T_{\text{max}}
+    \boldsymbol{T}_{\text{cmd}} = \boldsymbol{u} T_{\text{max}}
 \end{equation}
 
 \todo{: Add min thrust mapping xd}
@@ -169,7 +172,7 @@ The heading vector, serves an auxiliary vector to compute $\mathbf{\hat{b}}_2$ a
     \scalebox{0.9}{%
         \begin{minipage}{\textwidth}
             \centering
-            \subfloat[Projection of the drone's yaw angle $\psi$.]{
+            \subfloat[Projection of the drone's yaw angle $\psi$.\todo{adapted from ctu slides} ]{
                 \input{fig/tikz/drone_simp}
                 \label{fig:simp_drone}
             }
@@ -205,9 +208,10 @@ For this reason, as explained in \cite{Lee}, $\dot{\mathbf{R}}_{\text{cmd}}$ is 
 Finally, the torque is set by,
 
 \begin{equation}\label{eq:geo_tau}
-    \boldsymbol{\tau}_\textbf{cmd} = - k_R \mathbf{e}_\textbf{R} - k_\omega \mathbf{e}_{\boldsymbol{\omega}} + \omega  \times J\omega
+    \boldsymbol{\tau}_\textbf{cmd} = - k_R \mathbf{e}_\textbf{R} - k_\omega \mathbf{e}_{\boldsymbol{\omega}} + \boldsymbol{\omega}  \times \mathbf{J}\boldsymbol{\omega} - \mathbf{J} ( \hat{\boldsymbol{\omega}} \mathbf{R}^T \mathbf{R}_{\text{cmd}} \boldsymbol{\omega}_{\text{cmd}} - \mathbf{R}^T \mathbf{R}_{\text{cmd}} \dot{\boldsymbol{\omega}}_{\text{cmd}} )
 \end{equation}
 where a gyroscopic and feed forward terms are added to the rotation and rotational speed errors.
+The \textit{hat map} $\hat{\cdot} \colon \mathbb{R}^3 \to \mathfrak{so}(3)$ is defined by the condition that $\hat{x} y = x \times y$ for all $x, y \in \mathbb{R}^3$.
 In this manner, the commanded collective thrust \autoref{eq:geo_thrust}, and commanded torques \autoref{eq:geo_tau}, can be mapped to single rotor thrust commands to apply the same procedure of the last control modes during the forward and backward passes.
 
 
@@ -231,22 +235,101 @@ Thus, when this control mode is selected, the policy outputs are, the same as \a
 \begin{equation}
     k_{\omega, cmd} = u_7 k_{\omega,\text{max}}
 \end{equation}
-% \begin{figure}[h]
-%     \centering
-% \include{fig/tikz/so3}
-% \end{figure}
 
 
 
-% \begin{figure}[!ht]
-% \centering
-% \include{fig/tikz/drone_simp}
-% \caption{Projection of the drone's yaw angle $\psi$ into the $\{\hat{\mathbf{e}}_1, \hat{\mathbf{e}}_2\}$ plane.}
-% \label{fig:simp_drone}
-% \end{figure}
+
+% ====================================================================================
+%                                  Domain Randomization
+% ====================================================================================
+
+\subsection{Domain Randomization}
+To improve the transferability of the policy and to prevent the it from ovrefitting to a specific environment, \ac{DR} is implemented in our methodology as it is well-stabilshed strategy in the field, \todo{: Cite}
+
+A domain can be defined as a specific subset of all possible \ac{POMDP} environments. 
+While a complete \ac{POMDP} is formally characterized by an 8-tuple~\cite{ASTROM1965174}, 
+we focus on a reduced 6-tuple representation that captures the essential elements 
+for our domain definition. A standard domain is then characterized by 
+$\mathcal{D} = (\mathcal{S}, \mathcal{A}, \mathcal{O}, P, O, R)$ where:
+
+\begin{itemize}
+    \item $\mathbf{\mathcal{S}:}$ denotes a set of states called the state space.
+    \item $\mathbf{\mathcal{A}:}$ is the set of actions called the action space.
+    \item $\mathbf{\mathcal{O}:}$ is the set of observations called the observation space.
+    \item $\mathbf{P(s'|s, a):}$ is the probability that a given action $a \in A$, at state $s \in S$ will lead to a new state $s' \subset S$. 
+    \item $\mathbf{O(o|s', a):}$ is the observation probability, representing the probability of observing $o \in \mathcal{O}$ after taking action $a$ and transitioning to state $s'$.
+    \item $\mathbf{R(s',s,a):}$ is the immediate reward, or expected inmediate reward, received for transitioning from $s$ to $s'$ after performing action $a$. 
+\end{itemize}
+From the source domain, $\mathcal{D}_{\xi_s}$, (i.e. simulation), we can control a set of N parameters that define a configuration vector, $\boldsymbol{\xi} = [\xi_i, \xi_{i+1}, ..., \xi_N]$.
+These parameters will affect the transition probability $\mathbf{P(s'|s,a)}$ of the domain.
+Examples of $\xi_i$ can include:
+
+\begin{tabular}{c|c}
+
+    Physical properties & $\xi_{\text{mass}}, \ \xi_{\text{inertia}}, \ \xi_{\text{drag}}, \ \xi_{\text{gravity}}$ \\
+    Perception properties & $\xi_{\text{sensor\_noise}}, \ \xi_{\text{sensor\_latency}}$ \\
+    Viual properties & $\xi_{\text{lighting}}, \ \xi_{\text{texture}}, \ \xi_{\text{fov}}$ \\
+    Scene properties & $\xi_{\text{gate\_pos}}, \ \xi_{\text{gate\_size}}, , \ \xi_{\text{gate\_num}}$ \\
+    
+\end{tabular}
+
+When \ac{DR} is applied, each configuration $\boldsymbol{\xi}$ is sampled from a bounded randomization space $\Xi$ with a probability distribution. 
+That is to say, $\boldsymbol{\xi} \in \Xi \subset \mathbb{R}^N$,  $\boldsymbol{\xi} \sim p(\boldsymbol{\xi})$ where $\xi_i \in [\xi_i^{\text{low}}, \xi_i^{\text{high}}]$. 
+At the start of every training episode, a new environment insance is created by sampling a new configuration vector $\boldsymbol{\xi}$ from the distribution $p(\boldsymbol{\xi})$. 
+Therefore, the policy will interact with a new \ac{POMDP} environment, a new domain $\mathcal{D}_{\boldsymbol{\xi}}$. 
+This way, data from a vareity of environments that otherwise would reamain unexplored can be collected. 
+\begin{figure}[H]
+  \centering
+
+  \begin{adjustbox}{max totalsize={0.5\textwidth}{0.4\textheight}, center}
+    \input{fig/tikz/DR.tex}
+  \end{adjustbox}
+
+  \caption{In red, the source domain. In light blue, ranodimized instances of the source configuration. In green, the target domain configuration. }
+  \label{domains}
+\end{figure}
+Hereby, during training, the neural network weights and biases $\theta$ are optimized to maximize the expected reward $R$/\todo{:minimize the loss} across a distribution of randomized domains~\cite{weng2019DR}.
+With the aim of finding the optimal, $\theta^*$ that will lead to the optimal policy $\pi_{\theta}^*$.
+% \begin{equation}\label{opt_theta}
+%     \theta ^* = \arg \max_{\theta} \mathbb{E}_{\boldsymbol{\xi}\sim\Xi} \left[\mathbb{E}_{\pi_\theta,\tau\sim D_\xi}[R(\tau)] \right]
+% \end{equation}
+% Where $R(\tau) = \sum_{t=0}^{n} \gamma^t r_{t}$ is the cummulative discounted reward over a trajectory (or sequence) of states and actions $\tau = (s_0,a_0,s_1,a_1,...)$, for the episode length $n$.
+% $R(\tau)  = \sum_{t=0}^{n} \gamma^t r_{t}$
+
+% \[ R(\tau)  = \sum_{t=0}^{n} \gamma^t r_{t}\]
+As illustrated in \autoref{domains} and described in \autoref{opt_theta}, the policy is exposed to a variety of domains to promote generalization and improve robustness, increasing the likelihood of successful transfer to the real environment. 
+However, this strategy further reduces the sample efficiency of \ac{RL} and increases training time. 
+Therefore, it is essential to properly bound the randomization space $\Xi$, so that it encompasses only the minimum necessary range to include the target domain.
+
+In order to efficently bound this randomization space while still allowing for enough randomness a two stage randomization is implement.
+Inspired by \todo{:Cite, Zhang}, first a design informed randomization \todo{:Add acronym?} is applied.
+This ensures that sensible variations of the nominal platform are predominant in the randomization space.
+Thus avoiding that unfeasible designs such as a quadrotor with unsensible \ac{TWR} (i.e. \ac{TWR}$<1$). 
+The authors of \cite{} notice that quadrotor designs, in general, follow a similar pattern where the quadrotors armlength $l$ is strongly correlated to its mass $m$, inertia $\mathbf{J}$, drag coefficents $\mathbf{c_d}$ and other physical parameters.
+
+Hence, they propose to sample a size factor $c \sim \mathcal{U}(0,1)$ and scale the quadrotor's physcial parameters as listed below;
+\begin{equation}
+    l = c(l_{\max} - l_{\min}) + l_{\min}
+\end{equation}
 
 
+\begin{equation}
+    m = \frac{l^3 - l_{\min}^3}{l_{\max}^3 - l_{\min}^3}(m_{\max} - m_{\min}) + m_{\min}
+\end{equation}
 
+
+\begin{equation}
+    \mathbf{J} = \frac{l^5 - l_{\min}^5}{l_{\max}^5 - l_{\min}^5} (\mathbf{J}_{\max} - \mathbf{J}_{\min}) + \mathbf{J}_{\min}
+\end{equation}
+
+\begin{equation}
+    \mathbf{c_d} = \frac{l^2 - l_{\min}^2}{l_{\max}^2 - l_{\min}^2} (\mathbf{c}_{d_{\max}} - \mathbf{c}_{d_{\min}}) + \mathbf{c}_{d_{\min}}
+\end{equation}
+Following the scaling process, these parameters which comprisise the following configuration vector
+\begin{equation}
+    \boldsymbol{\xi} = \begin{bmatrix} l & m & \mathbf{J} & \mathbf{c_d} \end{bmatrix}
+\end{equation}
+are subjected to additional noise. Each parameter is multiplied by a scaling factor $\eta \sim \mathcal{U}(1-p, 1+p)$, where $p=0.2$. This specific uncertainty range was selected based on experimental results from a previous project, as it demonstrated good transferability, nonetheless it can be considered a hyperparameter of the training process and be tunned according to the situation.
 
 \section{Training Tasks} \label{sec:tasks}
 
