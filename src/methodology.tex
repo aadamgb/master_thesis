@@ -110,12 +110,12 @@ aditionally, a proportinal gain $k_p$ can be introduced to adjust the stiffness 
 Given the commanded collective thrust and torques, the motor thursts can be obtained from \autoref{eq:alloc} and then the same procudeure of \autoref{sec:srt} is applied during the forward and backward passes.
 \subsubsection{Linear Velocities and Yaw Rate}
 
-Lastly, the highest level of abstraction that is implement consists on commanding \ac{LVYR}. With this control mode, the policy outputs are scaled as,
+The highest level of abstraction that is implement consists on commanding \ac{LVYR}. With this control mode, the policy outputs are scaled as,
 
-\begin{equation}
+\begin{equation}\label{eq:geo_vel}
     v_{i, \text{cmd}} = (2u_{i} - 1) \cdot v_{i, \text{max}}, \quad i \in \{1, 2, 3\}
 \end{equation}
-\begin{equation}
+\begin{equation}\label{eq:geo_omega}
     \omega_{3, \text{cmd}} = \dot{\psi}_{\text{cmd}} = (2u_{4} - 1) \cdot \dot{\psi}_{ \text{max}}
 \end{equation}
 
@@ -131,17 +131,20 @@ First, the acceleration vector is computed as
 
 \noindent where $k_v$ is a proportional gain on the velocity. 
 Note that the acceleration along the third body axis is compensated for gravity; $\mathbf{\hat{b}}_3$ denotes the unit vector along this axis.
-Then the commanded collective thrust is the \ac{UAV}'s mass times the acceleration vector.
+Then, force vector is the \ac{UAV}'s mass times the commanded acceleration vector, and the commanded collective thrust vector is the projection of the force vector onto the $\mathbf{\hat{b}}_3$ axis.
 
-\todo{Correct this...}
 \begin{equation}
-    T_{c, \text{cmd}} = m \mathbf{a}_{\text{cmd}} 
+    \mathbf{F} = m \mathbf{a}_{\text{cmd}} 
 \end{equation}
 
-\todo{Double check wether projecting the heading angle is actually correct}
+\begin{equation}\label{eq:geo_thrust}
+    T_{c, \text{cmd}} = \mathbf{F} \cdot \mathbf{\hat{b}}_3
+\end{equation}
 
- To obtain the commanded bodytorques, the heading vector is obtained by projecting the yaw angle into the world plane defined by span$\{\hat{e}_1, \hat{e}_2\}$.
-The heading vector, serves an auxiliary vector to compute $\mathbf{\hat{b}}_2$ and $\mathbf{\hat{b}}_1$.
+
+
+To obtain the commanded bodytorques, the heading vector is obtained by projecting the yaw angle into the world plane defined by span$\{\hat{e}_1, \hat{e}_2\}$.
+The heading vector, serves an auxiliary vector to compute $\mathbf{\hat{b}}_2$ and $\mathbf{\hat{b}}_1$. \todo{Double check wether projecting the heading angle is actually correct}
 
 \begin{equation} \mathbf{h} = \begin{bmatrix} \cos{\psi} & \sin{\psi} & 0 \end{bmatrix} ^T \end{equation} 
 
@@ -155,31 +158,11 @@ The heading vector, serves an auxiliary vector to compute $\mathbf{\hat{b}}_2$ a
 
 \noindent In this way, the commanded orientation is defined by $\mathbf{R}_{\text{cmd}} = \begin{bmatrix}
     \hat{\mathbf{b}}_1 & \hat{\mathbf{b}}_2 & \hat{\mathbf{b}}_3
-\end{bmatrix}$ and the error between the commanded orientation and the current orientation is computed as in \todo{Cite Lee}.
+\end{bmatrix}$ and the error between the commanded orientation and the current orientation is computed as in \cite{Lee}.
 
 \begin{equation}\label{eq:atterr}
     \mathbf{e}_R = \frac{1}{2} \left( \mathbf{R}_{\text{cmd}}^T \mathbf{R} - \mathbf{R}^T \mathbf{R}_{\text{cmd}} \right)^\vee 
 \end{equation}
-
-\noindent The complete derivation of \autoref{eq:atterr} can be found in the original paper, \cite{Lee}. 
-To provide intuition, note that if $\mathbf{R}_{\text{cmd}} = \mathbf{R}$, then $\mathbf{R}_{\text{cmd}}^T \mathbf{R} = \mathbf{I}$ and the error is zero. 
-Otherwise, the matrix $\mathbf{R}_{\text{cmd}}^T \mathbf{R}$ represents the relative rotation between the current and desired orientations. 
-The skew-symmetric part of this matrix, given by $\frac{1}{2}(\mathbf{R}_{\text{cmd}}^T \mathbf{R} - \mathbf{R}^T \mathbf{R}_{\text{cmd}})$, encodes the axis and magnitude of the rotation error. 
-The vee map $(\cdot)^\vee$ then converts this skew-symmetric matrix into a vector in $\mathbb{R}^3$, corresponding to the rotation error expressed in the Lie algebra $\mathfrak{so}(3)$, that is to say, $^\vee \colon \mathfrak{so}(3) \to \mathbb{R}^3$.
-Then, the factor $\frac{1}{2}$ ensures consistency with the standard definition of the vee operator and avoids double counting of the off-diagonal terms.
-
-
-Adittionally, an error on the angular velocity of the rotation is introduced as,
-
-\begin{equation}\label{eq:geo_ang}
-    \mathbf{e}_{\boldsymbol{\omega}} = \boldsymbol{\omega} - \mathbf{R}^T \mathbf{R}_{\text{cmd}}\boldsymbol{\omega}_{\text{cmd}}
-\end{equation}
-where $\boldsymbol{\omega}_{\text{cmd}} = \begin{bmatrix}
-    0 & 0 & \dot{\psi}_{\text{cmd}}\end{bmatrix}^T$. 
-Note that the error between the desired rotational velocity and the current rotational velocity line on different tangent planes to the unit sphere, 
-$\dot{\mathbf{R}} \in \mathrm{T}_{\mathbf{R}} SO(3)$ and $\dot{\mathbf{R}}_{\text{cmd}} \in \mathrm{T}_{\mathbf{R}_{\text{cmd}}} SO(3)$.
-For this reason, as explained in \cite{Lee}, $\dot{\mathbf{R}}_{\text{cmd}}$ is transformed into a vector in the $\mathrm{T}_{\mathbf{R}} SO(3)$ space to be able to compare it to $\dot{\mathbf{R}}$ and obtain the error;\autoref{eq:geo_ang}.
-
 
 \begin{figure}[H]
     \centering
@@ -200,7 +183,54 @@ For this reason, as explained in \cite{Lee}, $\dot{\mathbf{R}}_{\text{cmd}}$ is 
     \caption{Geometric interpretation of Equations 3.12--3.15}
 \end{figure}
 
+\noindent The complete derivation of \autoref{eq:atterr} can be found in the original paper, \cite{Lee}. 
+To provide intuition, note that if $\mathbf{R}_{\text{cmd}} = \mathbf{R}$, then $\mathbf{R}_{\text{cmd}}^T \mathbf{R} = \mathbf{I}$ and the error is zero. 
+Otherwise, the matrix $\mathbf{R}_{\text{cmd}}^T \mathbf{R}$ represents the relative rotation between the current and desired orientations. 
+The skew-symmetric part of this matrix, given by $\frac{1}{2}(\mathbf{R}_{\text{cmd}}^T \mathbf{R} - \mathbf{R}^T \mathbf{R}_{\text{cmd}})$, encodes the axis and magnitude of the rotation error. 
+The vee map $(\cdot)^\vee$ then converts this skew-symmetric matrix into a vector in $\mathbb{R}^3$, corresponding to the rotation error expressed in the Lie algebra $\mathfrak{so}(3)$, that is to say, $^\vee \colon \mathfrak{so}(3) \to \mathbb{R}^3$.
+Then, the factor $\frac{1}{2}$ ensures consistency with the standard definition of the vee operator and avoids double counting of the off-diagonal terms.
 
+
+
+Adittionally, an error on the angular velocity of the rotation is introduced as,
+
+\begin{equation}\label{eq:geo_ang}
+    \mathbf{e}_{\boldsymbol{\omega}} = \boldsymbol{\omega} - \mathbf{R}^T \mathbf{R}_{\text{cmd}}\boldsymbol{\omega}_{\text{cmd}}
+\end{equation}
+where $\boldsymbol{\omega}_{\text{cmd}} = \begin{bmatrix}
+    0 & 0 & \dot{\psi}_{\text{cmd}}\end{bmatrix}^T$. 
+Note that the error between the desired rotational velocity and the current rotational velocity line on different tangent planes to the unit sphere, 
+$\dot{\mathbf{R}} \in \mathrm{T}_{\mathbf{R}} SO(3)$ and $\dot{\mathbf{R}}_{\text{cmd}} \in \mathrm{T}_{\mathbf{R}_{\text{cmd}}} SO(3)$.
+For this reason, as explained in \cite{Lee}, $\dot{\mathbf{R}}_{\text{cmd}}$ is transformed into a vector in the $\mathrm{T}_{\mathbf{R}} SO(3)$ space to be able to compare it to $\dot{\mathbf{R}}$ and obtain the error; \autoref{eq:geo_ang}.
+Finally, the torque is set by,
+
+\begin{equation}\label{eq:geo_tau}
+    \boldsymbol{\tau}_\textbf{cmd} = - k_R \mathbf{e}_\textbf{R} - k_\omega \mathbf{e}_{\boldsymbol{\omega}} + \omega  \times J\omega
+\end{equation}
+where a gyroscopic and feed forward terms are added to the rotation and rotational speed errors.
+In this manner, the commanded collective thrust \autoref{eq:geo_thrust}, and commanded torques \autoref{eq:geo_tau}, can be mapped to single rotor thrust commands to apply the same procedure of the last control modes during the forward and backward passes.
+
+
+\subsubsection{Linear Velocity Yaw Rate and Gains}
+
+Finally, the last control mode implemented is an augmentation of the \ac{LVYR} controller.
+In this formulation, the policy outputs high-level commands in the form of desired linear velocities and yaw rate, rather than directly commanding individual rotor thrusts.
+This higher level of abstraction simplifies the learning process, as the policy does not need to implicitly learn how differential rotor thrusts generate torques, since this mapping is handled by the geometric controller.
+As shown in \autoref{label} \todo{cite the section}, this abstraction enables faster learning.
+However, this approach does not necessarily minimize the loss function, as the policy performance can be significantly constrained by the tuning of the controller gains.
+For this reason, it is of interest to investigate how performance is affected when the policy is allowed to output the controller gains in addition to the velocity and yaw rate commands.
+
+Thus, when this control mode is selected, the policy outputs are, the same as \autoref{eq:geo_vel}, \autoref{eq:geo_ang}, and the gains $\{k_v, k_R, k_\omega\}$ are included by simply scaling the policy outputs to the maximum allowed gains.
+
+\begin{equation}
+    k_{v, cmd} = u_5 k_{v,\text{max}}
+\end{equation}
+\begin{equation}
+    k_{R, cmd} = u_6 k_{R,\text{max}}
+\end{equation}
+\begin{equation}
+    k_{\omega, cmd} = u_7 k_{\omega,\text{max}}
+\end{equation}
 % \begin{figure}[h]
 %     \centering
 % \include{fig/tikz/so3}
