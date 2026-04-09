@@ -24,14 +24,13 @@ Lastly, \autoref{sec:diff_opt} details how differentiability is leveraged to opt
     \caption{Your Caption}
     \label{fig:my_label}
 \end{figure}
-
+\todo{: Correct the diagram!!}
 \subsection{Quadrotor Model}\label{sec:quad_model}
 In the simulated environments, the quadcopter is modeeld as a 6 \ac{dof} rigid body.
 The inertial world frame $\mathcal{W}$ is defined by the fixed orthonormal basis $\{\hat{\mathbf{e}}_1, \hat{\mathbf{e}}_2, \hat{\mathbf{e}}_3\}$ while the non-inertial body-fixed frame $\mathcal{B}$ by the  orthonormal basis $\{\hat{\mathbf{b}}_1, \hat{\mathbf{b}}_2, \hat{\mathbf{b}}_3\}$, which is attached to the vehicle's center of mass.  
 The state of the \ac{UAV} is given by $\mathbf{x} = [\mathbf{p}, \mathbf{v}, \mathbf{q}, \boldsymbol{\omega}, \mathbf{\Omega}]^T$ where the position $\mathbf{p} \in \real^3$, velocity $\mathbf{v} \in \real^3$, and acceleration are represented in the world frame $\mathcal{W} \in \mathbb{R}^3$. 
 Conversely, the body rates $\boldsymbol{\omega} \in \real^3$ are represented in the body frame $\mathcal{B} \in \mathbb{R}^3$ and $\mathbf{\Omega} \in \real^4$ is a vector of scalar values indicating the rotor speeds.
-The relationship between the two frames is given by the rotation mapping $\mathbf{b}_i = \mathbf{R}\mathbf{e}_i$, where $\mathbf{R} \in SO(3)$ is the rotation matrix corresponding to the orientation $\mathbf{q}$.
-
+The relationship between the two frames is given by the rotation mapping $\mathbf{b}_i = \mathbf{R}\mathbf{e}_i$, where $\mathbf{R} \in SO(3)$.
 
 \noindent Thus, the kinematics and dynamics of the quadcopter are:
 
@@ -55,21 +54,55 @@ The relationship between the two frames is given by the rotation mapping $\mathb
 \end{equation}
 \end{minipage}
 
- In these expressions, $\odot$ denotes the quaternion multiplication operator, $\mathbf{R}(\mathbf{q})$ represents the rotation matrix mapping the body frame $\mathcal{B}$ to the world frame $\mathcal{W}$.
+\noindent In these expressions, $\odot$ denotes the quaternion multiplication operator, $\mathbf{R}(\mathbf{q})$ represents the rotation matrix mapping the body frame $\mathcal{B}$ to the world frame $\mathcal{W}$.
 The vectors $\mathbf{F}_T^{\mathcal{B}}$ and $\mathbf{F}_D^{\mathcal{B}}$ correspond to the collective thrust and drag forces, respectively.
 Finally, $\mathbf{J}$ is the diagonal inertia matrix, $k_m$ is the motor time constant, and $\mathbf{g}$ is the gravity vector.
 
 
 \begin{figure}[H]
     \centering
-    \include{fig/tikz/drone_forces.tex}
-    \caption{Diagram of the forces acting on the quadrotor}
-    \label{fig:drone_forces}
+    \scalebox{0.75}{%
+        \begin{minipage}{\textwidth}
+            \centering
+            \subfloat[Diagram of the motor layout.]{
+                \input{fig/tikz/mot_layout}
+                \label{fig:mot_layout}
+            }
+            \hfill
+            \subfloat[Diagram of the forces acting upon the quadrotor.]{
+                \input{fig/tikz/drone_forces.tex}
+                \label{fig:drone_forces}
+            }
+        \end{minipage}
+    }
+    \caption{Quadrotor configuration and force diagram.}
 \end{figure}
 
-
 In the body frame $\mathcal{B}$, the individual motor thrusts $T_i, \ i=1,..,4$, are assumed to be perpendicular to the $\{\hat{\mathbf{b}}_1,\hat{\mathbf{b}}_2\}$ plane.
-The magnitudes of collective thrust $F_T$, and body torques $\boldsymbol{\tau}^\mathcal{B}$, can be obtained from the individual motor thrusts with the allocation matrix $\Gamma$.
+The magnitudes of collective thrust $F_T$, and body torques $\boldsymbol{\tau}^\mathcal{B}$, can be obtained from \autoref{eq:full_alloc}.
+To be strictly rigourous, the torques produced by the rotor's angular acceleration and gyroscopic effects should be accounted for.
+
+
+
+\begin{equation}
+      \begin{bmatrix}
+    F_T \\
+    \boldsymbol{\tau}^\mathcal{B}
+  \end{bmatrix} = \boldsymbol{\Gamma} \mathbf{T} + \begin{bmatrix}
+        0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 \\
+        J_p & -J_p & J_p & -J_p
+    \end{bmatrix} \dot{\boldsymbol{\Omega}} + \begin{bmatrix}
+        0 & 0 & 0 & 0 \\
+        J_p \omega_{b2} & -J_p \omega_{b2} & J_p \omega_{b2} & -J_p \omega_{b2} \\
+        -J_p \omega_{b1} & J_p \omega_{b1} & -J_p \omega_{b1} & J_p \omega_{b1} \\
+        0 & 0 & 0 & 0
+    \end{bmatrix} \boldsymbol{\Omega}
+    \label{eq:full_alloc}
+\end{equation}
+Where $\boldsymbol{\Gamma}$ is the allocation matrix and $J_p$ the propeller's inertia. Nonetheless, these effects produced by the rotor speeds, can be neglected and \autoref{eq:full_alloc} simplifies to \autoref{eq:simp_alloc},
+
 
 \begin{equation}
   \begin{bmatrix}
@@ -89,12 +122,10 @@ The magnitudes of collective thrust $F_T$, and body torques $\boldsymbol{\tau}^\
   \begin{bmatrix}
     T_1 \\ T_2 \\ T_3 \\ T_4
   \end{bmatrix}
+  \label{eq:simp_alloc}
 \end{equation}
-
-
-
-Where $l$ is the arm length and $c_{tf}$ the linear torque constant.
-The individual motror thrusts $T_i$, can be obtained from the rotor speeds $\Omega_i$ with the thrust map coefficents, $\mathbf{k_T} = [a_0,\ a_1,\ a_2]$ which can be obtained experimentally by fitting a quadratic curve to the rotor speed versus thrust data.
+where $l$ is the arm length, $\beta$ is the arm angle, and $c_{tf}$ the linear torque constant.
+The individual motror thrusts $T_i$, can be obtained from the rotor speeds $\Omega_i$ with the thrust map coefficents, $\mathbf{k_T} = [a_1,\ a_2,\ a_3]$ which can be obtained experimentally by fitting a quadratic curve to the rotor speed versus thrust data.
 
 \begin{equation} 
   T_i = \mathbf{k_T} \begin{bmatrix}
@@ -106,19 +137,17 @@ The individual motror thrusts $T_i$, can be obtained from the rotor speeds $\Ome
   \end{bmatrix}
   \label{eq:thrust_map}
 \end{equation}
-For convinence, we simplificate \autoref{eq:thrust_map} to $ T_i =  a_0 \Omega_i^2$.
+For convinence, \autoref{eq:thrust_map} is simplified to $ T_i =  a_0 \Omega_i^2$. 
 
 
-
-
-\begin{figure}[H]
-    \centering
-    \include{fig/tikz/mot_layout}
-    \caption{Diagram of the forces acting on the quadrotor}
-    \label{fig:mot_layout}
-\end{figure}
-
-
+To complete the quadrotor model, the aerodynamic drag force $\mathbf{F}_D$ is incorporated using a simplified quadratic formulation.
+Other aerodynamic effects, such as rotational drag and ground interaction, are neglected.
+The drag force is expressed as:
+\begin{equation}
+    \mathbf{F}^{\mathcal{B}}_D = -\tfrac{1}{2}\rho \|\mathbf{v}^{\mathcal{B}}\| \mathbf{C}_D \mathbf{A} \mathbf{v}^{\mathcal{B}}
+\end{equation}
+where $\rho$ denotes the air density, $\mathbf{A} = \mathrm{diag}(A_{b1}, A_{b2}, A_{b3})$ represents the reference area along each body axis, and $\mathbf{C}_D = \mathrm{diag}(A_{b1}, A_{b2}, A_{b3})$ is a diagonal matrix of non-dimensional drag coefficients.
+The velocity must be expressed in the body frame, obtained as $\mathbf{v}^{\mathcal{B}} = \mathbf{R}(\mathbf{q})^\top \mathbf{v}^{\mathcal{W}}$.
 
 
 \subsection{Control Abstraction}
@@ -397,7 +426,7 @@ In order to efficently bound this randomization space while still allowing for e
 Inspired by \todo{:Cite, Zhang}, first a design informed randomization \todo{:Add acronym?} is applied.
 This ensures that sensible variations of the nominal platform are predominant in the randomization space.
 Thus avoiding that unfeasible designs such as a quadrotor with unsensible \ac{TWR} (i.e. \ac{TWR}$<1$). 
-The authors of \cite{} notice that quadrotor designs, in general, follow a similar pattern where the quadrotors armlength $l$ is strongly correlated to its mass $m$, inertia $\mathbf{J}$, drag coefficents $\mathbf{c_d}$ and other physical parameters.
+The authors of \cite{} notice that quadrotor designs, in general, follow a similar pattern where the quadrotors armlength $l$ is strongly correlated to its mass $m$, inertia $\mathbf{J}$, drag coefficents $\mathbf{C_D}$ and other physical parameters.
 
 Hence, they propose to sample a size factor $c \sim \mathcal{U}(0,1)$ and scale the quadrotor's physcial parameters as listed below;
 \begin{equation}
@@ -415,14 +444,14 @@ Hence, they propose to sample a size factor $c \sim \mathcal{U}(0,1)$ and scale 
 \end{equation}
 
 \begin{equation}
-    \mathbf{c_d} = \frac{l^2 - l_{\min}^2}{l_{\max}^2 - l_{\min}^2} (\mathbf{c}_{d_{\max}} - \mathbf{c}_{d_{\min}}) + \mathbf{c}_{d_{\min}}
+    \mathbf{C_D} = \frac{l^2 - l_{\min}^2}{l_{\max}^2 - l_{\min}^2} (\mathbf{C}_{D_{\max}} - \mathbf{C}_{D_{\min}}) + \mathbf{C}_{D_{\min}}
 \end{equation}
 
 \todo{:Add the rest of the params}
 
 Following the scaling process, these parameters which comprisise the following configuration vector
 \begin{equation}
-    \boldsymbol{\xi} = \begin{bmatrix} l & m & \mathbf{J} & \mathbf{c_d} \end{bmatrix}
+    \boldsymbol{\xi} = \begin{bmatrix} l & m & \mathbf{J} & \mathbf{C_D} \end{bmatrix}
 \end{equation}
 are subjected to additional noise. Each parameter is multiplied by a scaling factor $\eta \sim \mathcal{U}(1-p, 1+p)$, where $p=0.2$. This specific uncertainty range was selected based on experimental results from a previous project, as it demonstrated good transferability, nonetheless it can be considered a hyperparameter of the training process and be tunned according to the situation.
 
