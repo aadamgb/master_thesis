@@ -26,6 +26,98 @@ Lastly, \autoref{sec:diff_opt} details how differentiability is leveraged to opt
 \end{figure}
 
 \subsection{Quadrotor Model}\label{sec:quad_model}
+In the simulated environments, the quadcopter is modeeld as a 6 \ac{dof} rigid body.
+The inertial world frame $\mathcal{W}$ is defined by the fixed orthonormal basis $\{\hat{\mathbf{e}}_1, \hat{\mathbf{e}}_2, \hat{\mathbf{e}}_3\}$ while the non-inertial body-fixed frame $\mathcal{B}$ by the  orthonormal basis $\{\hat{\mathbf{b}}_1, \hat{\mathbf{b}}_2, \hat{\mathbf{b}}_3\}$, which is attached to the vehicle's center of mass.  
+The state of the \ac{UAV} is given by $\mathbf{x} = [\mathbf{p}, \mathbf{v}, \mathbf{q}, \boldsymbol{\omega}, \mathbf{\Omega}]^T$ where the position $\mathbf{p} \in \real^3$, velocity $\mathbf{v} \in \real^3$, and acceleration are represented in the world frame $\mathcal{W} \in \mathbb{R}^3$. 
+Conversely, the body rates $\boldsymbol{\omega} \in \real^3$ are represented in the body frame $\mathcal{B} \in \mathbb{R}^3$ and $\mathbf{\Omega} \in \real^4$ is a vector of scalar values indicating the rotor speeds.
+The relationship between the two frames is given by the rotation mapping $\mathbf{b}_i = \mathbf{R}\mathbf{e}_i$, where $\mathbf{R} \in SO(3)$ is the rotation matrix corresponding to the orientation $\mathbf{q}$.
+
+
+\noindent Thus, the kinematics and dynamics of the quadcopter are:
+
+\begin{minipage}{0.5\textwidth}
+\begin{equation}
+  \dot{\mathbf{p}}^{\mathcal{W}} = \mathbf{v}^{\mathcal{W}}
+\end{equation}
+\begin{equation}
+    \dot{\mathbf{q}} = \tfrac{1}{2}\ \mathbf{q} \odot \begin{bmatrix} 0 \\ \boldsymbol{\omega}^{\mathcal{B}} \end{bmatrix}
+\end{equation}
+\begin{equation}
+    \dot{\mathbf{v}}^{\mathcal{W}} = \frac{\mathbf{R}(\mathbf{q})}{m} \left( \mathbf{F}_T^{\mathcal{B}} + \mathbf{F}_D^{\mathcal{B}} \right) + \mathbf{g}^{\mathcal{W}}
+\end{equation}
+\end{minipage}%
+\begin{minipage}{0.5\textwidth}
+\begin{equation}
+    \dot{\boldsymbol{\omega}}^{\mathcal{B}} = \mathbf{J}^{-1} \left( \boldsymbol{\tau}^{\mathcal{B}} - \boldsymbol{\omega}^{\mathcal{B}} \times \mathbf{J} \boldsymbol{\omega}^{\mathcal{B}} \right)
+\end{equation}
+\begin{equation}
+  \dot{\mathbf{\Omega}} = \frac{1}{k_{\mathrm{m}}} \left(\mathbf{\Omega}_{\text{cmd}} - \mathbf{\Omega}\right)
+\end{equation}
+\end{minipage}
+
+ In these expressions, $\odot$ denotes the quaternion multiplication operator, $\mathbf{R}(\mathbf{q})$ represents the rotation matrix mapping the body frame $\mathcal{B}$ to the world frame $\mathcal{W}$.
+The vectors $\mathbf{F}_T^{\mathcal{B}}$ and $\mathbf{F}_D^{\mathcal{B}}$ correspond to the collective thrust and drag forces, respectively.
+Finally, $\mathbf{J}$ is the diagonal inertia matrix, $k_m$ is the motor time constant, and $\mathbf{g}$ is the gravity vector.
+
+
+\begin{figure}[H]
+    \centering
+    \include{fig/tikz/drone_forces.tex}
+    \caption{Diagram of the forces acting on the quadrotor}
+    \label{fig:drone_forces}
+\end{figure}
+
+
+In the body frame $\mathcal{B}$, the individual motor thrusts $T_i, \ i=1,..,4$, are assumed to be perpendicular to the $\{\hat{\mathbf{b}}_1,\hat{\mathbf{b}}_2\}$ plane.
+The magnitudes of collective thrust $F_T$, and body torques $\boldsymbol{\tau}^\mathcal{B}$, can be obtained from the individual motor thrusts with the allocation matrix $\Gamma$.
+
+\begin{equation}
+  \begin{bmatrix}
+    F_T \\
+    \tau_{b1} \\
+    \tau_{b2} \\
+    \tau_{b3}
+  \end{bmatrix} = 
+  \overbrace{
+  \begin{bmatrix}
+    1 & 1 & 1 & 1 \\
+    -l\sin{\beta} & l\sin{\beta} & l\sin{\beta} & -l\sin{\beta} \\
+    -l\cos{\beta} & l\cos{\beta} & -l\cos{\beta} & l\cos{\beta} \\
+    -c_{tf} & -c_{tf} & c_{tf} & c_{tf}
+  \end{bmatrix}
+  }^{\boldsymbol{\Gamma}}
+  \begin{bmatrix}
+    T_1 \\ T_2 \\ T_3 \\ T_4
+  \end{bmatrix}
+\end{equation}
+
+
+
+Where $l$ is the arm length and $c_{tf}$ the linear torque constant.
+The individual motror thrusts $T_i$, can be obtained from the rotor speeds $\Omega_i$ with the thrust map coefficents, $\mathbf{k_T} = [a_0,\ a_1,\ a_2]$ which can be obtained experimentally by fitting a quadratic curve to the rotor speed versus thrust data.
+
+\begin{equation} 
+  T_i = \mathbf{k_T} \begin{bmatrix}
+    \Omega_i^2 \\ \Omega_i \\ 1
+  \end{bmatrix} = \begin{bmatrix}
+  a_0 & a_1 & a_2
+  \end{bmatrix} \begin{bmatrix}
+    \Omega_i^2 \\ \Omega_i \\ 1
+  \end{bmatrix}
+  \label{eq:thrust_map}
+\end{equation}
+For convinence, we simplificate \autoref{eq:thrust_map} to $ T_i =  a_0 \Omega_i^2$.
+
+
+
+
+\begin{figure}[H]
+    \centering
+    \include{fig/tikz/mot_layout}
+    \caption{Diagram of the forces acting on the quadrotor}
+    \label{fig:mot_layout}
+\end{figure}
+
 
 
 
@@ -325,6 +417,9 @@ Hence, they propose to sample a size factor $c \sim \mathcal{U}(0,1)$ and scale 
 \begin{equation}
     \mathbf{c_d} = \frac{l^2 - l_{\min}^2}{l_{\max}^2 - l_{\min}^2} (\mathbf{c}_{d_{\max}} - \mathbf{c}_{d_{\min}}) + \mathbf{c}_{d_{\min}}
 \end{equation}
+
+\todo{:Add the rest of the params}
+
 Following the scaling process, these parameters which comprisise the following configuration vector
 \begin{equation}
     \boldsymbol{\xi} = \begin{bmatrix} l & m & \mathbf{J} & \mathbf{c_d} \end{bmatrix}
