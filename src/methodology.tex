@@ -22,13 +22,13 @@ Lastly, \autoref{sec:diff_opt} details how differentiability is leveraged to opt
     \centering
     \resizebox{1\textwidth}{!}{\input{fig/tikz/sim_arch_diagram.tex}}
     \caption{Your Caption}
-    \label{fig:my_label}
+    \label{fig:cool-diagram}
 \end{figure}
 \todo{: Correct the diagram!!}
 \subsection{Quadrotor Model}\label{sec:quad_model}
 In the simulated environments, the quadcopter is modeeld as a 6 \ac{dof} rigid body.
 The inertial world frame $\mathcal{W}$ is defined by the fixed orthonormal basis $\{\hat{\mathbf{e}}_1, \hat{\mathbf{e}}_2, \hat{\mathbf{e}}_3\}$ while the non-inertial body-fixed frame $\mathcal{B}$ by the  orthonormal basis $\{\hat{\mathbf{b}}_1, \hat{\mathbf{b}}_2, \hat{\mathbf{b}}_3\}$, which is attached to the vehicle's center of mass.  
-The state of the \ac{UAV} is given by $\mathbf{x} = [\mathbf{p}, \mathbf{v}, \mathbf{q}, \boldsymbol{\omega}, \mathbf{\Omega}]^T$ where the position $\mathbf{p} \in \real^3$, velocity $\mathbf{v} \in \real^3$, and acceleration are represented in the world frame $\mathcal{W} \in \mathbb{R}^3$. 
+The state of the \ac{UAV} is given by $\mathbf{x} = [\mathbf{p}, \mathbf{v}, \mathbf{q}, \boldsymbol{\omega}, \mathbf{\Omega}]^\top$ where the position $\mathbf{p} \in \real^3$, velocity $\mathbf{v} \in \real^3$, and acceleration are represented in the world frame $\mathcal{W} \in \mathbb{R}^3$. 
 Conversely, the body rates $\boldsymbol{\omega} \in \real^3$ are represented in the body frame $\mathcal{B} \in \mathbb{R}^3$ and $\mathbf{\Omega} \in \real^4$ is a vector of scalar values indicating the rotor speeds.
 The relationship between the two frames is given by the rotation mapping $\mathbf{b}_i = \mathbf{R}\mathbf{e}_i$, where $\mathbf{R} \in SO(3)$.
 
@@ -163,14 +163,13 @@ The highest level of abstraction outputs desired linear velocities and yaw rate,
 The mathematical formulation of these transformations is presented next.
 
 \subsubsection{Single Rotor Thrust} \label{sec:srt}
-When the \ac{SRT} control mode is choosen, the only transformation to be applied is scaling the policy output $\boldsymbol{u} \in [0, 1]\in \real^4$ to the maximum thrust that can be produced by the motors, $T_{\text{max}}$.
-Therefore, the transformation is as simple as: 
+When the \ac{SRT} control mode is choosen, the only transformation to be applied is scaling the policy output $\boldsymbol{u} \in [0, 1]\in \real^4$ to the actuator limits, $\mathbf{T_{\text{cmd}}} \in [T_{\text{min}}, T_{\text{max}} ]$.
+Therefore, the transformation is as simple as; 
 
 \begin{equation}
-    \boldsymbol{T}_{\text{cmd}} = \boldsymbol{u} T_{\text{max}}
+    \boldsymbol{T}_{\text{cmd}} = \boldsymbol{u} \left( T_{\text{max}}- T_{\text{min}} \right) + T_{\text{min}}
 \end{equation}
 
-\todo{: Add min thrust mapping xd}
 
 Once the scaling is applied, to better emulate the behaviour of a real motor, a first order model with rotor speed saturation is implemented.
 First, the commanded motor thrust $\boldsymbol{T}_{\text{cmd}}$ are converted to commaned rotor speed.
@@ -270,7 +269,7 @@ Then, force vector is the \ac{UAV}'s mass times the commanded acceleration vecto
 To obtain the commanded bodytorques, the heading vector is obtained by projecting the yaw angle into the world plane defined by span$\{\hat{e}_1, \hat{e}_2\}$.
 The heading vector, serves an auxiliary vector to compute $\mathbf{\hat{b}}_2$ and $\mathbf{\hat{b}}_1$. \todo{Double check wether projecting the heading angle is actually correct}
 
-\begin{equation} \mathbf{h} = \begin{bmatrix} \cos{\psi} & \sin{\psi} & 0 \end{bmatrix} ^T \end{equation} 
+\begin{equation} \mathbf{h} = \begin{bmatrix} \cos{\psi} & \sin{\psi} & 0 \end{bmatrix} ^\top \end{equation} 
 
 \begin{equation}
     \hat{\mathbf{b}}_2 = \frac{\hat{\mathbf{b}}_3 \times \mathbf{h}}{\|\hat{\mathbf{b}}_3 \times \mathbf{h}\|}
@@ -285,7 +284,7 @@ The heading vector, serves an auxiliary vector to compute $\mathbf{\hat{b}}_2$ a
 \end{bmatrix}$ and the error between the commanded orientation and the current orientation is computed as in \cite{Lee}.
 
 \begin{equation}\label{eq:atterr}
-    \mathbf{e}_R = \frac{1}{2} \left( \mathbf{R}_{\text{cmd}}^T \mathbf{R} - \mathbf{R}^T \mathbf{R}_{\text{cmd}} \right)^\vee 
+    \mathbf{e}_R = \frac{1}{2} \left( \mathbf{R}_{\text{cmd}}^\top \mathbf{R} - \mathbf{R}^\top \mathbf{R}_{\text{cmd}} \right)^\vee 
 \end{equation}
 
 \begin{figure}[H]
@@ -308,9 +307,9 @@ The heading vector, serves an auxiliary vector to compute $\mathbf{\hat{b}}_2$ a
 \end{figure}
 
 \noindent The complete derivation of \autoref{eq:atterr} can be found in the original paper, \cite{Lee}. 
-To provide intuition, note that if $\mathbf{R}_{\text{cmd}} = \mathbf{R}$, then $\mathbf{R}_{\text{cmd}}^T \mathbf{R} = \mathbf{I}$ and the error is zero. 
-Otherwise, the matrix $\mathbf{R}_{\text{cmd}}^T \mathbf{R}$ represents the relative rotation between the current and desired orientations. 
-The skew-symmetric part of this matrix, given by $\frac{1}{2}(\mathbf{R}_{\text{cmd}}^T \mathbf{R} - \mathbf{R}^T \mathbf{R}_{\text{cmd}})$, encodes the axis and magnitude of the rotation error. 
+To provide intuition, note that if $\mathbf{R}_{\text{cmd}} = \mathbf{R}$, then $\mathbf{R}_{\text{cmd}}^\top \mathbf{R} = \mathbf{I}$ and the error is zero. 
+Otherwise, the matrix $\mathbf{R}_{\text{cmd}}^\top \mathbf{R}$ represents the relative rotation between the current and desired orientations. 
+The skew-symmetric part of this matrix, given by $\frac{1}{2}(\mathbf{R}_{\text{cmd}}^\top \mathbf{R} - \mathbf{R}^\top \mathbf{R}_{\text{cmd}})$, encodes the axis and magnitude of the rotation error. 
 The vee map $(\cdot)^\vee$ then converts this skew-symmetric matrix into a vector in $\mathbb{R}^3$, corresponding to the rotation error expressed in the Lie algebra $\mathfrak{so}(3)$, that is to say, $^\vee \colon \mathfrak{so}(3) \to \mathbb{R}^3$.
 Then, the factor $\frac{1}{2}$ ensures consistency with the standard definition of the vee operator and avoids double counting of the off-diagonal terms.
 
@@ -319,17 +318,17 @@ Then, the factor $\frac{1}{2}$ ensures consistency with the standard definition 
 Adittionally, an error on the angular velocity of the rotation is introduced as,
 
 \begin{equation}\label{eq:geo_ang}
-    \mathbf{e}_{\boldsymbol{\omega}} = \boldsymbol{\omega} - \mathbf{R}^T \mathbf{R}_{\text{cmd}}\boldsymbol{\omega}_{\text{cmd}}
+    \mathbf{e}_{\boldsymbol{\omega}} = \boldsymbol{\omega} - \mathbf{R}^\top \mathbf{R}_{\text{cmd}}\boldsymbol{\omega}_{\text{cmd}}
 \end{equation}
 where $\boldsymbol{\omega}_{\text{cmd}} = \begin{bmatrix}
-    0 & 0 & \dot{\psi}_{\text{cmd}}\end{bmatrix}^T$. 
+    0 & 0 & \dot{\psi}_{\text{cmd}}\end{bmatrix}^\top$. 
 Note that the error between the desired rotational velocity and the current rotational velocity line on different tangent planes to the unit sphere, 
 $\dot{\mathbf{R}} \in \mathrm{T}_{\mathbf{R}} SO(3)$ and $\dot{\mathbf{R}}_{\text{cmd}} \in \mathrm{T}_{\mathbf{R}_{\text{cmd}}} SO(3)$.
 For this reason, as explained in \cite{Lee}, $\dot{\mathbf{R}}_{\text{cmd}}$ is transformed into a vector in the $\mathrm{T}_{\mathbf{R}} SO(3)$ space to be able to compare it to $\dot{\mathbf{R}}$ and obtain the error; \autoref{eq:geo_ang}.
 Finally, the torque is set by,
 
 \begin{equation}\label{eq:geo_tau}
-    \boldsymbol{\tau}_\textbf{cmd} = - k_R \mathbf{e}_\textbf{R} - k_\omega \mathbf{e}_{\boldsymbol{\omega}} + \boldsymbol{\omega}  \times \mathbf{J}\boldsymbol{\omega} - \mathbf{J} ( \hat{\boldsymbol{\omega}} \mathbf{R}^T \mathbf{R}_{\text{cmd}} \boldsymbol{\omega}_{\text{cmd}} - \mathbf{R}^T \mathbf{R}_{\text{cmd}} \dot{\boldsymbol{\omega}}_{\text{cmd}} )
+    \boldsymbol{\tau}_\textbf{cmd} = - k_R \mathbf{e}_\textbf{R} - k_\omega \mathbf{e}_{\boldsymbol{\omega}} + \boldsymbol{\omega}  \times \mathbf{J}\boldsymbol{\omega} - \mathbf{J} ( \hat{\boldsymbol{\omega}} \mathbf{R}^\top \mathbf{R}_{\text{cmd}} \boldsymbol{\omega}_{\text{cmd}} - \mathbf{R}^\top \mathbf{R}_{\text{cmd}} \dot{\boldsymbol{\omega}}_{\text{cmd}} )
 \end{equation}
 where a gyroscopic and feed forward terms are added to the rotation and rotational speed errors.
 The \textit{hat map} $\hat{\cdot} \colon \mathbb{R}^3 \to \mathfrak{so}(3)$ is defined by the condition that $\hat{x} y = x \times y$ for all $x, y \in \mathbb{R}^3$.
@@ -444,22 +443,131 @@ Hence, they propose to sample a size factor $c \sim \mathcal{U}(0,1)$ and scale 
 \end{equation}
 
 \begin{equation}
-    \mathbf{C_D} = \frac{l^2 - l_{\min}^2}{l_{\max}^2 - l_{\min}^2} (\mathbf{C}_{D_{\max}} - \mathbf{C}_{D_{\min}}) + \mathbf{C}_{D_{\min}}
+    \mathbf{C}_D = \frac{l^2 - l_{\min}^2}{l_{\max}^2 - l_{\min}^2} (\mathbf{C}_{D_{\max}} - \mathbf{C}_{D_{\min}}) + \mathbf{C}_{D_{\min}}
 \end{equation}
 
 \todo{:Add the rest of the params}
 
 Following the scaling process, these parameters which comprisise the following configuration vector
 \begin{equation}
-    \boldsymbol{\xi} = \begin{bmatrix} l & m & \mathbf{J} & \mathbf{C_D} \end{bmatrix}
+    \boldsymbol{\xi} = \begin{bmatrix} l & m & \mathbf{J} & \mathbf{C}_D \end{bmatrix}
 \end{equation}
-are subjected to additional noise. Each parameter is multiplied by a scaling factor $\eta \sim \mathcal{U}(1-p, 1+p)$, where $p=0.2$. This specific uncertainty range was selected based on experimental results from a previous project, as it demonstrated good transferability, nonetheless it can be considered a hyperparameter of the training process and be tunned according to the situation.
+are subjected to additional noise. 
+Each parameter is multiplied by a scaling factor $\eta \sim \mathcal{U}(1-p, 1+p)$, where $p=0.2$. 
+This specific uncertainty range was selected based on experimental results from a previous project, as it demonstrated good transferability, nonetheless it can be considered a hyperparameter of the training process and be tunned according to the situation.
+
 
 \section{Training Tasks} \label{sec:tasks}
 
+The training objectives considered for this thesis aim to provide an approximate solution to the \ac{OCPs}, formulated in \autoref{sec:simpmin-OCP}.
+To adress these problems, we use the proposed simulation framework detailed in \autoref{sec:sim_frame}.
+Unlike traditional solvers that rely on \ac{QP-ing} or model-free \ac{RL} which treats the system's dynamics as a black-box, we leverage the simulator's automatic differentiation enginge to compute the analytical gradient from the cost function to the policy parameters.
+
+Following this method, to achieve near optimum results, the training environment and policy architecture has to be carfuly desigend. 
+In our simulation, we formulate them for the trajectory tracking and path progress tasks is the next manner.
+% \subsection{Trajectory Tracking}
+% For the trajectory tracking task, the objective is to minimize a cumulative loss function over a finite time window of length $T$ between a reference state $\boldsymbol{x_k^\text{ref}}$, and the quadrotor's state $\boldsymbol{x_k}$. 
+% The loss at each timestep $\mathcal{L}_k(\boldsymbol{x_k^\text{ref}}, \boldsymbol{x_k})$,  is formulated as a weighted sum of the positon, velocity and attitude alignment Eculidean norm errors, plus an aditional penalization to the body rates to help stabilize the quadrotor during early stages the training process.
+% The attitude loss is calculated as a cosine similarity between the current body $\mathbf{\hat{b}}_3$ axis, and the normilized gravity compensated reference acceleration.  
+
+% \begin{equation}
+%     \mathcal{L}_k = \lambda_p ||\mathbf{p}_k^\text{ref}-\mathbf{p}_k|| +\lambda_v ||\mathbf{v}_k^\text{ref}-\mathbf{v}_k|| + \lambda_a (1- \mathbf{\hat{b}}_3 \cdot \mathbf{z}_k) + \lambda_\omega \boldsymbol{\omega}_k
+% \end{equation}
+
+% \begin{equation}
+%     \mathbf{z}_k = \frac{\mathbf{a}_k^\text{ref} + \mathbf{g}}{||\mathbf{a}_k^\text{ref} + \mathbf{g} ||}
+% \end{equation}
+
+% This way, the loss is accumulated over a time window $\sum_{k=t}^{t +T-1}\mathcal{L}_k$, where $t$ indicates the time at ehich the accumulation begings
 
 \subsection{Trajectory Tracking}
+% For the trajectory tracking task, the objective is to minimize a cumulative loss function over a finite time window of length $T$ between a reference state $\mathbf{x}_k^\text{ref}$ and the quadrotor's state $\mathbf{x}_k$. The loss at each timestep $k$, denoted as $\mathcal{L}_k(\mathbf{x}_k^\text{ref}, \mathbf{x}_k)$, is formulated as a weighted sum of the position, velocity, and attitude alignment Euclidean norm errors, plus an additional penalization of the body rates to help stabilize the quadrotor during the early stages of the training process. 
+% The attitude loss is calculated as the cosine similarity between the current body-z axis $\mathbf{\hat{b}}_3$ and the normalized, gravity-compensated reference acceleration $\mathbf{z}_k$,
+
+% \begin{equation}
+%     \mathcal{L}_k = \lambda_p \|\mathbf{p}_k^\text{ref}-\mathbf{p}_k\| + \lambda_v \|\mathbf{v}_k^\text{ref}-\mathbf{v}_k\| + \lambda_a (1 - \mathbf{\hat{b}}_3 \cdot \mathbf{z}_k) + \lambda_\omega \|\boldsymbol{\omega}_k\|^2
+% \end{equation}
+% where the target thrust direction $\mathbf{z}_k$ is defined as:
+
+% \begin{equation}
+%     \mathbf{z}_k = \frac{\mathbf{a}_k^\text{ref} + \mathbf{g}}{\|\mathbf{a}_k^\text{ref} + \mathbf{g}\|}
+% \end{equation}
+% The total loss minimized during training is accumulated over the time window,
+
+% \begin{equation}
+%     J = \sum_{k=t}^{t+T-1} \mathcal{L}_k
+% \end{equation}where $t$ indicates the start of the current optimization horizon.
+For the trajectory tracking task, the objective is to minimize a cumulative loss function over a finite horizon of length $H$, defined with respect to a reference state $\mathbf{x}_k^\text{ref}$ and the quadrotor state $\mathbf{x}_k$.
+The stage loss at each timestep $k$, denoted as $\mathcal{L}(\mathbf{x}_k^\text{ref}, \mathbf{x}_k)$, is formulated as a weighted sum of position, velocity, and attitude alignment errors, together with a penalization of the body rates to improve stability during early training.
+
+\begin{equation}
+\mathcal{L}(\mathbf{x}_k^\text{ref}, \mathbf{x}_k) =
+\lambda_p \|\mathbf{p}_k^\text{ref} - \mathbf{p}_k\|_2 +
+\lambda_v \|\mathbf{v}_k^\text{ref} - \mathbf{v}_k\|_2 +
+\lambda_a \left(1 - \mathbf{\hat{b}}_{3,k} \cdot \mathbf{z}_k \right) +
+\lambda_\omega \|\boldsymbol{\omega}_k\|_2^2
+\end{equation}
+The desired thrust direction $\mathbf{z}_k$ is defined as:
+
+\begin{equation}
+\mathbf{z}_k =
+\frac{\mathbf{a}_k^\text{ref} + \mathbf{g}}{\|\mathbf{a}_k^\text{ref} + \mathbf{g}\|_2}
+\end{equation}
+Since the simulator is batched, i.e., multiple environments run in parallel, the total cumulative cost over the horizon is defined as:
+
+\begin{equation}\label{cum-cost}
+J_k = \frac{1}{N} \sum_{i=1}^{N} \sum_{h=k}^{k+H-1} \mathcal{L}\big(\mathbf{x}_{h,i}^\text{ref}, \mathbf{x}_{h,i}\big)
+\end{equation}
+where $k$ denotes the initial timestep of the current horizon, $H$ is the horizon length, and $N$ is the number of parallel environments.
+At the end of each horizon, the gradient of the cumulative cost in \autoref{cum-cost} with respect to the policy parameters is backpropagated through time for optimization, as described in \autoref{sec:diff-opt}.
+
+To improve numerical stability and avoid exploding gradients, training episodes are terminated when predefined conditions are met.
+This prevents the accumulation of large errors, which can otherwise lead unstable learning dynamics.
+For this task, episode termination is based solely on the position tracking error.
+Specifically, an episode is terminated when the Euclidean distance between the quadrotor position and the reference trajectory exceeds a predefined threshold $d_{\max}$.
+\begin{equation}
+d_{\max} <\|\mathbf{p}_k^\text{ref} - \mathbf{p}_k\|_2 
+\end{equation}
+This criterion prevents the system from exploring states that are excessively far from the desired trajectory, which are unlikely to provide useful learning signals and may lead to unstable gradient updates.
+If the termination condition is triggered during an episode, the quadrotor state is reset to the reference trajectory state and the loss over that horizon is not taken into account.
+
+\todo{:Lol i've been using MAE not MSE to train!}
+\begin{figure}[H]
+    \centering
+    \include{fig/tikz/TT}
+    \caption{Trajectory tracking task.}
+\end{figure}
+
+
+
+Regardless of the training task, the policy network is provided with the full state of the quadrotor.
+For the trajectory tracking task, the observation is augmented with reference trajectory information.
+Specifically, instead of providing absolute position and velocity, the observation includes tracking errors together with feedforward terms from the reference trajectory.
+This improves learning efficiency by explicitly encoding the control objective.
+The observation vector is defined as:
+\begin{equation}\label{obs-TT}
+\mathbf{o}_k =
+\begin{bmatrix}
+\mathbf{p}_k^\text{ref} - \mathbf{p}_k \\  
+\mathbf{v}_k^\text{ref} - \mathbf{v}_k \\
+\mathbf{a}_k^\text{ref} \\
+\mathbf{q}_k \\
+\boldsymbol{\omega}_k
+\end{bmatrix}
+\in \mathbb{R}^{16}
+\end{equation}
+
+
 \subsection{Path Progress}
 
-\section{Differentiable Optimization} \label{sec:diff_opt}
+\section{Differentiable Optimization} \label{sec:diff-opt}
 
+Under the paradigm of differentiable optimization, we no longer treat the quadrotor model as a "black-box".
+The main idea of this thesis is to leverage the simulator's automatic differentiation engine to compute the exact analytical gradient of the cumulative loss $J_k$ with respect to the control policy network.
+
+{\color{blue}
+\begin{itemize}
+    \item Explain computational graph, how pytorch builds it, how does it go from the loss function to the neural network J-> quadrotor dynamics -> control abstarction ->neural network
+    \item explain how the gradient is used to optimize the network, Adam Optimizer 
+\end{itemize}
+}

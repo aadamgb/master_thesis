@@ -74,15 +74,15 @@ $\mathcal{X}_k$ as
     \item[] $M$ is the total number of obstacles.
 \end{itemize}
 
-\subsection{Simplified Minimum-Time OCP}
-The anterior problem formulation (\autoref{subsec:minOCP}), is rather complex. 
-It has to solve simultaneously for an optimal trajectory that passes through all the gates and avoids obstacles.
-And, find the optimal control sequence achivable by the drone given its dynamics and actuator constrains.
-% The state transition function $\mathbf{f}_{k}(\boldsymbol{x}_{k}, \boldsymbol{u}_{k})$, which is indeed the quadrotor model, is specified in \autoref{sec:quad_model}. 
-To simplify this problem, throughout this thesis, either an optimal trajectory or an optimal path will be assumed to be given by an external source. 
-Thereafter, the \ac{OCPs} that we adress are 
+\subsection{Simplified Minimum-Time OCP}~\label{sec:simpmin-OCP}
+The original problem formulation (\autoref{subsec:minOCP}) is inherently complex, as it requires simultaneously solving for an optimal trajectory that clears all gates and avoids obstacles while determining the optimal control sequence achievable within the vehicle's dynamics and actuator constraints.
+To make the problem more tractable, this thesis assumes that a reference trajectory or path is provided a priori.
+Consequently, the \acp{OCP} addressed hereafter focus on trajectory tracking or path progress, formulated as follows:
 
 \subsubsection{Trajectory Tracking OCP}
+In the trajectory tracking \ac{OCP}, the objective is to find the optimal control sequence $\mathbf{U}$ that minimizes the error between a given reference state $\boldsymbol{x}_k^{\text{ref}}$ and the current system state $\boldsymbol{x}_k$, subject to dynamics, actuator, and state constraints.
+While this simplifies the optimization significantly it comes at the cost of reduced robustness.
+By assuming the trajectory is fixed, the system cannot re-optimize the path to accommodate state constraints or environmental changes, effectively limiting the drone's agility compared to a unified spatial-temporal optimization.
 
 \begin{equation}
 \begin{aligned}
@@ -96,8 +96,10 @@ Thereafter, the \ac{OCPs} that we adress are
 \end{equation}
 
 
-\subsubsection{Path Progress \ac{OCP}}
-
+\subsubsection{Path Progress OCP}
+An alternative to reduce the complexity without sacrifiyng much on robsutness is to optimize the progress along a given path. 
+Unlike trajectory tracking, which imposes a strict temporal constraint for every spatial coordinate, the path progress \ac{OCP} treats the speed along the path as a decision variable. 
+This allows the controller to dynamically adjust the vehicle's velocity based on current tracking errors or actuator saturation, ensuring the drone stays on the geometric path even when pushed to its physical limits.
 
 \section{Pontryagin's Maximum Principle}
  maybe solve it using a pmm and Pontryagin's Maximum Principle
@@ -110,6 +112,8 @@ the optimal solution breaks under real world conditions.
 \subsection{Model Predictive Control}
 
 \section{Learning-Based approaches}\label{sec:learned}
+
+\subsection{Neural Networks?}
 \subsection{Model-Free Reinforcement Learning}
 \subsection{Model-Based Reinforcement Learning}
 
