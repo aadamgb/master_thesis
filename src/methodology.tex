@@ -564,10 +564,75 @@ The observation vector is defined as:
 
 Under the paradigm of differentiable optimization, we no longer treat the quadrotor model as a "black-box".
 The main idea of this thesis is to leverage the simulator's automatic differentiation engine to compute the exact analytical gradient of the cumulative loss $J_k$ with respect to the control policy network.
+In this section we provide an overview on how the optimization process works.
 
+\subsection{Computational Graph and Backporopagation}
+The gradient of the cummulative stage cost function $J_k$ with respect to the network parameters $\theta$ is given by the chain rule as,
+\begin{equation}
+    \frac{\partial J_k}{\partial \theta} =
+    \frac{1}{N} \sum_{i=1}^{N} \sum_{h=k}^{k+H-1}
+    \frac{\partial \mathcal{L}_h}{\partial \mathbf{x}_h}
+    \frac{\partial \mathbf{x}_h}{\partial \mathbf{u}_{h-1}}
+    \frac{\partial \mathbf{u}_{h-1}}{\partial \theta},
+\end{equation}
+\noindent where $\frac{\partial \mathcal{L}_h}{\partial \mathbf{x}_h}$ is the gradient of
+the stage loss with respect to the state, $\frac{\partial \mathbf{x}_h}{\partial
+\mathbf{u}_{h-1}}$ encodes the change in the dynamics regarding the applied controls, and
+$\frac{\partial \mathbf{u}_{h-1}}{\partial \theta}$ is the gradient of the control output
+with respect to the policy parameters.
+
+To compute this gradient analytically, an automatic differentiation engine is required. 
+Many \ac{ML} frameworks, such as PyTorch~\cite{}, TensorFlow~\cite{}, and JAX~\cite{}, among others, provide autodiff capabilities. 
+At present, JAX is regarded as a high-performance framework for numerical \ac{ML} computing. 
+However, for this simulator, PyTorch was selected due to its intuitive interface, extensive documentation, and lower implementation complexity.
+
+\begin{figure}[H]
+    \centering
+    \include{fig/tikz/comp_graph}
+    \caption{}
+    \label{fig:com-graph}
+\end{figure}
+
+\subsection{Optimization Algrotihm}
 {\color{blue}
 \begin{itemize}
     \item Explain computational graph, how pytorch builds it, how does it go from the loss function to the neural network J-> quadrotor dynamics -> control abstarction ->neural network
     \item explain how the gradient is used to optimize the network, Adam Optimizer 
 \end{itemize}
 }
+
+
+
+
+{\color{red} Review the following equations: }
+{\color{blue}
+\begin{equation}
+    \hat{m}_t = \frac{\beta_1 m_{t-1} + (1-\beta_1) g_t}{1 - \beta_1^t}, \qquad
+    \hat{v}_t = \frac{\beta_2 v_{t-1} + (1-\beta_2) g_t^2}{1 - \beta_2^t},
+\end{equation}
+
+\begin{equation}
+    \theta_{t+1} = \theta_t - \alpha \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon},
+\end{equation}
+}
+
+
+\begin{algorithm}
+\caption{An algorithm with caption}\label{alg:cap}
+\begin{algorithmic}
+\Require $n \geq 0$
+\Ensure $y = x^n$
+\State $y \gets 1$
+\State $X \gets x$
+\State $N \gets n$
+\While{$N \neq 0$}
+\If{$N$ is even}
+    \State $X \gets X \times X$
+    \State $N \gets \frac{N}{2}$  \Comment{This is a comment}
+\ElsIf{$N$ is odd}
+    \State $y \gets y \times X$
+    \State $N \gets N - 1$
+\EndIf
+\EndWhile
+\end{algorithmic}
+\end{algorithm}

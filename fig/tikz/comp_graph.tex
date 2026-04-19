@@ -1,0 +1,54 @@
+\resizebox{0.8\textwidth}{!}{%
+\begin{circuitikz}
+\tikzstyle{every node}=[font=\fontsize{18.2pt}{23.7pt}\selectfont]
+\draw [ color={rgb,255:red,255; green,255; blue,255}, draw opacity=1 , fill={rgb,255:red,59; green,130; blue,246}, fill opacity=1, line width=0.2pt ] (1.125,3.25) circle (1.25cm) node[ inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm, text opacity=1] {\fontsize{20.2pt}{23.7pt}\selectfont {\color[RGB]{255,255,255}$y$}} ;
+\draw [ color={rgb,255:red,255; green,255; blue,255}, draw opacity=1 , fill={rgb,255:red,59; green,130; blue,246}, fill opacity=1, line width=0.2pt ] (10.125,4.375) circle (1.25cm) node[ inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm, text opacity=1] {\fontsize{20.2pt}{23.7pt}\selectfont {\color[RGB]{255,255,255}$z$}} ;
+\draw [ color={rgb,255:red,59; green,130; blue,246}, draw opacity=1, line width=0.8pt, -{Stealth[scale=1.5]}, ] (7.5,4.25) -- (8.875,4.25);
+\draw [ color={rgb,255:red,59; green,130; blue,246}, draw opacity=1, line width=0.8pt, -{Stealth[scale=1.5]}, ] (2.375,3.375) .. controls (8.375,3.625) and (12.375,1) .. (13.5,3.75) ;
+
+
+
+
+
+\draw [ color={rgb,255:red,255; green,255; blue,255}, draw opacity=1 , fill={rgb,255:red,59; green,130; blue,246}, fill opacity=1, line width=0.2pt ] (17.625,4.375) circle (1.25cm) node[ inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm, text opacity=1] {\fontsize{20.2pt}{23.7pt}\selectfont {\color[RGB]{255,255,255}$w$}} ;
+\draw [ color={rgb,255:red,255; green,255; blue,255}, draw opacity=1 , fill={rgb,255:red,59; green,130; blue,246}, fill opacity=1, line width=0.2pt ] (24.875,4.25) circle (1.25cm) node[ inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm, text opacity=1] {\fontsize{20.2pt}{23.7pt}\selectfont {\color[RGB]{255,255,255}$u$}} ;
+\draw [ color={rgb,255:red,255; green,255; blue,255}, draw opacity=1 , fill={rgb,255:red,112; green,164; blue,70}, fill opacity=1, line width=0.2pt ] (18,-0.875) circle (1.25cm) node[ inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm, text opacity=1] {\fontsize{20.2pt}{23.7pt}\selectfont {\color[RGB]{255,255,255}$\frac{\partial u}{\partial w}$}} ;
+\draw [ color={rgb,255:red,255; green,255; blue,255}, draw opacity=1 , fill={rgb,255:red,112; green,164; blue,70}, fill opacity=1, line width=0.2pt , rounded corners = 4.8] (20.625,-0.25) rectangle (23.125,-1.25);
+\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm, text opacity=1] at (21.875,-0.75) {\fontsize{18.2pt}{23.7pt}\selectfont {\color[RGB]{255,255,255}PowBck}};
+\draw [ color={rgb,255:red,112; green,164; blue,70}, draw opacity=1, line width=0.8pt, -{Stealth[scale=1.5]}, ] (18.625,3.625) .. controls (20.25,1.75) and (21.125,2.375) .. (21.75,-0.25) ;
+\draw [ color={rgb,255:red,112; green,164; blue,70}, draw opacity=1, line width=0.8pt, -{Stealth[scale=1.5]}, ] (13,-0.75) -- (11.5,-0.75);
+\draw [ color={rgb,255:red,255; green,255; blue,255}, draw opacity=1 , fill={rgb,255:red,112; green,164; blue,70}, fill opacity=1, line width=0.2pt , rounded corners = 4.8] (13,-0.25) rectangle (15.5,-1.25);
+\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm, text opacity=1] at (14.25,-0.75) {\fontsize{18.2pt}{23.7pt}\selectfont {\color[RGB]{255,255,255}DivBck}};
+\draw [ color={rgb,255:red,112; green,164; blue,70}, draw opacity=1, line width=0.8pt, -{Stealth[scale=1.5]}, ] (11.125,3.625) .. controls (13.625,2.875) and (13.625,2) .. (14.5,-0.25) ;
+\draw [ color={rgb,255:red,112; green,164; blue,70}, draw opacity=1, line width=0.8pt, -{Stealth[scale=1.5]}, ] (2.375,3) .. controls (9.5,0.75) and (12.5,3.375) .. (13.625,-0.25) ;
+\draw [ color={rgb,255:red,112; green,164; blue,70}, draw opacity=1, line width=0.8pt, -{Stealth[scale=1.5]}, ] (16.75,-0.75) -- (15.5,-0.75);
+\draw [ color={rgb,255:red,255; green,255; blue,255}, draw opacity=1 , fill={rgb,255:red,112; green,164; blue,70}, fill opacity=1, line width=0.2pt ] (10.25,-0.875) circle (1.25cm) node[ inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm, text opacity=1] {\fontsize{20.2pt}{23.7pt}\selectfont {\color[RGB]{255,255,255}$\frac{\partial u}{\partial z}$}} ;
+\draw [ color={rgb,255:red,255; green,255; blue,255}, draw opacity=1 , fill={rgb,255:red,59; green,130; blue,246}, fill opacity=1, line width=0.2pt , rounded corners = 4.8] (4.875,4.75) rectangle (7.5,3.75);
+\node[anchor=north, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm, text opacity=1] at (6.1875,4.6) {\fontsize{18.2pt}{23.7pt}\selectfont {\color[RGB]{255,255,255}*}};
+\draw [ color={rgb,255:red,112; green,164; blue,70}, draw opacity=1, line width=0.8pt, -{Stealth[scale=1.5]}, ] (2.0089,5.3661) .. controls (4.25,2.625) and (5.5,3.125) .. (6.375,-0.25) ;
+\draw [ color={rgb,255:red,112; green,164; blue,70}, draw opacity=1, line width=0.8pt, -{Stealth[scale=1.5]}, ] (2.125,2.5) .. controls (4,1.125) and (4.625,1.5) .. (5.75,-0.25) ;
+\draw [ color={rgb,255:red,255; green,255; blue,255}, draw opacity=1 , fill={rgb,255:red,112; green,164; blue,70}, fill opacity=1, line width=0.2pt ] (1.125,0.375) circle (1.25cm) node[ inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm, text opacity=1] {\fontsize{20.2pt}{23.7pt}\selectfont {\color[RGB]{255,255,255}$\frac{\partial u}{\partial x}$}} ;
+\draw [ color={rgb,255:red,255; green,255; blue,255}, draw opacity=1 , fill={rgb,255:red,112; green,164; blue,70}, fill opacity=1, line width=0.2pt ] (1.125,-2.5) circle (1.25cm) node[ inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm, text opacity=1] {\fontsize{21.2pt}{23.7pt}\selectfont {\color[RGB]{255,255,255}$\frac{\partial u}{\partial y}$}} ;
+\draw [ color={rgb,255:red,255; green,255; blue,255}, draw opacity=1 , fill={rgb,255:red,112; green,164; blue,70}, fill opacity=1, line width=0.2pt , rounded corners = 4.8] (4.875,-0.25) rectangle (7.5,-1.25);
+\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm, text opacity=1] at (6.1875,-0.75) {\fontsize{18.2pt}{23.7pt}\selectfont {\color[RGB]{255,255,255}MulBck}};
+\draw [ color={rgb,255:red,255; green,255; blue,255}, draw opacity=1 , fill={rgb,255:red,59; green,130; blue,246}, fill opacity=1, line width=0.2pt , rounded corners = 4.8] (13,4.75) rectangle (15.5,3.75);
+\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm, text opacity=1] at (14.25,4.25) {\fontsize{18.2pt}{23.7pt}\selectfont {\color[RGB]{255,255,255}/}};
+\draw [ color={rgb,255:red,255; green,255; blue,255}, draw opacity=1 , fill={rgb,255:red,59; green,130; blue,246}, fill opacity=1, line width=0.2pt ] (1.125,6.25) circle (1.25cm) node[ inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm, text opacity=1] {\fontsize{20.2pt}{23.7pt}\selectfont {\color[RGB]{255,255,255}$\frac{\partial u}{\partial w}$}} ;
+\draw [ color={rgb,255:red,255; green,255; blue,255}, draw opacity=1 , fill={rgb,255:red,59; green,130; blue,246}, fill opacity=1, line width=0.2pt , rounded corners = 4.8] (20.375,5) rectangle (22.75,3.625);
+\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm, text opacity=1] at (21.5625,4.3125) {\fontsize{18.2pt}{23.7pt}\selectfont {\color[RGB]{255,255,255}$(·)^2$}};
+\draw [ color={rgb,255:red,59; green,130; blue,246}, draw opacity=1, line width=0.8pt, -{Stealth[scale=1.5]}, ] (15.5,4.25) -- (16.375,4.25);
+\draw [ color={rgb,255:red,59; green,130; blue,246}, draw opacity=1, line width=0.8pt, -{Stealth[scale=1.5]}, ] (18.875,4.25) -- (20.375,4.25);
+\draw [ color={rgb,255:red,59; green,130; blue,246}, draw opacity=1, line width=0.8pt, -{Stealth[scale=1.5]}, ] (22.75,4.25) -- (23.625,4.25);
+\draw [ color={rgb,255:red,112; green,164; blue,70}, draw opacity=1, line width=0.8pt, -{Stealth[scale=1.5]}, ] (9,-0.75) -- (7.5,-0.75);
+\draw [ color={rgb,255:red,112; green,164; blue,70}, draw opacity=1, line width=0.8pt, -{Stealth[scale=1.5]}, ] (4.875,-0.5) .. controls (3.625,0) and (3.75,0.75) .. (2.375,0.5) ;
+\draw [ color={rgb,255:red,112; green,164; blue,70}, draw opacity=1, line width=0.8pt, -{Stealth[scale=1.5]}, ] (4.875,-0.875) .. controls (3.625,-1.5) and (4.125,-2.375) .. (2.375,-2.25) ;
+\draw [ color={rgb,255:red,112; green,164; blue,70}, draw opacity=1, line width=0.8pt, -{Stealth[scale=1.5]}, ] (20.625,-0.75) -- (19.25,-0.75);
+\draw [ color={rgb,255:red,59; green,130; blue,246}, draw opacity=1, line width=1pt, -{Stealth[scale=1.5]}, ] (-0.125,7.875) -- (25.875,7.875);
+\node [font=\fontsize{18.2pt}{23.7pt}\selectfont, color={rgb,255:red,59; green,130; blue,246}, text opacity=1, , fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (13,8.375) {Forward Pass};
+\draw [ color={rgb,255:red,112; green,164; blue,70}, draw opacity=1, line width=1pt, {Stealth[scale=1.5]}-, ] (-0.125,-4.625) -- (25.875,-4.625);
+\node [font=\fontsize{18.2pt}{23.7pt}\selectfont, color={rgb,255:red,112; green,164; blue,70}, text opacity=1, , fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (13,-4.125) {Backward Pass};
+\draw [ color={rgb,255:red,59; green,130; blue,246}, draw opacity=1, line width=0.8pt, -{Stealth[scale=1.5]}, ] (11.375,4.25) -- (13,4.25);
+\draw [ color={rgb,255:red,59; green,130; blue,246}, draw opacity=1, line width=0.8pt, -{Stealth[scale=1.5]}, ] (2.25,6) .. controls (3.625,5.25) and (3.25,4.75) .. (4.875,4.375) ;
+\draw [ color={rgb,255:red,59; green,130; blue,246}, draw opacity=1, line width=0.8pt, -{Stealth[scale=1.5]}, ] (2.25,3.75) .. controls (3.625,4) and (3.375,4.375) .. (4.875,4.125) ;
+\end{circuitikz}
+}%
