@@ -516,9 +516,9 @@ The desired thrust direction $\mathbf{z}_k$ is defined as:
 Since the simulator is batched, i.e., multiple environments run in parallel, the total cumulative cost over the horizon is defined as:
 
 \begin{equation}\label{cum-cost}
-J_k = \frac{1}{N} \sum_{i=1}^{N} \sum_{h=k}^{k+H-1} \mathcal{L}\big(\mathbf{x}_{h,i}^\text{ref}, \mathbf{x}_{h,i}\big)
+J_k = \frac{1}{B} \sum_{i=1}^{B} \sum_{h=k}^{k+H-1} \mathcal{L}\big(\mathbf{x}_{h,i}^\text{ref}, \mathbf{x}_{h,i}\big)
 \end{equation}
-where $k$ denotes the initial timestep of the current horizon, $H$ is the horizon length, and $N$ is the number of parallel environments.
+where $k$ denotes the initial timestep of the current horizon, $H$ is the horizon length, and $B$ is the number of parallel environments.
 At the end of each horizon, the gradient of the cumulative cost in \autoref{cum-cost} with respect to the policy parameters is backpropagated through time for optimization, as described in \autoref{sec:diff-opt}.
 
 To improve numerical stability and avoid exploding gradients, training episodes are terminated when predefined conditions are met.
@@ -557,6 +557,7 @@ The observation vector is defined as:
 \in \mathbb{R}^{16}
 \end{equation}
 
+\todo{Explain harmonics generation for pretraining}
 
 \subsection{Path Progress}
 
@@ -569,70 +570,222 @@ In this section we provide an overview on how the optimization process works.
 \subsection{Computational Graph and Backporopagation}
 The gradient of the cummulative stage cost function $J_k$ with respect to the network parameters $\theta$ is given by the chain rule as,
 \begin{equation}
-    \frac{\partial J_k}{\partial \theta} =
-    \frac{1}{N} \sum_{i=1}^{N} \sum_{h=k}^{k+H-1}
+    \nabla_\theta J_k =
+    \frac{1}{B} \sum_{i=1}^{B} \sum_{h=k}^{k+H-1}
     \frac{\partial \mathcal{L}_h}{\partial \mathbf{x}_h}
     \frac{\partial \mathbf{x}_h}{\partial \mathbf{u}_{h-1}}
-    \frac{\partial \mathbf{u}_{h-1}}{\partial \theta},
+    \frac{\partial \mathbf{u}_{h-1}}{\partial \theta}
 \end{equation}
 \noindent where $\frac{\partial \mathcal{L}_h}{\partial \mathbf{x}_h}$ is the gradient of
 the stage loss with respect to the state, $\frac{\partial \mathbf{x}_h}{\partial
 \mathbf{u}_{h-1}}$ encodes the change in the dynamics regarding the applied controls, and
 $\frac{\partial \mathbf{u}_{h-1}}{\partial \theta}$ is the gradient of the control output
 with respect to the policy parameters.
+Since the gradient is accumulated through time due to the recursive dependence of the state on previous states and control inputs, this procedure is known as \ac{BPTT}.
 
-To compute this gradient analytically, an automatic differentiation engine is required. 
+To compute this gradient analytically, an automatic differentiation engine is used. 
 Many \ac{ML} frameworks, such as PyTorch~\cite{}, TensorFlow~\cite{}, and JAX~\cite{}, among others, provide autodiff capabilities. 
 At present, JAX is regarded as a high-performance framework for numerical \ac{ML} computing. 
-However, for this simulator, PyTorch was selected due to its intuitive interface, extensive documentation, and lower implementation complexity.
+However, for this simulator, PyTorch has been selected due to its intuitive interface, extensive documentation, and lower implementation complexity.
 
 \begin{figure}[H]
     \centering
-    \include{fig/tikz/comp_graph}
-    \caption{}
+    \include{fig/tikz/comp_graph-2}
+    \caption{Computational graph of the numerical operations of the forward and backward passes.}
     \label{fig:com-graph}
 \end{figure}
 
-\subsection{Optimization Algrotihm}
-{\color{blue}
+
+To illustrate how gradients are computed, consider the next function $f(x, y) = y(xy)^2$. Its gradient is
+ $\nabla f = \begin{bmatrix}
+    \frac{\partial f}{\partial x} & \frac{\partial f}{\partial y}
+\end{bmatrix} = \begin{bmatrix}
+    2xy^3 & 3x^2y^2
+\end{bmatrix}$ and evaluating at $x=1$ and $y=2$, we get $\nabla f(1,2) = \begin{bmatrix}
+    16 & 12
+\end{bmatrix}$.
+In PyTorch, this gradient is computed using a computational graph which is constructed during the forward pass.
+Each mathematical operation is stored as a node in this graph.
+During backporopagation, PyTorch applies automatic differentiation to traverse the graph from the output back to the input and applying the chain rule to accumulate gradients.
+The computational graph shown in \autoref{fig:com-graph} represents this process and Algortihm~\ref{alg:backprop} presents the pesudocode.
+% \autoref{fig:com-graph} storing each operation is built, then the b
+
+\begin{algorithm}
+\caption{PyTorch Backpropagation for example the function $u(x,y) = y(xy)^2$}
+
+\begin{algorithmic}
+\Require $x \in \real, \ y \in \real$
+\Ensure $\frac{\partial u}{\partial x},\ \frac{\partial u}{\partial y}$
+
+\State \textbf{--- Forward Pass (Build Computational Graph) ---}
+\State $x \gets \texttt{tensor}(1.0,\ \texttt{requires\_grad=True})$ \Comment{Leaf node}
+\State $y \gets \texttt{tensor}(2.0,\ \texttt{requires\_grad=True})$ \Comment{Leaf node}
+\State $z \gets x \times y$ \Comment{Node: \texttt{MulBackward}}
+\State $w \gets z^2$ \Comment{Node: \texttt{PowBackward}}
+\State $u \gets w \times y$ \Comment{Output Node: \texttt{MulBackward}}
+
+\State \textbf{--- Backward Pass (Reverse-Mode Autodiff) ---}
+\State Initialize $\frac{\partial u}{\partial u} \gets 1$
+\State $\frac{\partial u}{\partial w} \gets \frac{\partial u}{\partial u} \cdot y = 1 \cdot 2 = 2$ \Comment{Backprop through $u = w \cdot y$}
+\State $\frac{\partial u}{\partial y} \mathrel{+}= \frac{\partial u}{\partial u} \cdot w = 1 \cdot 4 = 4$ \Comment{Accumulate $y$ gradient from this node}
+\State $\frac{\partial u}{\partial z} \gets \frac{\partial u}{\partial w} \cdot 2z = 2 \cdot 2 = 4$ \Comment{Backprop through $w = z^2$}
+\State $\frac{\partial u}{\partial x} \gets \frac{\partial u}{\partial z} \cdot y = 4 \cdot 2 = 8$ \Comment{Backprop through $z = x \cdot y$} 
+
+\State $\frac{\partial u}{\partial y} \mathrel{+}= \frac{\partial u}{\partial z} \cdot x = 4 \cdot 1 = 4$ \Comment{Accumulate $y$ gradient from this node}
+
+\State \textbf{--- Results ---}
+\State $\frac{\partial u}{\partial x} = 16,\quad \frac{\partial u}{\partial y} = 4 + 4 + 4 = 12$
+
+\end{algorithmic}
+\label{alg:backprop}
+\end{algorithm}
+In practice, the calculation of the gradients is done simply by calling \textbf{u.backward()} in PyTorch.
+
+\todo{Explain the surrogate gradient thing!!!}
+\subsection{Optimization Process}
+Given the gradient $\nabla_\theta J$ computed via \ac{BPTT} the policy parameters are updated using the Adaptive Moment Estimation (Adam) optimizer~\cite{2014adam}.
+Adam is a variant of \ac{SGD}, in standard \ac{SGD} the model parameters are updated proportionnally to the gradient in its opposite direction,
+
+\begin{equation}
+    \theta_{k+1} = \theta_k - \alpha\nabla_\theta J_k
+\end{equation}
+where $\alpha$ inidcates the learning rate. The main disatvantages of standard \ac{SGD} is that near the optimum, the gradient decreases rquiring more steps to converge and each parameter is updated equally.
+Adam solves this issues by combining two other variations of \ac{SGD}: Momentum and \ac{RMSP}.
+
 \begin{itemize}
-    \item Explain computational graph, how pytorch builds it, how does it go from the loss function to the neural network J-> quadrotor dynamics -> control abstarction ->neural network
-    \item explain how the gradient is used to optimize the network, Adam Optimizer 
+    \item Momentum accumulates an avarage of past gradients sustaining progress along the directions of consistent descent and dampening oscillations in high curvature directions.
+    \item \ac{RMSP} avarages the square of the gradients, which are used to scale the learning rate of each parameter individually, hence, parmeters with high historical gradients revice smaller updates than those with smaller gradientes 
 \end{itemize}
-}
-
-
-
-
-{\color{red} Review the following equations: }
-{\color{blue}
-\begin{equation}
-    \hat{m}_t = \frac{\beta_1 m_{t-1} + (1-\beta_1) g_t}{1 - \beta_1^t}, \qquad
-    \hat{v}_t = \frac{\beta_2 v_{t-1} + (1-\beta_2) g_t^2}{1 - \beta_2^t},
-\end{equation}
+Adam unifies these two concepts through the first and second moment estimates, $m$ and $v_k$ respectively, which are updated as,
 
 \begin{equation}
-    \theta_{t+1} = \theta_t - \alpha \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon},
+    m_k = \beta_1 m_{k-1} + (1-\beta_1)\nabla_\theta J_{k-1}
 \end{equation}
-}
+\begin{equation}
+    v_k = \beta_2 v_{k-1} + (1-\beta_2)(\nabla_\theta J_{k-1})^2
+\end{equation}
+where $\beta_1$ and $\beta_2$ are hyperparameters usually set to $0.9$ and $0.999$ respectively. Since both moments are initialized at zero $m_0 = v_0 = 0$, the estimates are biased towards zero in the early iterations of training.
+For this reason, each moment is normalized to,
+
+\begin{equation}
+    \hat{m}_t = \frac{m_t}{1 - \beta_1^k}
+\end{equation}
+\begin{equation}
+    \hat{v}_t = \frac{v_t}{1 - \beta_2^k}.
+\end{equation}
+The final prameter update is given by,
+\begin{equation}
+    \theta_{k+1} = \theta_k - \alpha\, \frac{\hat{m}_k}{\sqrt{\hat{v}_t} + \epsilon}
+    \label{eq:adam}
+\end{equation}
+where $\epsilon \ll 1$ is a small constant introduced for numerical stability.
 
 
 \begin{algorithm}
-\caption{An algorithm with caption}\label{alg:cap}
+\caption{Adam, algorithm proposed in \cite{}.}\label{alg:adam}
 \begin{algorithmic}
-\Require $n \geq 0$
-\Ensure $y = x^n$
-\State $y \gets 1$
-\State $X \gets x$
-\State $N \gets n$
-\While{$N \neq 0$}
-\If{$N$ is even}
-    \State $X \gets X \times X$
-    \State $N \gets \frac{N}{2}$  \Comment{This is a comment}
-\ElsIf{$N$ is odd}
-    \State $y \gets y \times X$
-    \State $N \gets N - 1$
-\EndIf
+\Require $\alpha$: Stepsize
+\Require $\beta_1, \beta_2 \in [0, 1)$: Exponential decay rates for the moment estimates
+\Require $\mathcal{L}_k(\theta)$: Stochastic objective function with parameters $\theta$
+\Require $\theta_0$: Initial parameter vector
+\State $m_0 \gets 0$ \Comment{Initialize 1st moment vector}
+\State $v_0 \gets 0$ \Comment{Initialize 2nd moment vector}
+\State $k \gets 0$ \Comment{Initialize timestep}
+\While{$\theta_k$ not converged}
+    \State $k \gets k + 1$
+    \State $J_k \gets \nabla_\theta \mathcal{L}_k(\theta_{k-1})$ \Comment{Get gradients w.r.t. stochastic objective at timestep $k$}
+    \State $m_k \gets \beta_1 \cdot m_{k-1} + (1 - \beta_1) \cdot J_k$ \Comment{Update biased first moment estimate}
+    \State $v_k \gets \beta_2 \cdot v_{k-1} + (1 - \beta_2) \cdot J_k^2$ \Comment{Update biased second raw moment estimate}
+    \State $\widehat{m}_k \gets m_k / (1 - \beta_1^k)$ \Comment{Compute bias-corrected first moment estimate}
+    \State $\widehat{v}_k \gets v_k / (1 - \beta_2^k)$ \Comment{Compute bias-corrected second raw moment estimate}
+    \State $\theta_k \gets \theta_{k-1} - \alpha \cdot \widehat{m}_k / (\sqrt{\widehat{v}_k} + \epsilon)$ \Comment{Update parameters}
 \EndWhile
+\State \Return $\theta_k$ \Comment{Resulting parameters}
 \end{algorithmic}
 \end{algorithm}
+
+\section{Summary}
+To summirize the methodology, the training workflow is the following. First the user selects the training task, refered in the code as environemnt env=[tt,\ pp], which are either; trajectory tracking or path progress.
+The user also selects the control abstraction/mode cm=[srt,\ ctbr,\ lvhr,\ lvhr+g] which defines the control mapping function $g_{\text{cm}}()$ from the policy outputs $\boldsymbol{\pi_\theta}(\mathbf{o})$ to the control inputs $\mathbf{u}$. 
+Finally, the user introduces the number of parallel environments $B$, the number of episodes $N$, the number of steps $K$, the optimization horizon $H$ and other hyperparameters such as the learning rate $\alpha$, randomization percentage $p$, termination distance threshold $d_\text{max}$, etc. 
+
+Once all these parameters are set, training proceeds as follows:
+% \begin{algorithm}
+% \caption{Pesudocode for the training process.}\label{alg:cap}
+% \begin{algorithmic}
+% \Require env=[tt,\ pp], cm=[srt,\ ctbr,\ lvhr,\ lvhr+g], batch size $B$, episodes $N$, steps $K$, horizon $H$ hyperparameters\footnote{Simulation step size is set to $dt=0.01$}.
+% % \Ensure $y = x^n$
+% \State \textbf{Initialize:} Policy network $\pi_\theta$, controller $g_{\text{cm}}(cm)$, reference generator $\mathbf{x}^\text{ref}$, dynamics transition function $\mathbf{\dot{f}(\mathbf{x}, u)}$
+% \For {$n=0, \dots, N $}
+%     \State Randomize $\boldsymbol{\xi}(B)$,  $\mathbf{X}(K)^\text{ref}$ % X^ref caps is the entire reference state over K 
+%     \State $\mathbf{x_0} \gets \mathbf{x_0}^\text{ref}$
+%     \For {$k=0, \dots, K $}
+%         \State $\mathbf{o}_k^{\text{env}} \gets getObservation(env)$
+%         \State $\mathbf{x}_k^{\text{env}} \gets getReference(env)$
+%         % \State $\mathbf{x}_{k+1} = \mathbf{x}_k + \int_{t_k}^{t_{k+1}} \mathbf{f}\left(\mathbf{x}(t), g_{\text{cm}}(\mathbf{\pi}_\theta(\mathbf{o}_k))\right) dt$ \Comment{Numerical integration step}
+%         \State $\mathbf{x}_{k+1} \gets \mathbf{x}_k + \Delta t \cdot \mathbf{f}(\mathbf{x}_k, g_{\text{cm}}(\mathbf{\pi}_\theta(\mathbf{o}_k^{\text{env}})), \boldsymbol{\xi}(B))$
+%         \If{$\mathbf{x}_{k+1}$ \textit{not terminated}}
+%             \State $J_k += \mathcal{L}_k(\mathbf{x}_k^{\text{env}}, \mathbf{x}_k )$
+%         \EndIf
+%         \If{$(k+1) \bmod H = 0$}
+%             \State $loss \gets \frac{J_k}{H}$
+%             \State $\nabla_{\theta} J_k \gets loss.backward()$ \Comment{Bckw pass thorugh the graph to obtain the gradients}
+%             \State $\theta \gets optimizer.step()$  \Comment{Update of the policy parameters}
+%             \State $ \mathbf{x_k}.detach()$ \Comment{Breaks the comutational graph for the next optimization step}
+%             \State $ J_k \gets 0$
+
+%         \EndIf
+%     \EndFor
+% \EndFor
+% \end{algorithmic}
+% \end{algorithm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{algorithm}[H]
+\caption{Training procedure for differentiable policy optimization.}
+\label{alg:training}
+\begin{algorithmic}[1]
+
+\Require Training task $\mathrm{env} \in \{\mathrm{tt},\ \mathrm{pp}\}$,
+         control mode $\mathrm{cm} \in \{\mathrm{srt},\ \mathrm{ctbr},\ \mathrm{lvyr},\ \mathrm{lvyr{+}g}\}$,
+         batch size $B$, episodes $N$, steps $K$, horizon $H$,
+         learning rate $\alpha$, simulation step $\Delta t = 0.01\,\mathrm{s}$, other hyperparams
+
+\State \textbf{Initialize} policy $\pi_\theta$, controller $g_{\mathrm{cm}}$, optimizer
+
+\For{$n = 1, \dots, N$}
+    \State Sample domain parameters $\boldsymbol{\xi}^{(i)} \sim p(\boldsymbol{\xi})$ for $i = 1, \dots, B$ \Comment{Domain randomization}
+    \State Sample reference $\mathbf{x}_{0:K}^{\mathrm{ref}} \gets \texttt{getReference}(\mathrm{env})$ \Comment{Task-dependent reference}
+    \State $\mathbf{x}_0 \gets \mathbf{x}_0^{\mathrm{ref}}$, \quad $J \gets 0$
+
+    \For{$k = 0, \dots, K-1$}
+
+        \State $\mathbf{o}_k \gets \texttt{getObservation}(\mathrm{env},\ \mathbf{x}_k,\ \mathbf{x}_k^{\mathrm{ref}})$ \Comment{Task-dependent observation}
+
+        \State $\mathbf{u}_k \gets g_{\mathrm{cm}}\!\bigl(\pi_\theta(\mathbf{o}_k)\bigr)$ \Comment{Policy forward pass + control mapping}
+
+        \State $\mathbf{x}_{k+1} \gets \mathbf{x}_k + \Delta t \cdot \mathbf{f}(\mathbf{x}_k,\ \mathbf{u}_k,\ \boldsymbol{\xi})$ \Comment{Euler integration through dynamics}
+
+        \State $\mathrm{term}_k \gets \texttt{isTerminated}(\mathrm{env},\ \mathbf{x}_{k+1},\ \mathbf{x}_{k+1}^{\mathrm{ref}})$ \Comment{Task-dependent termination}
+
+        \State $J \mathrel{+}= \dfrac{1}{B}\displaystyle\sum_{i=1}^{B} \mathcal{L}_{\mathrm{env}}\!\bigl(\mathbf{x}_{k+1,i}^{\mathrm{ref}},\ \mathbf{x}_{k+1,i}\bigr)\cdot\mathbf{1}\!\left[\lnot\,\mathrm{term}_{k,i}\right]$
+
+        \State Reset terminated environments: $\mathbf{x}_{k+1,i} \gets \mathbf{x}_{k+1,i}^{\mathrm{ref}}\ $ for all $i$ where $\mathrm{term}_{k,i}$
+
+        \If{$(k + 1) \bmod H = 0$} \Comment{End of truncation window}
+            \State $\nabla_\theta J \gets \texttt{backward}\!\left(J / H\right)$ \Comment{BPTT through the computational graph}
+            \State $\theta \gets \texttt{Adam.step}(\theta,\ \nabla_\theta J,\ \alpha)$ \Comment{Parameter update}
+            \State $\mathbf{x}_{k+1} \gets \mathbf{x}_{k+1}.\texttt{detach}()$ \Comment{Detach state to truncate graph}
+            \State $J \gets 0$
+        \EndIf
+
+    \EndFor
+\EndFor
+
+\State \Return $\theta$
+\end{algorithmic}
+\end{algorithm}
+
+\noindent Note that the state is batched, the dynamics transition function is dependent on xi \todo{}
