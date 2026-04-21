@@ -2,12 +2,103 @@
 
 \chapter{Results \label{chap:results}}
 
-\section{Evaluation Criteria}
+In this chapter, the results of the proposed differentiable simulation training approach are presented and evaluated.
+First, the assessment metrics used throughout the chapter are defined in \refsec{sec:eval_criteria}.
+Subsequently, the performance of the proposed method is compared against standard model-free \ac{RL} training and a classical fixed-gain geometric controller as baselines in \refsec{sec:baseline}.
+An ablation study is then conducted in \refsec{sec:ablation} to evaluate the effect of key design choices.
+Qualitative results, including trajectory visualizations and velocity profiles, are then presented in \refsec{sec:qualitative}.
+The transferability of the trained policies to the MRS UAV stack in Gazebo is analyzed in \refsec{sec:transferability}.
+Finally, preliminary real-world validation results are presented in \refsec{sec:realworld}.
 
-\section{Baseline Performance}
+\todo{Update this introduction, since I changed the section names....}
+\section{Evaluation Criteria}\label{sec:eval_criteria}
 
-\section{Ablation Study}
+This section details the metrics and experimental framework used to evaluate the performance of the proposed differentiable physics approach against a model-free \ac{PPO}. 
+The evaluation is structured around three primary axes: training efficiency, performance  in terms of lap time and success rate, and sim-to-sim transferability. 
+% Furthermore, a specific case study is conducted within the differentiable simulation framework to isolate the effects of adaptive versus fixed controller gains. 
+% In this study, a policy trained using the \ac{LVHR} control abstraction with static gains is compared against an augmented formulation where the policy dynamically modulates adaptive gains $\{k_v, k_R, k_\omega\}$, as described in \autoref{sec:diff-opt}. 
+% This comparison quantifies the benefit of online stiffness modulation and demonstrates the utility of our simulator for complex control optimization.
 
-\section{Transferability to MRS UAV System}
+\subsection{Sample Efficiency}
+One of the central claims of this thesis is that leveraging analytical gradients from differentiable simulation significantly improves sample efficiency compared to standard model-free \ac{RL} algorithms.
+To evaluate this claim, the training convergence of the proposed differentiable physics approach is compared against \ac{PPO} trained on the same task, observation space, network architecture, and control abstraction.
+Sample efficiency is measured as the wall-clock training time and the number of environment steps required for each method to converge to a stable policy.
+Convergence is defined as the point at which the cumulative loss/reward ceases to improve by more than a threshold.
+For a fair comparison, the randomized processes use a common seed during the training process.
 
-\section{Real World Validation}
+
+\subsection{Lap Time and Success Rate}
+
+Ultimately, the primary objective of \ac{ADR} is to traverse a sequence of gates as fast as possible.
+The two metrics used to evaluate this objective are the lap time $T_f$ and the success rate $\mathit{SR}$.
+
+The lap time $T_f$ is defined as the time elapsed from the start of the episode until the drone successfully passes the final gate.
+The success rate is defined as the ratio of successfully passed gates $G_p$ to the total number of gates $G$ in the racing track,
+
+\begin{equation}
+    \mathit{SR} = \frac{G_p}{G} \in [0, 1].
+\end{equation}
+
+A gate $g$ is characterized by its position $\mathbf{p}_g \in \mathbb{R}^3$, orientation $\mathbf{R}_g \in SO(3)$, and dimensions $(t,\, w,\, h)$, corresponding to the thickness, width, and height of the gate opening, respectively.
+The gate frame axes are defined as,
+
+\begin{equation}
+    \hat{\mathbf{g}}_1 = \mathbf{R}_g \hat{\mathbf{e}}_1, \qquad
+    \hat{\mathbf{g}}_2 = \mathbf{R}_g \hat{\mathbf{e}}_2, \qquad
+    \hat{\mathbf{g}}_3 = \mathbf{R}_g \hat{\mathbf{e}}_3,
+\end{equation}
+
+\noindent where $\hat{\mathbf{g}}_1$, $\hat{\mathbf{g}}_2$, and $\hat{\mathbf{g}}_3$ denote the forward (normal), lateral , and vertical axes of the gate, respectively.
+The position of the drone relative to the gate, expressed in the gate frame, is,
+
+\begin{equation}
+    \mathbf{p}^g_k = \mathbf{R}_g^\top \left( \mathbf{p}_k - \mathbf{p}_g \right) =
+    \begin{bmatrix} p^g_1 & p^g_2 & p^g_3 \end{bmatrix}^\top.
+\end{equation}
+
+\noindent A gate $g$ is considered successfully passed at timestep $k$ if,
+
+\begin{equation}
+    % \mathit{passed} \iff
+    \left| p^g_1 \right| < \frac{t}{2}
+    \quad \wedge \quad
+    \left| p^g_2 \right| \leq \frac{w}{2}
+    \quad \wedge \quad
+    \left| p^g_3 \right| \leq \frac{h}{2},
+\end{equation}
+and a gate is unsuccessfully passed when,
+
+\begin{equation}
+    % \mathit{crash} \iff
+    \left| p^g_1 \right| < \frac{t}{2}
+    \quad \wedge \quad
+    \left( \left| p^g_2 \right| > \frac{w}{2}
+    \;\vee\;
+    \left| p^g_3 \right| > \frac{h}{2} \right).
+\end{equation}
+
+\begin{figure}[H]
+    \centering
+    \include{fig/tikz/planes}
+    \caption{Gate traversal geometry. The success region (green) is defined with respect to the gate position $\mathbf{p}_g$, orientation $\mathbf{R}_g$ and dimensions $(t, w, h)$. \todo{add gate dimension to the plot, t,w,h}}
+    \label{fig:gate_geometry}
+\end{figure}
+
+\subsection{Transferability and Robustness}\label{subsec:transfer}
+
+Learned policies are prone to overfitting to the training environment and may fail to generalize when deployed under conditions that deviate from those seen during training, due to model mismatches and unmodeled effects.
+To mitigate this, \ac{DR} is employed during training as described in \autoref{subsec:DR}.
+
+To assess transferability, the policies trained in the proposed differentiable simulator are evaluated in a high-fidelity simulation environment using the MRS UAV stack in Gazebo~\cite{}.
+Since the differentiable physics and model-free \ac{RL} policies are optimized under different paradigms, the sim-to-sim performance gap is analyzed for each method, measuring the degradation in success rate $\mathit{SR}$ and lap time $T_f$ relative to the results obtained in the training simulator.
+Additionally, robustness to external disturbances is evaluated by exposing the trained policies to wind perturbations during deployment, without any retraining or fine-tuning.
+
+\section{Simulator Validation}\label{sec:qualitative}
+
+\section{Model-Free \& Model-Based}\label{sec:baseline}
+
+\section{Adaptive Gains}\label{sec:ablation}
+
+% \section{Transferability to MRS UAV System}\label{sec:transferability}
+
+\section{Real World Validation}\label{sec:realworld}

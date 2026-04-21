@@ -18,7 +18,7 @@ Lastly, \autoref{sec:diff_opt} details how differentiability is leveraged to opt
 \section{Simulation Framework}\label{sec:sim_frame}
 {\color{blue}Make cool diagram}
 
-\begin{figure}[!ht]
+\begin{figure}[H]
     \centering
     \resizebox{1\textwidth}{!}{\input{fig/tikz/sim_arch_diagram.tex}}
     \caption{Your Caption}
@@ -231,9 +231,9 @@ Once the rates are calculated, they can be converted to torque values,
 \end{equation}
 aditionally, a proportinal gain $k_p$ can be introduced to adjust the stiffness of the conversion.
 Given the commanded collective thrust and torques, the motor thursts can be obtained from \autoref{eq:alloc} and then the same procudeure of \autoref{sec:srt} is applied during the forward and backward passes.
-\subsubsection{Linear Velocities and Yaw Rate}
+\subsubsection{Linear Velocities and Heading Rate}
 
-The highest level of abstraction that is implement consists on commanding \ac{LVYR}. With this control mode, the policy outputs are scaled as,
+The highest level of abstraction that is implement consists on commanding \ac{LVHR}. With this control mode, the policy outputs are scaled as,
 
 \begin{equation}\label{eq:geo_vel}
     v_{i, \text{cmd}} = (2u_{i} - 1)  v_{i, \text{max}}, \quad i \in \{1, 2, 3\}
@@ -335,9 +335,9 @@ The \textit{hat map} $\hat{\cdot} \colon \mathbb{R}^3 \to \mathfrak{so}(3)$ is d
 In this manner, the commanded collective thrust \autoref{eq:geo_thrust}, and commanded torques \autoref{eq:geo_tau}, can be mapped to single rotor thrust commands to apply the same procedure of the last control modes during the forward and backward passes.
 
 
-\subsubsection{Linear Velocity Yaw Rate and Gains}
+\subsubsection{Linear Velocity Heading Rate and Gains}
 
-Finally, the last control mode implemented is an augmentation of the \ac{LVYR} controller.
+Finally, the last control mode implemented is an augmentation of the \ac{LVHR} controller.
 In this formulation, the policy outputs high-level commands in the form of desired linear velocities and yaw rate, rather than directly commanding individual rotor thrusts.
 This higher level of abstraction simplifies the learning process, as the policy does not need to implicitly learn how differential rotor thrusts generate torques, since this mapping is handled by the geometric controller.
 As shown in \autoref{label} \todo{cite the section}, this abstraction enables faster learning.
@@ -363,7 +363,7 @@ Thus, when this control mode is selected, the policy outputs are, the same as \a
 %                                  Domain Randomization
 % ====================================================================================
 
-\subsection{Domain Randomization}
+\subsection{Domain Randomization}\label{subsec:DR}
 To improve the transferability of the policy and to prevent the it from ovrefitting to a specific environment, \ac{DR} is implemented in our methodology as it is well-stabilshed strategy in the field, \todo{: Cite}
 
 A domain can be defined as a specific subset of all possible \ac{POMDP} environments. 
@@ -516,7 +516,7 @@ The desired thrust direction $\mathbf{z}_k$ is defined as:
 Since the simulator is batched, i.e., multiple environments run in parallel, the total cumulative cost over the horizon is defined as:
 
 \begin{equation}\label{cum-cost}
-J_k = \frac{1}{B} \sum_{i=1}^{B} \sum_{h=k}^{k+H-1} \mathcal{L}\big(\mathbf{x}_{h,i}^\text{ref}, \mathbf{x}_{h,i}\big)
+J_k = \frac{1}{B}\frac{1}{H} \sum_{i=1}^{B} \sum_{h=k}^{k+H-1} \mathcal{L}\big(\mathbf{x}_{h,i}^\text{ref}, \mathbf{x}_{h,i}\big)
 \end{equation}
 where $k$ denotes the initial timestep of the current horizon, $H$ is the horizon length, and $B$ is the number of parallel environments.
 At the end of each horizon, the gradient of the cumulative cost in \autoref{cum-cost} with respect to the policy parameters is backpropagated through time for optimization, as described in \autoref{sec:diff-opt}.
@@ -571,7 +571,7 @@ In this section we provide an overview on how the optimization process works.
 The gradient of the cummulative stage cost function $J_k$ with respect to the network parameters $\theta$ is given by the chain rule as,
 \begin{equation}
     \nabla_\theta J_k =
-    \frac{1}{B} \sum_{i=1}^{B} \sum_{h=k}^{k+H-1}
+    \frac{1}{B}\frac{1}{H} \sum_{i=1}^{B} \sum_{h=k}^{k+H-1}
     \frac{\partial \mathcal{L}_h}{\partial \mathbf{x}_h}
     \frac{\partial \mathbf{x}_h}{\partial \mathbf{u}_{h-1}}
     \frac{\partial \mathbf{u}_{h-1}}{\partial \theta}
@@ -611,7 +611,7 @@ The computational graph shown in \autoref{fig:com-graph} represents this process
 % \autoref{fig:com-graph} storing each operation is built, then the b
 
 \begin{algorithm}
-\caption{PyTorch Backpropagation for example the function $u(x,y) = y(xy)^2$}
+\caption{PyTorch Backpropagation for the function $u(x,y) = y(xy)^2$}
 
 \begin{algorithmic}
 \Require $x \in \real, \ y \in \real$
@@ -749,7 +749,7 @@ Once all these parameters are set, training proceeds as follows:
 \begin{algorithmic}[1]
 
 \Require Training task $\mathrm{env} \in \{\mathrm{tt},\ \mathrm{pp}\}$,
-         control mode $\mathrm{cm} \in \{\mathrm{srt},\ \mathrm{ctbr},\ \mathrm{lvyr},\ \mathrm{lvyr{+}g}\}$,
+         control mode $\mathrm{cm} \in \{\mathrm{srt},\ \mathrm{ctbr},\ \mathrm{lvhr},\ \mathrm{lvhr{+}g}\}$,
          batch size $B$, episodes $N$, steps $K$, horizon $H$,
          learning rate $\alpha$, simulation step $\Delta t = 0.01\,\mathrm{s}$, other hyperparams
 
