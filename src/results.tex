@@ -95,10 +95,74 @@ Additionally, robustness to external disturbances is evaluated by exposing the t
 
 \section{Simulator Validation}\label{sec:qualitative}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{fig/photos/placehldrs/sim-val.png}
+    \caption{\todo{This is a placeholder figure, (I need to get the actual data)}Body rates respones in our simulator and gazebo.}
+    \label{fig:rates_resp}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{fig/photos/placehldrs/sim-val2.png}
+    \caption{\todo{This is a placeholder figure, (I need to get the actual data)}Body rates respones in our simulator and gazebo.}
+    \label{fig:vel_resp}
+\end{figure}
+
+
+
+
+
 \section{Model-Free \& Model-Based}\label{sec:baseline}
 
-\section{Adaptive Gains}\label{sec:ablation}
 
+
+\begin{table}[H]
+    \centering
+    \large
+    \caption{Performance comparison of policies trained with differentiable gradients versus PPO, evaluated in the proposed simulator and Gazebo environment.}
+\begin{tabular}{lll|ll}
+\toprule
+\multicolumn{1}{c}{} & \multicolumn{2}{c|}{BPTT}          & \multicolumn{2}{c}{PPO}           \\ \hline
+                       & \multicolumn{1}{c}{Ours} & Gazebo & \multicolumn{1}{c}{Ours} & Gazebo \\ \hline
+$N$                      & \multicolumn{1}{c}{}     &        & \multicolumn{1}{c}{}     &        \\ 
+$T_t$                 & \multicolumn{1}{c}{}     &        & \multicolumn{1}{c}{}     &        \\ 
+$SR$                     & \multicolumn{1}{c}{}     &        & \multicolumn{1}{c}{}     &        \\ 
+$T_f$                   & \multicolumn{1}{c}{}     &        & \multicolumn{1}{c}{}     &        \\ \bottomrule
+% Transfer               & \multicolumn{2}{c|}{Good}          & \multicolumn{2}{c}{Good}          \\ \hline
+\end{tabular}
+\end{table}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{fig/photos/placehldrs/vel_dist.png}
+    \caption{\todo{This is a placeholder figure, (I need to get the actual data)}Wind response, gazebo?}
+    \label{fig:wind}
+\end{figure}
+
+
+\section{Adaptive Gains}\label{sec:ablation}
+\begin{figure}[H]
+    \centering
+    \subfloat[\todo{}Fixed gains\label{fig:adapt_gains_top}]{%
+        \includegraphics[width=1.0\textwidth, height=0.3\textwidth]{fig/photos/placehldrs/adapt_gains}
+    }\\[0.5em]
+    \subfloat[\todo{}Adaptive gains\label{fig:adapt_gains_bottom}]{%
+        \includegraphics[width=01.0\textwidth, height=0.3\textwidth]{fig/photos/placehldrs/adapt_gains}
+    }
+
+    \caption{Adaptive gains comparison}
+    \label{fig:adapt_gains}
+\end{figure}
 % \section{Transferability to MRS UAV System}\label{sec:transferability}
 
 \section{Real World Validation}\label{sec:realworld}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{fig/photos/placehldrs/realwrld-flight.png}
+    \caption{\todo{This is a placeholder figure, (I need to get the actual data)}Real world flights}
+    \label{fig:real-flight}
+\end{figure}

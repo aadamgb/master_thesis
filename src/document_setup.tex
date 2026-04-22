@@ -65,7 +65,7 @@
 \usepackage{tikz-3dplot}
 \usetikzlibrary{math}
 \usepackage{ifthen}
-
+\usepackage{booktabs}
 
 
 
@@ -373,3 +373,20 @@
                     \@afterindentfalse
                     \secdef\@chapter\@schapter}
 \makeatother
+
+
+
+
+
+\pgfplotsset{
+    empty axis/.style={
+        axis lines=none,       % Remove all axis lines
+        ticks=none,            % Remove all tick marks
+        axis background/.style={fill=none}, % Remove background grid lines
+        grid=none,              % Ensure grid is disabled
+        xlabel={},              % Remove labels
+        ylabel={},
+        zlabel={},
+    }
+}
+

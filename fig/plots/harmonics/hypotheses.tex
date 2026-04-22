@@ -1,0 +1,101 @@
+\documentclass{standalone}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\definecolor{tabblue}{rgb}{0.0000, 0.4470, 0.7410}
+\definecolor{taborange}{rgb}{0.8500, 0.3250, 0.0980}
+\definecolor{tabgreen}{rgb}{0.4660, 0.6740, 0.1880}
+
+\begin{document}
+
+\begin{tikzpicture}
+
+% --- Plot 1 ---
+% \begin{axis}[
+%     name=plot1,
+%     width=5cm,
+%     height=5cm,
+%     view={60}{30},
+%     % axis lines=none,
+%     ticks=none,
+% ]
+\begin{axis}[
+            name=plot1,
+            width=5cm,
+            height=5cm,
+            view={120}{30},         % Set a good 3D perspective
+            grid=both,              % Enable grid for both major/minor ticks
+            minor tick num=1,       % Optional: add minor grid lines
+            xlabel={X},
+            ylabel={Y},
+            zlabel={Z},
+            zbuffer=sort,           % Correct rendering depth
+            % title={With Axis and Grids}
+        ]
+\addplot3[
+    color=tabblue,
+    thick,
+    smooth,
+] table[
+    x=px, y=py, z=pz,
+    col sep=comma,
+] {data/traj1.csv};
+\end{axis}
+
+% --- Plot 2 ---
+\begin{axis}[
+    name=plot2,
+    at={(plot1.right of south east)},
+    anchor=left of south west,
+    xshift=0.5cm,
+    width=5cm,
+    height=5cm,
+    view={120}{30},
+    grid=both,              % Enable grid for both major/minor ticks
+    minor tick num=1,       % Optional: add minor grid lines
+    xlabel={X},
+    ylabel={Y},
+    zlabel={Z},
+    zbuffer=sort,           % Correct rendering depth
+    % title={With Axis and Grids}
+]
+\addplot3[
+    color=taborange,
+    thick,
+    smooth,
+] table[
+    x=px, y=py, z=pz,
+    col sep=comma,
+] {data/traj2.csv};
+\end{axis}
+
+% --- Plot 3 ---
+\begin{axis}[
+    name=plot3,
+    at={(plot2.right of south east)},
+    anchor=left of south west,
+    xshift=0.5cm,
+    width=5cm,
+    height=5cm,
+    view={120}{30},
+    grid=both,              % Enable grid for both major/minor ticks
+    minor tick num=1,       % Optional: add minor grid lines
+    xlabel={X},
+    ylabel={Y},
+    zlabel={Z},
+    zbuffer=sort,           % Correct rendering depth
+]
+\addplot3[
+    color=tabgreen,
+    thick,
+    smooth,
+] table[
+    x=px, y=py, z=pz,
+    col sep=comma,
+] {data/traj3.csv};
+\end{axis}
+
+\end{tikzpicture}
+
+\end{document}
