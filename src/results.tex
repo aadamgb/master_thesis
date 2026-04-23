@@ -2,12 +2,12 @@
 
 \chapter{Results \label{chap:results}}
 
-In this chapter, the results of the proposed differentiable simulation training approach are presented and evaluated.
+In this chapter, the results of the proposed differentiable simulator are presented and evaluated.
 First, the assessment metrics used throughout the chapter are defined in \refsec{sec:eval_criteria}.
-Subsequently, the performance of the proposed method is compared against standard model-free \ac{RL} training and a classical fixed-gain geometric controller as baselines in \refsec{sec:baseline}.
+\todo{validation of the simulator}
+Subsequently, the performance of the proposed method is compared against standard model-free \ac{RL} training and a classical fixed-gain geometric controller in \refsec{sec:baseline}.
+Qualitative results, including trajectory visualizations, velocity profiles, and the transferability of the trained policiesare are presented.
 An ablation study is then conducted in \refsec{sec:ablation} to evaluate the effect of key design choices.
-Qualitative results, including trajectory visualizations and velocity profiles, are then presented in \refsec{sec:qualitative}.
-The transferability of the trained policies to the MRS UAV stack in Gazebo is analyzed in \refsec{sec:transferability}.
 Finally, preliminary real-world validation results are presented in \refsec{sec:realworld}.
 
 \todo{Update this introduction, since I changed the section names....}
@@ -94,7 +94,12 @@ Since the differentiable physics and model-free \ac{RL} policies are optimized u
 Additionally, robustness to external disturbances is evaluated by exposing the trained policies to wind perturbations during deployment, without any retraining or fine-tuning.
 
 \section{Simulator Validation}\label{sec:qualitative}
+As detailed in \autoref{sec:sim_frame}, our simulator utilizes a simplified model of quadrotor dynamics and aerodynamics. 
+To maintain a computationally efficient and generalizable framework, we omit secondary effects such as battery depletion on thrust, complex aerodynamic friction, and propeller rotational inertia. 
+While these unmodeled dynamics can cumulatively lead to a significant sim-to-real gap, we aim to address this mismatch through \ac{DR}.
 
+To validate the reliability of this simplified approach, we benchmark our simulator's behavior against Gazebo, a high-fidelity physics engine widely adopted by the robotics community. 
+Specifically, we utilize the UAV models provided by the MRS UAV System~\cite{} within the Gazebo environment as our ground-truth reference for comparison.
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{fig/photos/placehldrs/sim-val.png}
@@ -105,7 +110,7 @@ Additionally, robustness to external disturbances is evaluated by exposing the t
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{fig/photos/placehldrs/sim-val2.png}
-    \caption{\todo{This is a placeholder figure, (I need to get the actual data)}Body rates respones in our simulator and gazebo.}
+    \caption{\todo{This is a placeholder figure, (I need to get the actual data)Velocity response in our sim and gazebo}}
     \label{fig:vel_resp}
 \end{figure}
 

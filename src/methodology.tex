@@ -559,11 +559,21 @@ The observation vector is defined as:
 
 \todo{Explain harmonics generation for pretraining}
 
+\begin{equation}
+    \mathbf{p}_k^{\text{ref}} = \sum_{i=1}^{n}A_i\sin{\left(\omega_i k + \phi_i\right)}
+\end{equation}
+
+\begin{equation}
+        \mathbf{v}_k^\text{ref} \approx \frac{\mathbf{p}_{k+1}^\text{ref} - \mathbf{p}_k^\text{ref}}{T_s}
+\end{equation}
+\begin{equation}
+        \mathbf{a}_k^\text{ref} \approx \frac{\mathbf{v}_{k+1}^\text{ref} - \mathbf{v}_k^\text{ref}}{T_s}
+\end{equation}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{./fig/plots/harmonics/hypotheses.pdf}
-  \caption{Example of a 2D plot using \emph{PGFPlots}.}
+  \caption{\todo{}}
   \label{fig:pgfplots_data}
 \end{figure}
 
