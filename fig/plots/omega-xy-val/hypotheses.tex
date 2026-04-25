@@ -1,0 +1,86 @@
+\documentclass{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+
+\definecolor{tabblue}{rgb}{0.0000, 0.4470, 0.7410}
+\definecolor{taborange}{rgb}{0.8500, 0.3250, 0.0980}
+\definecolor{tabgreen}{rgb}{0.4660, 0.6740, 0.1880}
+
+\begin{document}
+    \begin{tikzpicture}
+        % --- Unit Step Respone ---
+        \begin{axis}[
+                    title = {\large Unit Step },
+                    % title style={font=\Large},
+                    name=plot1,
+                    width=8cm,
+                    height=5cm,
+                    xmin=0,
+                    xmax=1.5,
+                    xtick={0,0.5,1.0,1.5},
+                    ymin=0,
+                    grid=both,
+                    minor grid style={dashed, gray!30},              
+                    major grid style={dashed, gray!30},              
+                    minor tick num=1,       
+                    legend pos=south east,
+                    xlabel = \(t\),
+                    ylabel = {\(\omega_{b_1}/ \omega_{b_2}\)},
+                ]
+            \draw[dashed, black] (axis cs:\pgfkeysvalueof{/pgfplots/xmin},1) -- (axis cs:\pgfkeysvalueof{/pgfplots/xmax},1);
+            \addlegendimage{dashed, black}
+            \addplot[tabblue, thick] table[x=time, y=omega_x, col sep=comma] {data/wx_step_ours.csv};
+            \addplot[tabgreen, thick] table[x=time, y=omega_x, col sep=comma] {data/wx_step_gazebo.csv};
+            \legend{{reference}, {ours}, {gazebo}}
+        \end{axis}
+
+        % --- Variable Amplitude Response ---
+        \begin{axis}[
+                    title = {\large Variable Amplitude},
+                    name=plot2,
+                    at={(plot1.right of south east)},
+                    anchor=left of south west,
+                    xshift=0.5cm,
+                    width=8cm,
+                    height=5cm,
+                    xmin=0,
+                    xmax=8,
+                    xtick={0,4,8},
+                    ymin=-6,
+                    grid=both,
+                    minor grid style={dashed, gray!30},              
+                    major grid style={dashed, gray!30},              
+                    minor tick num=1,       
+                    xlabel = \(t\),
+                ]
+            \addplot[dashed, black, thick] table[x=time, y=omega_x, col sep=comma] {data/ref_amp.csv};
+            \addplot[tabblue, thick] table[x=time, y=omega_x, col sep=comma] {data/wx_amp_ours.csv};
+            \addplot[tabgreen, thick] table[x=time, y=omega_x, col sep=comma] {data/wx_amp_gazebo.csv};
+        \end{axis}
+
+        % --- Variable Frequency Response ---
+        \begin{axis}[
+                    title = {\large Variable Frequency},
+                    name=plot3,
+                    at={(plot2.right of south east)},
+                    anchor=left of south west,
+                    xshift=0.5cm,
+                    width=8cm,
+                    height=5cm,
+                    xmin=0,
+                    xmax=8,
+                    xtick={0,4,8},
+                    ymin=-1.2,
+                    grid=both,
+                    minor grid style={dashed, gray!30},              
+                    major grid style={dashed, gray!30},              
+                    minor tick num=1,       
+                    xlabel = \(t\),
+                ]
+            \addplot[dashed, black, thick] table[x=time, y=omega_x, col sep=comma] {data/ref_freq.csv};
+            \addplot[tabblue, thick] table[x=time, y=omega_x, col sep=comma] {data/wx_freq_ours.csv};
+            \addplot[tabgreen, thick] table[x=time, y=omega_x, col sep=comma] {data/wx_freq_gazebo.csv};
+        \end{axis}
+    \end{tikzpicture}
+\end{document}
