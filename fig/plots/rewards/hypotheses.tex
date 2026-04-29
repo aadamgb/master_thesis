@@ -1,0 +1,63 @@
+\documentclass{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\definecolor{tabblue}{rgb}{0.0000, 0.4470, 0.7410}
+\definecolor{taborange}{rgb}{0.8500, 0.3250, 0.0980}
+\begin{document}
+\begin{tikzpicture}
+
+% ---- Main axis (steps) ----
+\begin{axis}[
+    name=plot1,
+    width=7.5cm,
+    height=5cm,
+    grid=both,
+    minor grid style={dashed, gray!30},
+    major grid style={dashed, gray!30},
+    minor tick num=1,
+    xmin=0,
+    xmax={5*10^7},
+    % ymin=-10,
+    xlabel={Steps},
+    ylabel={Mean Reward},
+    legend pos=south east,
+]
+
+\addplot[tabblue, thick]
+table[x=Step, y expr=-\thisrow{Value}, col sep=comma] {data/bptt.csv}; \addlegendentry{BPTT}
+\addplot[taborange, thick]
+table[x=Step, y=Value, col sep=comma] {data/traj_tracking_run_7.csv};\addlegendentry{PPO}
+
+
+\end{axis}
+
+
+\begin{axis}[
+    name=plot2,
+    at={(plot1.right of south east)},
+    anchor=left of south west,
+    xshift=0.5cm,
+    width=7.5cm,
+    height=5cm,
+    grid=both,
+    minor grid style={dashed, gray!30},
+    major grid style={dashed, gray!30},
+    minor tick num=1,
+    % xmode=log,
+    xmin=0,
+    xmax={5*10^7},
+    % ymin=0,
+    xlabel={Step},
+    ylabel={Wall Time},
+]
+
+\addplot[tabblue, thick]
+table[x=Step, y expr=-\thisrow{Value}, col sep=comma] {data/bptt.csv}; 
+\addplot[taborange, thick]
+table[x=Step, y=Value, col sep=comma] {data/traj_tracking_run_7.csv};
+
+\end{axis}
+
+\end{tikzpicture}
+\end{document}

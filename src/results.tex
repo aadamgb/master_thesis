@@ -27,7 +27,9 @@ Convergence is defined as the point at which the cumulative loss/reward ceases t
 For a fair comparison, the randomized processes use a common seed during the training process.
 
 
-\subsection{Lap Time and Success Rate}
+\subsection{Perfromance}
+\subsubsection{Root Mean Square Error}
+\subsubsection{Lap Time and Succes Rate}
 
 Ultimately, the primary objective of \ac{ADR} is to traverse a sequence of gates as fast as possible.
 The two metrics used to evaluate this objective are the lap time $T_f$ and the success rate $\mathit{SR}$.
@@ -41,6 +43,12 @@ The success rate is defined as the ratio of successfully passed gates $G_p$ to t
 
 A gate $g$ is characterized by its position $\mathbf{p}_g \in \mathbb{R}^3$, orientation $\mathbf{R}_g \in SO(3)$, and dimensions $(t,\, w,\, h)$, corresponding to the thickness, width, and height of the gate opening, respectively.
 The gate frame axes are defined as,
+\begin{figure}[H]
+    \centering
+    \include{fig/tikz/planes}
+    \caption{Gate traversal geometry. The success region (green) is defined with respect to the gate position $\mathbf{p}_g$, orientation $\mathbf{R}_g$ and dimensions $(t, w, h)$. \todo{add gate dimension to the plot, t,w,h}}
+    \label{fig:gate_geometry}
+\end{figure}
 
 \begin{equation}
     \hat{\mathbf{g}}_1 = \mathbf{R}_g \hat{\mathbf{e}}_1, \qquad
@@ -77,12 +85,7 @@ and a gate is unsuccessfully passed when,
     \left| p^g_3 \right| > \frac{h}{2} \right).
 \end{equation}
 
-\begin{figure}[H]
-    \centering
-    \include{fig/tikz/planes}
-    \caption{Gate traversal geometry. The success region (green) is defined with respect to the gate position $\mathbf{p}_g$, orientation $\mathbf{R}_g$ and dimensions $(t, w, h)$. \todo{add gate dimension to the plot, t,w,h}}
-    \label{fig:gate_geometry}
-\end{figure}
+
 
 \subsection{Transferability and Robustness}\label{subsec:transfer}
 
@@ -107,12 +110,6 @@ Specifically, we utilize the UAV models provided by the MRS UAV System~\cite{} w
   \label{fig:wx-y-val}
 \end{figure}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1.0\textwidth]{fig/photos/placehldrs/sim-val.png}
-    \caption{\todo{This is a placeholder figure, (I need to get the actual data)}Body rates respones in our simulator and gazebo.}
-    \label{fig:rates_resp}
-\end{figure}
 
 \begin{figure}[H]
     \centering
@@ -126,6 +123,33 @@ Specifically, we utilize the UAV models provided by the MRS UAV System~\cite{} w
 
 
 \section{Model-Free \& Model-Based}\label{sec:baseline}
+\subsection{Sample Efficency}
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/sample-eff/hypotheses.pdf}
+    \caption{\todo{}}
+\end{figure}
+
+\subsection{Discrete and Continuous Rewards}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/rewards/hypotheses.pdf}
+    \caption{\todo{}}
+\end{figure}
+
+\subsection{Performance}
+
+\begin{equation}
+    \mathbf{p}(\theta) = \left( -\text{scale} \cdot \sin(\theta)\cos(\theta), \ -\text{scale} \cdot \cos(\theta), \ \text{h} \right)
+\end{equation}
+where     $\theta = \omega \cdot t \cdot dt$  and $\omega = \text{speed}/\text{scale}$
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/fig-8/hypotheses.pdf}
+    \caption{\todo{}}
+\end{figure}
+\subsection{Transferability and Robustness}
 
 
 
@@ -154,7 +178,15 @@ $T_f$                   & \multicolumn{1}{c}{}     &        & \multicolumn{1}{c}
 \end{figure}
 
 
-\section{Adaptive Gains}\label{sec:ablation}
+\section{Control Abstraction}\label{sec:ablation}
+\todo{Plot gradients of backward and foorward passes to comare their quality..}
+\subsection{Sample Efficency}
+\subsection{Performance}
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/uzh-track/hypotheses.pdf}
+\end{figure}
+\subsection{Transferability and Robustness}
 \begin{figure}[H]
     \centering
     \subfloat[\todo{}Fixed gains\label{fig:adapt_gains_top}]{%

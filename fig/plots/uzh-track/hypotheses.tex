@@ -1,0 +1,90 @@
+\documentclass{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\definecolor{tabblue}{rgb}{0.0000, 0.4470, 0.7410}
+\definecolor{taborange}{rgb}{0.8500, 0.3250, 0.0980}
+\definecolor{tabgreen}{rgb}{0.4660, 0.6740, 0.1880}
+\definecolor{tabyellow}{rgb}{0.9290, 0.6940, 0.1250}
+\definecolor{tabpurple}{rgb}{0.4940, 0.1840, 0.5560}
+
+\begin{document}
+\begin{tikzpicture}
+
+% ---- Left: trajectory plot ----
+\begin{axis}[
+    name=plot1,
+    width=7.5cm,
+    height=7cm,
+    grid=both,
+    minor grid style={dashed, gray!30},
+    major grid style={dashed, gray!30},
+    minor tick num=1,
+    xlabel={x [m]},
+    ylabel={y [m]},
+]
+\addplot[dashed, line width=1.0pt]
+    table[x=p_x, y=p_y, col sep=comma] {data/aos_refined_traj.csv};
+\end{axis}
+
+% ---- Top right: position error ----
+\begin{axis}[
+    name=plot2,
+    at={(plot1.right of north east)},
+    anchor=left of north west,
+    xshift=0.5cm,
+    width=7.5cm,
+    height=4cm,      % roughly half of plot1's height
+    grid=both,
+    minor grid style={dashed, gray!30},
+    major grid style={dashed, gray!30},
+    minor tick num=1,
+    xticklabels={},  % hide x labels on top plot
+    ylabel={\footnotesize Position Error [m]},
+]
+% \addplot ...
+\end{axis}
+
+% ---- Bottom right: flight speed ----
+\begin{axis}[
+    name=plot3,
+    at={(plot2.below south west)},
+    anchor=above north west,
+    yshift=-0.1cm,   % small gap between the two right plots
+    width=7.5cm,
+    height=4cm,
+    grid=both,
+    minor grid style={dashed, gray!30},
+    major grid style={dashed, gray!30},
+    minor tick num=1,
+    xlabel={Time [s]},
+    ylabel={\footnotesize Speed Error [m/s]},
+]
+% \addplot ...
+\end{axis}
+
+% ---- Shared legend in bottom-right corner ----
+\node[at={(plot1.south east)}, anchor=south east, xshift=6cm, yshift=0.5cm] {
+    \begin{tikzpicture}
+        \begin{axis}[
+            hide axis,
+            xmin=0, xmax=1, ymin=0, ymax=1,
+            legend style={draw=none, /tikz/every even column/.append style={column sep=0.5cm}},
+            legend columns=5,
+        ]
+        \addplot[dashed, line width=1pt] coordinates {(0,0)};
+        \addlegendentry{Reference}
+        \addplot[tabgreen, thick] coordinates {(0,0)};
+        \addlegendentry{SRT}
+        \addplot[tabblue, thick] coordinates {(0,0)};
+        \addlegendentry{CTBR}
+        \addplot[taborange, thick] coordinates {(0,0)};
+        \addlegendentry{LVHR}
+        \addplot[tabpurple, thick] coordinates {(0,0)};
+        \addlegendentry{LVHR+g}
+        \end{axis}
+    \end{tikzpicture}
+};
+
+\end{tikzpicture}
+\end{document}
