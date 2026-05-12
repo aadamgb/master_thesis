@@ -28,13 +28,12 @@ For a fair comparison, the randomized processes use a common seed during the tra
 
 
 \subsection{Perfromance}
-\subsubsection{Root Mean Square Error}
 \subsubsection{Lap Time and Succes Rate}
 
 Ultimately, the primary objective of \ac{ADR} is to traverse a sequence of gates as fast as possible.
 The two metrics used to evaluate this objective are the lap time $T_f$ and the success rate $\mathit{SR}$.
 
-The lap time $T_f$ is defined as the time elapsed from the start of the episode until the drone successfully passes the final gate.
+The lap time $T_f$ is defined as the time elapsed from the start of the episode until the drone passes the final gate.
 The success rate is defined as the ratio of successfully passed gates $G_p$ to the total number of gates $G$ in the racing track,
 
 \begin{equation}
@@ -85,6 +84,8 @@ and a gate is unsuccessfully passed when,
     \left| p^g_3 \right| > \frac{h}{2} \right).
 \end{equation}
 
+\subsubsection{Root Mean Square Error}
+When a referene path is used, another performance metric utilized is to compute the \ac{RMSE} between the drone's position and the reference path.
 
 
 \subsection{Transferability and Robustness}\label{subsec:transfer}
@@ -92,50 +93,78 @@ and a gate is unsuccessfully passed when,
 Learned policies are prone to overfitting to the training environment and may fail to generalize when deployed under conditions that deviate from those seen during training, due to model mismatches and unmodeled effects.
 To mitigate this, \ac{DR} is employed during training as described in \autoref{subsec:DR}.
 
-To assess transferability, the policies trained in the proposed differentiable simulator are evaluated in a high-fidelity simulation environment using the MRS UAV stack in Gazebo~\cite{}.
+To assess transferability, the policies trained in the proposed differentiable simulator are evaluated in a high-fidelity simulation environment using the MRS UAV stack in Gazebo~\cite{baca_mrs_2021}.
 Since the differentiable physics and model-free \ac{RL} policies are optimized under different paradigms, the sim-to-sim performance gap is analyzed for each method, measuring the degradation in success rate $\mathit{SR}$ and lap time $T_f$ relative to the results obtained in the training simulator.
 Additionally, robustness to external disturbances is evaluated by exposing the trained policies to wind perturbations during deployment, without any retraining or fine-tuning.
 
 \section{Simulator Validation}\label{sec:qualitative}
 As detailed in \autoref{sec:sim_frame}, our simulator utilizes a simplified model of quadrotor dynamics and aerodynamics. 
-To maintain a computationally efficient and generalizable framework, we omit secondary effects such as battery depletion on thrust, complex aerodynamic friction, and propeller rotational inertia. 
+To maintain a computationally efficient and generalizable framework, we omit secondary effects such as battery depletion on thrust, complex aerodynamic effects, and the propellers rotational inertia. 
 While these unmodeled dynamics can cumulatively lead to a significant sim-to-real gap, we aim to address this mismatch through \ac{DR}.
-
 To validate the reliability of this simplified approach, we benchmark our simulator's behavior against Gazebo, a high-fidelity physics engine widely adopted by the robotics community. 
-Specifically, we utilize the UAV models provided by the MRS UAV System~\cite{} within the Gazebo environment as our ground-truth reference for comparison.
+Specifically, we utilize the UAV models provided by the MRS UAV System within the Gazebo environment as our ground-truth reference for comparison.
+
+We separelty asses the respones of the body rates against a unit step, a variable amplitude and a variable frequency signals.
 \begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{./fig/plots/omega-xy-val/hypotheses.pdf}
-  \caption{\todo{}}
+  \caption{Pitch/Roll responses to unit step, variable amblitude and variable frequency signals.}
   \label{fig:wx-y-val}
 \end{figure}
-
-
+For the pitch and roll responses, the behavior observed in Gazebo and in our simulator is consistent.
+Minor discrepancies can be observed in the response of integration of the unit-step error, together with a slight overshoot in the variable-frequency signal.
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=1.0\textwidth]{fig/photos/placehldrs/sim-val2.png}
-    \caption{\todo{This is a placeholder figure, (I need to get the actual data)Velocity response in our sim and gazebo}}
-    \label{fig:vel_resp}
+  \centering
+  \includegraphics[width=1.0\textwidth]{./fig/plots/omega-z-val/hypotheses.pdf}
+  \caption{Yaw response to unit step, variable amblitude and variable frequency signals.}
+  \label{fig:wz-val}
 \end{figure}
 
+Similarly, the yaw reponse are close but there is some mismathc on the variable freuqency signal.
+In our simulator we saturate the yaw rate to $\pm 3$ rad/s and the yaw acceleartion to $\pm 5$ rad/$s^2$ to match with Gazebo. 
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=1.0\textwidth]{./fig/plots/throttle-val/hypotheses.pdf}
+%   \caption{Yaw response to unit step, variable amblitude and variable frequency signals.}
+%   \label{fig:throttle-val}
+% \end{figure}
+
+% Finally, the throttle response
+
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=1.0\textwidth]{fig/photos/placehldrs/sim-val2.png}
+%     \caption{\todo{This is a placeholder figure, (I need to get the actual data)Velocity response in our sim and gazebo}}
+%     \label{fig:vel_resp}
+% \end{figure}
 
 
 
 
-\section{Model-Free \& Model-Based}\label{sec:baseline}
-\subsection{Sample Efficency}
+
+\section{Model-Free against Model-Based}\label{sec:baseline}
+In this section, we compare two policies, one optimized using model-free \ac{RL} with \ac{PPO}, and the other using model-based \ac{RL} with \ac{BPTT}.
+The comparison is performed in terms of sample efficiency, mean reward, performance, transferability, and robustness.
+\subsection{Training Time}
+To evaluate the training time we measure the wall time agians the number of steps.
+It can be observed that the relationship between the steps and time is linear.
+Taking for \ac{BPTT} \textbf{7x} times less clock time to execute the same number of time steps than \ac{PPO}.
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/sample-eff/hypotheses.pdf}
-    \caption{\todo{}}
+    \caption{Wall time versus training steps for \ac{PPO} and \ac{BPTT}. }
 \end{figure}
+It is worth mentioning that the wall time is highly dependant on the frequency at which the network is optimized, as oftelny this procedure is the most time consuming.
+% For the model-free policy, backpropagation is produced every 100 steps, and for the model-based 
+For this comparison, the policies are optimized when losses for 50 stpes for 1024 parallel environments are collected, that is to say, every 51200 stpes. 
 
 \subsection{Discrete and Continuous Rewards}
 
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/rewards/hypotheses.pdf}
-    \caption{\todo{}}
+    \caption{Comparison between BPTT and PPO when the loss is countinuous or discrete.}
 \end{figure}
 
 \subsection{Performance}
@@ -153,39 +182,79 @@ where     $\theta = \omega \cdot t \cdot dt$  and $\omega = \text{speed}/\text{s
 
 
 
-\begin{table}[H]
-    \centering
-    \large
-    \caption{Performance comparison of policies trained with differentiable gradients versus PPO, evaluated in the proposed simulator and Gazebo environment.}
-\begin{tabular}{lll|ll}
-\toprule
-\multicolumn{1}{c}{} & \multicolumn{2}{c|}{BPTT}          & \multicolumn{2}{c}{PPO}           \\ \hline
-                       & \multicolumn{1}{c}{Ours} & Gazebo & \multicolumn{1}{c}{Ours} & Gazebo \\ \hline
-$N$                      & \multicolumn{1}{c}{}     &        & \multicolumn{1}{c}{}     &        \\ 
-$T_t$                 & \multicolumn{1}{c}{}     &        & \multicolumn{1}{c}{}     &        \\ 
-$SR$                     & \multicolumn{1}{c}{}     &        & \multicolumn{1}{c}{}     &        \\ 
-$T_f$                   & \multicolumn{1}{c}{}     &        & \multicolumn{1}{c}{}     &        \\ \bottomrule
-% Transfer               & \multicolumn{2}{c|}{Good}          & \multicolumn{2}{c}{Good}          \\ \hline
-\end{tabular}
-\end{table}
+% \begin{table}[H]
+%     \centering
+%     \large
+%     \caption{Performance comparison of policies trained with differentiable gradients versus PPO, evaluated in the proposed simulator and Gazebo environment.}
+% \begin{tabular}{lll|ll}
+% \toprule
+% \multicolumn{1}{c}{} & \multicolumn{2}{c|}{BPTT}          & \multicolumn{2}{c}{PPO}           \\ \hline
+%                        & \multicolumn{1}{c}{Ours} & Gazebo & \multicolumn{1}{c}{Ours} & Gazebo \\ \hline
+% $N$                      & \multicolumn{1}{c}{}     &        & \multicolumn{1}{c}{}     &        \\ 
+% $T_t$                 & \multicolumn{1}{c}{}     &        & \multicolumn{1}{c}{}     &        \\ 
+% $SR$                     & \multicolumn{1}{c}{}     &        & \multicolumn{1}{c}{}     &        \\ 
+% $T_f$                   & \multicolumn{1}{c}{}     &        & \multicolumn{1}{c}{}     &        \\ \bottomrule
+% % Transfer               & \multicolumn{2}{c|}{Good}          & \multicolumn{2}{c}{Good}          \\ \hline
+% \end{tabular}
+% \end{table}
+
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.8\textwidth]{fig/photos/placehldrs/vel_dist.png}
+%     \caption{\todo{This is a placeholder figure, (I need to get the actual data)}Wind response, gazebo?}
+%     \label{fig:wind}
+% \end{figure}
+
+
+\section{Control Abstraction Evaluation}\label{sec:ablation}
+In this section, we evaluate how the implemented control abstractions affect the sample efficiency, racing performance, as well as the transferability and robustness of the learned control policies.
+
+\subsection{Sample Efficency}
+To evaluate sample efficiency, the four policies are trained for 40 million steps under identical conditions, including the same randomization settings, loss function, network architecture, learning rate, and hyperparameters.
+We then analyze how the loss evolves throughout training.
 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{fig/photos/placehldrs/vel_dist.png}
-    \caption{\todo{This is a placeholder figure, (I need to get the actual data)}Wind response, gazebo?}
-    \label{fig:wind}
+    \includegraphics{fig/plots/sample-eff-ca/hypotheses.pdf}
+    \caption{Sample efficency of the different control abstractions.}
+    \label{samp-eff-ca}
 \end{figure}
 
+From \autoref{samp-eff-ca}, it can be observed that, as discussed in \autoref{met:ca}, the \ac{SRT} policy requires the longest training time to converge, since the network must implicitly learn the mapping between motor commands and body rates.
+Although this approach is slower to train, it has the advantage of requiring no controller gains or manual tuning.
+In contrast, the \ac{CTBR} policy converges significantly faster, reaching convergence after approximately 1.5 million steps.
+The geometric control abstractions, \ac{LVHR} and \ac{LVHR}+g, converge even faster, requiring only around 0.5 million steps.
+Despite their improved convergence speed, its woth noting that latter policies rely on carefully tuned gains to ensure stable behavior, which can be time consuming and task-dependant.
 
-\section{Control Abstraction}\label{sec:ablation}
-\todo{Plot gradients of backward and foorward passes to comare their quality..}
-\subsection{Sample Efficency}
+% \todo{Plot gradients of backward and foorward passes to comare their quality..}
+
 \subsection{Performance}
+To evaluate performance, the policies are further trained on a specific racing track.
+The selected track is commonly used in the literature, as it contains straight sections, high-curvature segments, and a split-S gate configuration, making it suitable for benchmarking agile flight performance.
+This circuit is commonly referred to as the UZH track, as it was designed by the University of Zurich.
+
+To generate trajectories passing through the gates, the time-optimal gate traversal planner proposed in~\cite{qin_time-optimal_2024} is used.
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/uzh-track/hypotheses.pdf}
+    \caption{Tracking error of the different control abstractions for the UZH racing track.}
+    \label{fig:uzh_ca}
 \end{figure}
+The data from \autoref{fig:uzh_ca} and \autoref{tab:uzh_ca} indicates that the X control abstraction achieves the best tracking perfromance with a \ac{RMSE} of X a succes rate of X and lap time of X.
+
+\begin{table}[H]
+    \centering
+    \caption{Position and Velocity \ac{RMSE} of the control abstractions.}
+\begin{tabular}{ccccc}
+    \hline
+RMSE  & SRT  & CTBR & LVHR & LVHR+g \\ \hline
+$\mathbf{p}$ & 0.14 & 0.14 & 0.14 & 0.14  \\
+$\mathbf{v}$ & 0.14 & 0.14 & 0.14 & 0.14 \\ \hline
+\end{tabular}
+\end{table}
+
 \subsection{Transferability and Robustness}
 \begin{figure}[H]
     \centering
@@ -201,6 +270,8 @@ $T_f$                   & \multicolumn{1}{c}{}     &        & \multicolumn{1}{c}
 \end{figure}
 % \section{Transferability to MRS UAV System}\label{sec:transferability}
 
+
+\section{Surrogate Gradient Analysis}
 \section{Real World Validation}\label{sec:realworld}
 
 

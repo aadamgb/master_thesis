@@ -41,12 +41,12 @@
                     minor tick num=1,       
                     legend pos=south east,
                     xlabel = \(t\),
-                    ylabel = {\(\omega_{b_1}/ \omega_{b_2}\)},
+                    ylabel = {\(\omega_{b_3}\)},
                 ]
             \draw[dashed, black] (axis cs:\pgfkeysvalueof{/pgfplots/xmin},1) -- (axis cs:\pgfkeysvalueof{/pgfplots/xmax},1);
             \addlegendimage{dashed, black}
-            \addplot[tabblue, thick] table[x=time, y=omega_x, col sep=comma] {data/wx_step_ours.csv};
-            \addplot[tabgreen, thick] table[x=time, y=omega_x, col sep=comma] {data/wx_step_gazebo.csv};
+            \addplot[tabblue, thick] table[x=time, y=omega_z, col sep=comma] {data/wz_step_ours.csv};
+            \addplot[tabgreen, thick] table[x=time, y=omega_z, col sep=comma] {data/wz_step_gazebo.csv};
             \legend{{reference}, {ours}, {gazebo}}
         \end{axis}
 
@@ -69,12 +69,12 @@
                     minor tick num=1,       
                     xlabel = \(t\),
                 ]
-            \addplot[dashed, black, thick] table[x=time, y=omega_x, col sep=comma] {data/ref_amp.csv};
-            \addplot[tabblue, thick] table[x=time, y=omega_x, col sep=comma] {data/wx_amp_ours.csv};
-            \addplot[tabgreen, thick] table[x=time, y=omega_x, col sep=comma] {data/wx_amp_gazebo.csv};
+            \addplot[dashed, black, thick] table[x=time, y=omega_z, col sep=comma] {data/ref_amp.csv};
+            \addplot[tabblue, thick] table[x=time, y=omega_z, col sep=comma] {data/wz_amp_ours.csv};
+            \addplot[tabgreen, thick] table[x=time, y=omega_z, col sep=comma] {data/wz_amp_gazebo.csv};
         \end{axis}
 
-        % --- Variable Frequency Response ---
+        % % --- Variable Frequency Response ---
         \begin{axis}[
                     title = {\large Variable Frequency},
                     name=plot3,
@@ -93,11 +93,10 @@
                     minor tick num=1,       
                     xlabel = \(t\),
                 ]
-            \addplot[dashed, black, thick] table[x=time, y=omega_x, col sep=comma] {data/ref_freq.csv};
-            \addplot[tabblue, thick] table[x=time, y=omega_x, col sep=comma] {data/wx_freq_ours.csv};
-            \addplot[tabgreen, thick] table[x=time, y=omega_x, col sep=comma] {data/wx_freq_gazebo.csv};
+            \addplot[dashed, black, thick] table[x=time, y=omega_z, col sep=comma] {data/ref_freq.csv};
+            \addplot[tabblue, thick] table[x=time, y=omega_z, col sep=comma] {data/wz_freq_ours.csv};
+            \addplot[tabgreen, thick] table[x=time, y=omega_z, col sep=comma] {data/wz_freq_gazebo.csv};
         \end{axis}
-        
-        \node[font=\Large\bfseries, above, yshift=10pt, xshift=12pt] at (current bounding box.north) {Pitch/Roll Responses};
+        \node[font=\Large\bfseries, above, yshift=10pt, xshift=12pt] at (current bounding box.north) {Yaw Response};
     \end{tikzpicture}
 \end{document}

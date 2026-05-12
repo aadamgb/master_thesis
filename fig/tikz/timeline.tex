@@ -1,0 +1,40 @@
+ \begin{circuitikz}[
+        timeline/.style={draw=blue!80, line width=1.5pt},
+        yearlabel/.style={font=\bfseries\large, color=blue!90!black},
+        speedlabel/.style={font=\bfseries, color=blue!70!black},
+        bar/.style={inner sep=0pt, minimum height=0.8cm, draw=white, line width=1pt},
+        % bullet/.style={circle, fill=blue!90!black, inner sep=2pt}
+    ]
+        % Define segment widths
+        \def\wA{3.0} \def\wB{3.0} \def\wC{3.0} \def\wD{3.0} \def\wE{3.0} \def\wF{3.0} %\def\wG{3.0}
+        
+        % Timeline Segments (Color Palette: Blues)
+        \node[bar, fill=blue!20, minimum width=\wA cm] (b1) at (\wA/2, 0) {$v_{\text{max}} = 0.6$ m/s};
+        \node[bar, fill=blue!35, minimum width=\wB cm, right=0pt of b1] (b2) {$v_{\text{max}} = 0.7$ m/s};
+        \node[bar, fill=blue!50, minimum width=\wC cm, right=0pt of b2] (b3) {$v_{\text{max}} = 2.0$ m/s};
+        \node[bar, fill=blue!65, minimum width=\wD cm, right=0pt of b3] (b4) {\color{white} $v_{\text{max}} = 10$ m/s};
+        \node[bar, fill=blue!85, minimum width=\wE cm, right=0pt of b4] (b5) {\color{white} $v_{\text{max}} = 22$ m/s};
+        \node[bar, fill=blue!85, minimum width=\wF cm, right=0pt of b5] (b6) {\color{white} $v_{\text{max}} = 22$ m/s};
+        % \node[bar, fill=blue!85, minimum width=\wF cm, right=0pt of b6] (b7) {\color{white} $v_{\text{max}} = 22$ m/s};
+
+        % Year Markers and Bullets
+        % 2016
+        \draw[timeline] (b1.north west) -- (b1.south west) node[above=1.0cm, yearlabel] {2016};
+        \node[below=1.0cm] at (b1.south west) {IROS ADR I};
+        
+        % 2017
+        \draw[timeline] (b2.north west) -- (b2.south west) node[below=0.8cm, yearlabel] {2017};
+        
+        % 2018
+        \draw[timeline] (b3.north west) -- (b3.south west) node[above=0.8cm, yearlabel] {2018};
+        
+        % 2019
+        \draw[timeline] (b4.north west) -- (b4.south west) node[below=0.8cm, yearlabel] {2019};
+        
+        % 2022
+        \draw[timeline] (b5.north west) -- (b5.south west) node[above=0.8cm, yearlabel] {2022};
+        
+        % Final vertical line
+        \draw[timeline] (b5.north east) -- (b5.south east);
+
+\end{circuitikz}

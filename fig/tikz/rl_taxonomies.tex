@@ -1,0 +1,84 @@
+\begin{circuitikz}[
+        node distance=1.5cm and 0.4cm,
+        rlblock/.style={
+            rectangle, 
+            draw=blue!70, 
+            fill=blue!5, 
+            very thick, 
+            rounded corners, 
+            minimum width=3.5cm, 
+            minimum height=1.3cm, 
+            align=center,
+            font=\bfseries,
+            % drop shadow={opacity=0.15}
+        },
+        rlarrow/.style={
+            -{Stealth[scale=1.0]},
+            thick,
+            draw=blue!60,
+            rounded corners=5pt
+        },
+        desc/.style={
+            text width=3cm,
+            % text height=4cm,
+            font=\small,
+            color=black!90,
+            align=left
+        },
+    ]
+        % Root
+        \node (root) [rlblock] {RL Algorithms};
+
+        % Level 1
+        \node (mf) [rlblock, below left=1.2cm and 1.5cm of root] {Model-Free \ac{RL}};
+        \node (mb) [rlblock, below right=1.2cm and 1.5cm of root] {Model-Based RL};
+
+        % Level 2 (Model-Free)
+        \node (po) [rlblock, below left=1.4cm and -0.8cm of mf] {Policy Optimization};
+        \node (po_des) [desc, below=0.3cm of po] {
+            \begin{itemize}
+                % \item A2C /A3C
+                \item \ac{PPO}  \\ \cite{kaufmannchampion-level2023, songreaching2023,ferede2025, ppo} 
+                \item  Policy Gradient
+                \item  A2C / A3C
+            \end{itemize}
+        };  
+        \node (ql) [rlblock, below right=1.4cm and -0.8cm of mf] {Q-Learning};
+        \node (ql_desc) [desc, below=0.3cm of ql] {
+            \begin{itemize}
+                \item Deep Q-Learning
+            \end{itemize}
+        }; 
+
+        % Level 2 (Model-Based)
+        \node (lm) [rlblock, below left=1.4cm and -0.8cm of mb] {Learn the Model};
+        \node (lm_desc) [desc, below=0.3cm of lm] {
+            \begin{itemize}
+                \item World Models \\ \cite{romero_dream_2025, verraest_skydreamer_2025, hafner_mastering_2024}
+            \end{itemize}
+        };  
+
+
+        \node (gm) [rlblock, below right=1.4cm and -0.8cm of mb] {Given the Model};
+        \node (gm_desc) [desc, below=0.3cm of gm] {
+            \begin{itemize}
+                \item \ac{BPTT}\\  \cite{zhang_back_2025, zhang_diffaero_2025, heeg_learning_2025, pan_learning_2026, ren_learning_2026}
+            \end{itemize}
+        };  
+
+
+        % Level 1 Connections
+        \draw [rlarrow] (root.south) -- +(0,-0.6) -| (mf.north);
+        \draw [rlarrow] (root.south) -- +(0,-0.6) -| (mb.north);
+
+        % Level 2 Connections
+        \draw [rlarrow] (mf.south) -- +(0,-0.7) -| (po.north);
+        \draw [rlarrow] (mf.south) -- +(0,-0.7) -| (ql.north);
+
+        \draw [rlarrow] (mb.south) -- +(0,-0.7) -| (lm.north);
+        \draw [rlarrow] (mb.south) -- +(0,-0.7) -| (gm.north);
+
+
+        \node (env) [draw, dashed, thick, blue!50, rounded corners, inner sep=0.4cm, fit=(gm) (gm_desc) ] {};
+\end{circuitikz}
+

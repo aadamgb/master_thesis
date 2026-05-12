@@ -4,6 +4,10 @@
 
 \definecolor{tabblue}{rgb}{0.0000, 0.4470, 0.7410}
 \definecolor{taborange}{rgb}{0.8500, 0.3250, 0.0980}
+\definecolor{tabgreen}{rgb}{0.4660, 0.6740, 0.1880}
+\definecolor{tabyellow}{rgb}{0.9290, 0.6940, 0.1250}
+\definecolor{tabpurple}{rgb}{0.4940, 0.1840, 0.5560}
+
 \begin{document}
 \begin{tikzpicture}
 
@@ -42,7 +46,7 @@
     % at={(plot1.right of south east)},
     anchor=left of south west,
     xshift=0.5cm,
-    width=7.5cm,
+    width=9.5cm,
     height=5cm,
     grid=both,
     minor grid style={dashed, gray!30},
@@ -50,36 +54,47 @@
     minor tick num=1,
     % xmode=log,
     xmin=0,
-    xmax={5*10^7},
-    ymin=0,
+    xmax={4*10^7},
+    ymin=-16,
     xlabel={Step},
-    ylabel={Wall Time [min]},
-    legend pos=north west,
+    ylabel={Loss},
+    legend pos=south east,
+    legend style={font=\footnotesize},
+    legend columns=2,
+    % xtick distance=1,
 ]
 
-\addplot[tabblue, thick]
+% SRT
+\addplot[tabblue, line width=1.2pt, tabgreen]
 table[
-    y expr=(\thisrow{Wall time} )/60,
-    % y expr=-\thisrow{Value},
-    x =Step,
-    col sep=comma
-] {data/bptt.csv};\addlegendentry{BPTT}
+    y expr=-\thisrow{Loss},
+    x=Step,
+    col sep=comma,
+] {data/metrics_srt.csv};\addlegendentry{SRT}
 
-% \addplot[taborange, thick]
-% table[
-%     y expr=(\thisrow{Wall time} - \tzero )/60,
-%     % x=Step,
-%     x=Step,
-%     col sep=comma
-% ] {data/traj_tracking_run_7.csv};
+% CTBR
+\addplot[tabblue, line width=1.2pt, tabblue]
+table[
+    y expr=-\thisrow{Loss},
+    x=Step,
+    col sep=comma,
+] {data/metrics_ctbr.csv};\addlegendentry{CTBR}
 
-\addplot [
-    domain=0:50000000, 
-    samples=1000, 
-    color=taborange,
-    thick
-    ]
-    {0.0000007*x};\addlegendentry{PPO}
+% LVHR
+\addplot[tabblue, line width=1.2pt, taborange]
+table[
+    y expr=-\thisrow{Loss},
+    x=Step,
+    col sep=comma,
+] {data/metrics_lvhr.csv};\addlegendentry{LVHR}
+
+% LVHR+g
+\addplot[tabblue, line width=1.2pt, tabpurple]
+table[
+    y expr=-\thisrow{Loss},
+    x=Step,
+    col sep=comma,
+] {data/metrics_lvhr+g.csv};\addlegendentry{LVHR+g}
 
 
 

@@ -1,0 +1,134 @@
+\begin{circuitikz}[
+        node distance=0.8cm and 1.2cm,
+        block/.style={
+            rectangle, 
+            draw=blue!70, 
+            fill=blue!5, 
+            very thick, 
+            rounded corners, 
+            minimum width=3.5cm, 
+            minimum height=1.2cm, 
+            align=center,
+            % drop shadow={opacity=0.2}
+        },
+        block-s/.style={
+            rectangle, 
+            draw=blue!70, 
+            fill=blue!5, 
+            very thick, 
+            rounded corners, 
+            minimum width=2.5cm, 
+            minimum height=0.6cm, 
+            align=center,
+            % drop shadow={opacity=0.2}
+        },
+        challenge/.style={
+            text width=3.8cm,
+            font=\footnotesize,
+            color=black!90,
+            align=left
+        },
+        arrow/.style={
+            -{Stealth[scale=1.2]},
+            ultra thick,
+            draw=blue!80
+        },
+        header/.style={
+            font=\bfseries\color{blue!80!black},
+            inner sep=5pt
+        }
+    ]
+
+    % Perception
+    % \node (sens) [block-s] {
+    %     \textbf{Sensors} 
+    %     % \textit{"What do I sense?"}
+    % };
+    % \node (sens_desc) [challenge, below=0.3cm of sens] {
+    %     \begin{itemize}
+    %         \item Sensory data processing
+    %         \item Real-time gate detection
+    %         \item Sensor fusion (IMU, Vision)
+    %     \end{itemize}
+    % };
+
+    % Perception
+    \node (perc) [block] {
+        \textbf{Perception} \\
+        \textit{"Where am I?"}
+    };
+    \node (perc_desc) [challenge, below=0.3cm of perc] {
+        \begin{itemize}
+            \item Sensory data processing
+            \item Real-time gate detection
+            \item Sensor fusion \\ \tiny(VIO = IMU + Vision)
+        \end{itemize}
+    };
+
+    % \node (perc) [block] {
+    %     \textbf{Perception} \\
+    %     \textit{"What do I sense?"}
+    % };
+    % \node (perc_desc) [challenge, below=0.3cm of perc] {
+    %     \begin{itemize}
+    %         \item Sensory data processing
+    %         \item Real-time gate detection
+    %         \item Sensor fusion (IMU, Vision)
+    %     \end{itemize}
+    % };
+
+    % State Estimation
+    % \node (state) [block, right=of perc] {
+    %     \textbf{State Estimation} \\
+    %     \textit{"Where am I?"}
+    % };
+    % \node (state_desc) [challenge, below=0.3cm of state] {
+    %     \begin{itemize}
+    %         \item Noisy \& uncertain data
+    %         \item High-speed localization
+    %         \item Drift compensation
+    %     \end{itemize}
+    % };
+
+    % Planning
+    \node (plan) [block, right=of perc] {
+        \textbf{Planning} \\
+        \textit{"Where do I go?"}
+    };
+    \node (plan_desc) [challenge, below=0.3cm of plan] {
+        \begin{itemize}
+            \item Safe \& efficient paths
+            \item Minimum-time trajectories
+            \item Obstacle avoidance
+        \end{itemize}
+    };
+
+    % Control
+    \node (ctrl) [block, right=of plan] {
+        \textbf{Control} \\
+        \textit{"How do I get there?"}
+    };
+    \node (ctrl_desc) [challenge, below=0.3cm of ctrl] {
+        \begin{itemize}
+            \item Non-linear dynamics
+            \item Underactuated systems
+            \item Actuator limits
+        \end{itemize}
+    };
+
+    % Arrows
+    \draw [arrow] (perc) -- (plan);
+    % \draw [arrow] (perc) -- (state);
+    % \draw [arrow] (state) -- (plan);
+    \draw [arrow] (plan) -- (ctrl);
+
+    % Feedback Loop
+    % \draw [arrow] (ctrl.north) .. controls +(0,2.5) and +(0,2.5) .. (perc.north);
+        % node[midway, fill=white, font=\bfseries] {State \& Perception Feedback};
+
+    % Environment Interaction
+    \node (env) [draw, dashed, thick, blue!50, rounded corners, inner sep=0.4cm, fit=(perc) (ctrl) (perc_desc) (ctrl_desc)] {};
+    \node [above left, blue!70] at (env.south east) {\textbf{ADR Challenges }};
+
+\end{circuitikz}
+

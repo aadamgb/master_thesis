@@ -1,54 +1,168 @@
 
 \chapter{Introduction\label{chap:introduction}}
 
-% First, introduce the reader to the research topic.
-% Start with the most general view and slowly converge to the particular field, sub-field, and the challenges you face.
-% You can cite others' work here \cite{baca2021mrs}.
-
 % ---------------------------------------------------------
 % What is the problem?
 % Why is it important?
 % Why is the problem hard? What makes it challenging?
 % ---------------------------------------------------------
-
+This chapter 
 \section{Background}
-\ac{ADR}
-\textbf{*Give context about the problem*}
+% \ac{ADR} has become a nice platform in robotics to develop and apply novel control techniques in real world scenarios.
+% Tha aim of this sport is to navigante through a sequecne of gates in the minimum time possible, pushing the paltform's capaebilities to its limits.
+% To keep the platform agile and lightweight, as less as posible is used, a common \ac{ADR} drone consits of a quadrotor equiped with RGB camera, an \ac{IMU}, an onboard computer and a flight controller  all powered by a lipo battery.
 
-{\color{blue} What is ADR?}
+% \ac{ADR} comes with many challenges, that can can be divded in the following subgroups.
 
-- Navigate through a sequence of gates as fast as possible within the platform capabilities...
+% \begin{figure}[H]
+%     \centering
+%     \resizebox{1.0\textwidth}{!}{\input{fig/tikz/intro-diag.tex}}
+%     \caption{The modular navigation stack for ADR and its associated challeneges.}
+% \end{figure}
 
-{\color{blue} What are the challenges of ADR?}
+% The control stack starts at the \textbf{perceprion} level, this involves getting the sensory data produced by the sensors, camera and imu, shich is often nosiy and uncertain, at the perception level the challenge is to porcess this data, filter it and fuse it to produce  estimate the position of the gates.
+% fusing camera an imu is known as \ac{VIO} 
+% and estimate the state of the drone, to do so filtering techniques that combiene a known model with sensoty information such \ac{EKF} are used, this allows to locate the drone 
+% Given an estimate of the drone state and the environment the next step is \textbf{planning} an optimal trajectory, which in \ac{ADR} is of interest to be a minimum trajectory that passses thorugh the gates and avoids collsions, planning can be computantionally demanding for this reason it is od interest to have efficient plannining approaches,
+% Finally the last step of the pipeline is control, given a planned trajectory, what which are the control inputs tha can track it with the minimum error possoible, this is hard due to the highl nonlinear dynamics of the quadrotor and since it is an underactuated system only 4 out od \ac{DOFs} can be controlled, aditionally yaw has low control autorithy and actuators tend to saturate.
 
-\begin{itemize}
-    \item \textbf{Where am I?} $\rightarrow$ Perception
+% Many of these challenges are coomon in robotics, and several methods exist to adress them. 
+% Learning methods based on optimizing neural netowrks are becoming more popular due to their lower latency inference in real time and robussnes to noise.
+% Individual parts of the navigation stack can be learned by a neural netowrk, for example a CNN can be used to take VIO data and detect a gate, a MLPs can be used to plan or control the drone, combinations of the stack such as perecption and planning, or planning and control can be learnd or even the enitre stack can be learnd, this is known as end to end control.
+% Learning based methods have many advantages, howver the optimization process of the network requires alot of data and current otpimization approaches can be sample inefficent.
+% Since it can be impractical to gather this data in the real world, simulated environments that mimic thr real wolrd data ditribution are used allowing to run thousnds of paralel environments,
+% aditionally, current research directions have started to leverage automatic diffrentiation enginines of machine leanring frameworks to leverage the gradients from a cost function to the policy parameters greately imptoving the sample efficeny and no longer trating the quadrotor dynamics as a black box.
 
-    challenges: limited sensory data, noisy and uncertain partial observability
-    
-    \item \textbf{Where do I go?} $\rightarrow$ Planning
+% In this thesis we precviciely invetigate this direction, we focus on using differentiablity to learn the control part of the navigation stack, probvign that is a method with mcuh potential, 
 
-    safe efficient path planning
+\ac{ADR} has emerged as a compelling platform in robotics for developing and deploying novel control techniques in real-world scenarios.
+The aim of this sport is to navigate through a sequence of gates in minimum time, pushing the platform’s capabilities to their limits~\cite{hanover_autonomous_2024}.
+To maintain agility and low weight, the hardware is kept minimal; a typical \ac{ADR} drone consists of a quadrotor equipped with an RGB camera, an \ac{IMU}, an onboard computer, a flight controller, brushless \ac{DC} motors with propellers, and \ac{ESC} all powered by a \ac{LiPo} battery~\cite{foehn_agilicious_2022}.
 
-    \item \textbf{How do I get there?}  $\rightarrow$Control
+\ac{ADR} presents several challenges, which can be divided into the following subgroups depicted in \autoref{fig:intro}.
 
-    Handle the non-linear underactuated dynamics to execute the planned motion under actuator limits and model uncertainties
-\end{itemize}
+\begin{figure}[H]
+    \centering
+    \resizebox{1.0\textwidth}{!}{\input{fig/tikz/intro-diag.tex}}
+    \caption{The modular navigation stack for ADR and its associated challenges.}
+    \label{fig:intro}
+\end{figure}
+
+The control stack begins at the \textbf{perception} level.
+This stage involves processing sensory data from the camera and IMU, which is inherently noisy and uncertain.
+The main challenge at this level is to filter and fuse this data to estimate both the position of the gates and the state of the drone.
+The fusion of camera and IMU measurements is known as \ac{VIO}.
+State estimation is typically performed using filtering techniques that combine a system model with sensor measurements, such as the \ac{EKF} or variants.
+Given an estimate of the drone state and the environment, the next step is \textbf{planning}.
+The objective in \ac{ADR} is to compute a minimum-time trajectory that passes through the gates while avoiding collisions.
+Trajectory planning can be computationally demanding, making efficient approaches particularly important.
+The final stage of the pipeline is \textbf{control}.
+Given a planned trajectory, the goal is to determine the control inputs that track it with minimal error.
+This task is challenging due to the highly nonlinear dynamics of the quadrotor.
+Additionally, the system is underactuated, with only four out of the six \ac{DOFs} directly controllable.
+Moreover, yaw control authority is typically limited, and actuator saturation further constrains performance.
+
+Many of these challenges are common in robotics, and a variety of methods have been proposed to address them.
+Learning-based methods, particularly those relying on neural networks, are gaining popularity due to their low-latency inference and robustness to noise.
+Individual components of the navigation stack can be learned using neural networks.
+For instance, \ac{CNNs} can process \ac{VIO} data to detect gates, while \ac{MLPs}  can be used for planning or control.
+Combinations of multiple stages, such as perception and planning or planning and control, can also be learned jointly.
+In some cases, the entire pipeline is learned end-to-end.
+Learning-based approaches offer several advantages; however, training these models typically requires large amounts of data, and current optimization methods can be sample inefficient.
+Since collecting such data in real-world settings is often impractical, simulated environments that approximate real-world distributions are commonly used, enabling thousands of parallel training instances.
+Recent research has also explored the use of \ac{ADE} in \ac{ML} frameworks to propagate gradients from a cost function to policy parameters.
+This approach significantly improves sample efficiency and avoids treating the quadrotor dynamics as a black box.
+
+In this thesis, we investigate this direction by focusing on the use of differentiability to learn the control component of the navigation stack.
+We aim to demonstrate that this approach is a promising avenue for research in robotics and particulalry in \ac{ADR}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth, height=0.4\textwidth]{fig/photos/a2rl.png}
+    \caption{Long eexposure photography in the a2rl drone racing championship.}
+\end{figure}
+
+\todo{Add citations}
+% \section{Related Work}
+
+
+% The evolution of \ac{ADR} has progressed from early academic benchmarks in IROS competitions from 2016-2018 \cite{iros2016, iros2017, iros2018} where raching few meters per second, to more profesionalized racing competitions from 2019 to this date,where drones can go up to hundred kilometer per hour and outperporfimng porfessional fpv pilots.
+% Major breakthrough was in 2019, where teams competing at the AlphPiolt   cometition, approeached sppeed of ten meters per second, and in 2024 in the a2rl dronce champions lague \cite{a2rl} autonomous drones outperformed champions fpv pilots.
+% Key advancements that enabeld this milestopes was 
+
+% The trend from the AlphaPilot competition \cite{lockheedmartinAlphaPilotDrone} to this date has been adopting learning based methods to the navigation stack, in \cite{foehnalphapilot2021} the navigation pipline passed \ac{VIO} data and gate detections to an \ac{EKF} state estimation and planned accordingly unsing a Sampling-Based Receding Horizon Path Planning. Then for the control they used a cascade position and attitude controllers. The only part of the pipline that used neural netorks was for th computer vision algorithms for detecting the gates.
+% Later on in  \cite{kaufmannchampion-level2023}, a similar gate detection method was used, but the planning and control part were replaced a feed-foreard \ac{MLP}.
+% On a similar setup \cite{songreaching2023}, the authors showed how a model-free \ac{RL} outperformed optimal control thecniques.
+% In \cite{romero_dream_2025,verraest_skydreamer_2025} the authors implemented model-based \ac{RL} where they learned a world model and trained in an actor critic network in imagined rollaout using an architecture similar of \cite{hafner_mastering_2024}. 
+% In the latter works where \ac{RL} was used the main disdvantage of the methos where training times and sample efficency, for a complex \ac{RL} such as the one used in \cite{verraest_skydreamer_2025} training took up to $50$ hours to complete, which can greatly slow the reserach process.
+
+% In recent works, reserchars have been stated to backpropagate the gradients from an objective function through the navigation stack and used the gradients to directly optimize the policies, no longer treaitng the quadrotor model as a blackox for the network, greatly imporving sample efficency.
+% The work of  \cite{zhang_back_2025} pioneerd this reaearch direction, achivieng vision-based agile flight in cluttered environments. 
+% In their method, they trained a \ac{CRNN} and model the quadrotor as a double integrator.
+% A differentiable simulation framework is presented in \cite{zhang_diffaero_2025}, their simumlator arhitecture has served as an inspiration to build the simulation of our project.
+% The authors of \cite{heeg_learning_2025}, provide another highly efficient differentiable quadrotor framework built in JAX to learn quadrotor stabiulization from visual features, and compare their method with standard \ac{PPO}.
+% Building on the work of \cite{heeg_learning_2025} and leveraging the high smple efficeny the authors of \cite{pan_learning_2026,ren_learning_2026} adapt their policy in real time leraning from real-world data.
+% % ---------------------------------------------------------
+% % How far has existing work come? What is the frontier?
+% % Why hasn’t the problem been solved? What is the stumbling block?
+% % 
+% % Present the state of the art, how do the different research labs approach this problem
+
+% \subsubsection{Open Questions}
+
+% \begin{itemize}
+%     \item How to improve sample efficency
+%     \item Generalization to multiple tasks (how to race while avoiding obstacles, how to race agains other drones)
+%     \item Transferability of the conterllers under unmodeled effects (sim2real transfer)
+% \end{itemize}
 
 \section{Related Work}
-% ---------------------------------------------------------
-% How far has existing work come? What is the frontier?
-% Why hasn’t the problem been solved? What is the stumbling block?
 
-Present the state of the art, how do the different research labs approach this problem
+The evolution of \ac{ADR} has progressed from early academic benchmarks in the IROS competitions between 2016 and 2018 \cite{iros2016, iros2017, iros2018}, where drones reached speeds of only a few meters per second, to highly professionalized racing events since 2019, where autonomous drones can exceed 100~km/h and outperform professional FPV pilots.
+A major breakthrough occurred during the \textit{AlphaPilot} competition in 2019, where teams achieved speeds close to 10~m/s, and more recently in the A2RL Drone Champions League \cite{a2rl}, where autonomous systems surpassed human champions.
+These milestones were enabled by advances in perception, planning, control, and learning-based methods.
 
-\subsubsection{Open Questions}
+\begin{figure}[H]
+    \centering
+    \resizebox{1.0\textwidth}{!}{\input{fig/tikz/timeline.tex}}
+    \caption{The modular navigation stack for ADR and its associated challenges.}
+    \label{fig:introo}
+\end{figure}
 
-\begin{itemize}
-    \item How to improve sample efficency
-    \item Generalization to multiple tasks (how to race while avoiding obstacles, how to race agains other drones)
-    \item Transferability of the conterllers under unmodeled effects (sim2real transfer)
-\end{itemize}
+Since the AlphaPilot competition \cite{lockheedmartinAlphaPilotDrone}, there has been a clear trend toward incorporating learning-based components into the navigation stack.
+In \cite{foehnalphapilot2021}, the pipeline combined \ac{VIO} and gate detections within an \ac{EKF} for state estimation, followed by trajectory planning using sampling-based receding horizon methods.
+Control was implemented through a cascade of position and attitude controllers, while neural networks were used exclusively for visual gate detection.
+Subsequent work in \cite{kaufmannchampion-level2023} retained a similar perception pipeline but replaced planning and control with a feedforward \ac{MLP}, optimized using \ac{PPO} \cite{ppo}.
+In a related setup, \cite{songreaching2023} demonstrated that model-free \ac{RL} could outperform traditional optimal control approaches.
+
+More recent approaches have explored model-based \ac{RL}, where a learned world model enables training through imagined rollouts.
+In \cite{romero_dream_2025, verraest_skydreamer_2025}, the authors adopt an actor--critic architecture inspired by \cite{hafner_mastering_2024}.
+While these methods achieve strong performance, they suffer from high training times and limited sample efficiency; for instance, training in \cite{verraest_skydreamer_2025} can take up to 50 hours, significantly slowing down the research cycle.
+
+To address these limitations, recent work has shifted toward differentiable approaches that enable backpropagation of gradients from an objective function through the entire navigation stack, this is known as \ac{BPTT}.
+This paradigm avoids treating the quadrotor dynamics as a black box and substantially improves sample efficiency.
+The work of \cite{zhang_back_2025} pioneered this direction, achieving agile vision-based flight in cluttered environments using a \ac{CRNN} and a simplified double-integrator model.
+A differentiable simulation framework is introduced in \cite{zhang_diffaero_2025}, which has inspired the simulator design used in this work.
+Similarly, \cite{heeg_learning_2025} presents an efficient differentiable quadrotor framework implemented in JAX for learning stabilization from visual features, and compares it against standard \ac{PPO}.
+Building on this line of work, \cite{pan_learning_2026, ren_learning_2026} demonstrate real-time policy adaptation using real-world data, leveraging the improved sample efficiency of differentiable methods.
+
+aaaa
+\begin{figure}[H]
+    \centering
+    \resizebox{1.0\textwidth}{!}{\input{fig/tikz/rl_taxonomies.tex}}
+    \caption{The modular navigation stack for ADR and its associated challenges.}
+    \label{fig:rl_tax}
+\end{figure}
+
+
+% \subsubsection{Open Questions}
+
+% \begin{itemize}
+%     \item How to further improve sample efficiency in learning-based approaches.
+%     \item How to achieve robust generalization across tasks, such as obstacle avoidance and multi-agent racing.
+%     \item How to ensure transferability of learned controllers under unmodeled dynamics (sim-to-real transfer).
+% \end{itemize}
+
 \section{Structure and Objectives}
 
 

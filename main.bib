@@ -25,16 +25,6 @@
   copyright = {Creative Commons Attribution 4.0 International}
 }
 
-@article{JiayuChen2025,
-  doi = {10.48550/ARXIV.2412.11764},
-  url = {https://arxiv.org/abs/2412.11764},
-  author = {Chen,  Jiayu and Yu,  Chao and Xie,  Yuqing and Gao,  Feng and Chen,  Yinuo and Yu,  Shu'ang and Tang,  Wenhao and Ji,  Shilong and Mu,  Mo and Wu,  Yi and Yang,  Huazhong and Wang,  Yu},
-  keywords = {Robotics (cs.RO),  Machine Learning (cs.LG),  FOS: Computer and information sciences,  FOS: Computer and information sciences},
-  title = {What Matters in Learning A Zero-Shot Sim-to-Real RL Policy for Quadrotor Control? A Comprehensive Study},
-  publisher = {arXiv},
-  year = {2024},
-  copyright = {Creative Commons Attribution 4.0 International}
-}
 
 
 @article{ASTROM1965174,
@@ -99,44 +89,458 @@
 
 
 
-@article{baca2021mrs,
-  author = {Baca, Tomas and Petrlik, Matej and Vrba, Matous and Spurny, Vojtech and Penicka, Robert and Hert, Daniel and Saska, Martin},
-  issue = {1},
-  journal = {{Journal of Intelligent {\&} Robotic Systems}},
-  month = {05},
-  number = {26},
-  pages = {1--28},
-  publisher = {Springer},
-  title = {{The MRS UAV System: Pushing the Frontiers of Reproducible Research, Real-world Deployment, and Education with Autonomous Unmanned Aerial Vehicles}},
-  type = {article},
-  volume = {102},
-  year = {2021},
-}
 
-@inproceedings{baca2016embedded,
-  author = {Baca, Tomas and Loianno, Giuseppe and Saska, Martin},
-  booktitle = {{IEEE International Conference on Methods and Models in Automation and Robotics (MMAR)}},
-  organization = {IEEE},
-  pages = {992--997},
-  title = {{Embedded Model Predictive Control of Unmanned Micro Aerial Vehicles}},
-  type = {inproceedings},
-  year = {2016},
-}
-
-@article{benallegue2008high,
-  author = {Benallegue, Abdelaziz and Mokhtari, Abdellah and Fridman, Leonid},
-  journal = {International Journal of Robust and Nonlinear Control: IFAC-Affiliated Journal},
-  number = {4-5},
-  pages = {427--440},
-  publisher = {Wiley Online Library},
-  title = {{High-order sliding-mode observer for a quadrotor UAV}},
-  type = {article},
-  volume = {18},
-  year = {2008},
+@article{foehnalphapilot2021,
+	title = {{AlphaPilot}: {Autonomous} {Drone} {Racing}},
+	shorttitle = {{AlphaPilot}},
+	url = {http://arxiv.org/abs/2005.12813},
+	doi = {10.48550/arXiv.2005.12813},
+	abstract = {This paper presents a novel system for autonomous, vision-based drone racing combining learned data abstraction, nonlinear ﬁltering, and time-optimal trajectory planning. The system has successfully been deployed at the ﬁrst autonomous drone racing world championship: the 2019 AlphaPilot Challenge. Contrary to traditional drone racing systems, which only detect the next gate, our approach makes use of any visible gate and takes advantage of multiple, simultaneous gate detections to compensate for drift in the state estimate and build a global map of the gates. The global map and drift-compensated state estimate allow the drone to navigate through the race course even when the gates are not immediately visible and further enable to plan a near time-optimal path through the race course in real time based on approximate drone dynamics. The proposed system has been demonstrated to successfully guide the drone through tight race courses reaching speeds up to 8 m/s and ranked second at the 2019 AlphaPilot Challenge.},
+	language = {en},
+	publisher = {arXiv},
+	author = {Foehn, Philipp and Brescianini, Dario and Kaufmann, Elia and Cieslewski, Titus and Gehrig, Mathias and Muglikar, Manasi and Scaramuzza, Davide},
+	month = aug,
+	year = {2021},
+	note = {arXiv:2005.12813 [cs]},
+	keywords = {Computer Science - Robotics, Computer Science - Computer Vision and Pattern Recognition, Electrical Engineering and Systems Science - Systems and Control},
+	annote = {Comment: This paper is an extended version of an accepted publication from Robotics: Science and Systems, 2020. This version has been accepted for publication in Autonomous Robots (Springer). Please cite as "AlphaPilot: Autonomous Drone Racing", P. Foehn, Autonomous Robots 2021. Associated video at https://youtu.be/DGjwm5PZQT8},
+	file = {PDF:C\:\\Users\\adame\\Zotero\\storage\\YNEZV9F2\\Foehn et al. - 2021 - AlphaPilot Autonomous Drone Racing.pdf:application/pdf},
 }
 
 
 
+@article{kaufmannchampion-level2023,
+	title = {Champion-level drone racing using deep reinforcement learning},
+	volume = {620},
+	issn = {0028-0836, 1476-4687},
+	url = {https://www.nature.com/articles/s41586-023-06419-4},
+	doi = {10.1038/s41586-023-06419-4},
+	language = {en},
+	number = {7976},
+	journal = {Nature},
+	author = {Kaufmann, Elia and Bauersfeld, Leonard and Loquercio, Antonio and Müller, Matthias and Koltun, Vladlen and Scaramuzza, Davide},
+	month = aug,
+	year = {2023},
+	pages = {982--987},
+}
 
 
 
+@article{songreaching2023,
+	title = {Reaching the {Limit} in {Autonomous} {Racing}: {Optimal} {Control} versus {Reinforcement} {Learning}},
+	volume = {8},
+	issn = {2470-9476},
+	shorttitle = {Reaching the {Limit} in {Autonomous} {Racing}},
+	url = {http://arxiv.org/abs/2310.10943},
+	doi = {10.1126/scirobotics.adg1462},
+	abstract = {A central question in robotics is how to design a control system for an agile mobile robot. This paper studies this question systematically, focusing on a challenging setting: autonomous drone racing. We show that a neural network controller trained with reinforcement learning (RL) outperformed optimal control (OC) methods in this setting. We then investigated which fundamental factors have contributed to the success of RL or have limited OC. Our study indicates that the fundamental advantage of RL over OC is not that it optimizes its objective better but that it optimizes a better objective. OC decomposes the problem into planning and control with an explicit intermediate representation, such as a trajectory, that serves as an interface. This decomposition limits the range of behaviors that can be expressed by the controller, leading to inferior control performance when facing unmodeled effects. In contrast, RL can directly optimize a task-level objective and can leverage domain randomization to cope with model uncertainty, allowing the discovery of more robust control responses. Our findings allowed us to push an agile drone to its maximum performance, achieving a peak acceleration greater than 12 times the gravitational acceleration and a peak velocity of 108 kilometers per hour. Our policy achieved superhuman control within minutes of training on a standard workstation. This work presents a milestone in agile robotics and sheds light on the role of RL and OC in robot control.},
+	language = {en},
+	number = {82},
+	urldate = {2026-02-13},
+	journal = {Science Robotics},
+	author = {Song, Yunlong and Romero, Angel and Mueller, Matthias and Koltun, Vladlen and Scaramuzza, Davide},
+	month = sep,
+	year = {2023},
+	note = {arXiv:2310.10943 [cs]},
+	keywords = {Computer Science - Robotics, Computer Science - Machine Learning},
+	pages = {eadg1462},
+	file = {PDF:C\:\\Users\\adame\\Zotero\\storage\\IM2PKCT8\\Song et al. - 2023 - Reaching the Limit in Autonomous Racing Optimal Control versus Reinforcement Learning.pdf:application/pdf},
+}
+
+@misc{lockheedmartinAlphaPilotDrone,
+	author = {},
+	title = {{A}lpha{P}ilot {A}{I} {D}rone {I}nnovation {C}hallenge --- lockheedmartin.com},
+	howpublished = {\url{https://www.lockheedmartin.com/en-us/news/events/ai-innovation-challenge.html}},
+	year = {},
+	note = {[Accessed 30-04-2026]},
+}
+
+
+
+@article{iros2016,
+  title = {The IROS 2016 Competitions [Competitions]},
+  volume = {24},
+  ISSN = {1558-223X},
+  url = {http://dx.doi.org/10.1109/MRA.2016.2646090},
+  DOI = {10.1109/mra.2016.2646090},
+  number = {1},
+  journal = {IEEE Robotics \& amp; Automation Magazine},
+  publisher = {Institute of Electrical and Electronics Engineers (IEEE)},
+  author = {Moon,  Hyungpil and Sun,  Yu and Baltes,  Jacky and Kim,  Si Jung},
+  year = {2017},
+  month = Mar,
+  pages = {20-29},
+}
+@misc{iros2017,
+	author = {Jung, Sunggoo and Hwang, Sunyou and Shin, Heemin and  Prof. Hyunchul Shim, David},
+	title = {},
+	howpublished = {\url{https://sunyouh.github.io/projects/adr2017}},
+	year = {2017},
+	note = {[Accessed 30-04-2026]},
+}
+
+@misc{iros2018,
+	author = {},
+	title = {{C}ompetitions | iros --- iros2018.org},
+	howpublished = {\url{https://www.iros2018.org/competitions}},
+	year = {},
+	note = {[Accessed 30-04-2026]},
+}
+@misc{a2rl,
+	author = {},
+	title = {},
+	howpublished = {\url{https://a2rl.io/autonomous-drone-race}},
+	year = {},
+	note = {[Accessed 30-04-2026]},
+}
+
+
+
+@misc{romero_dream_2025,
+	title = {Dream to {Fly}: {Model}-{Based} {Reinforcement} {Learning} for {Vision}-{Based} {Drone} {Flight}},
+	shorttitle = {Dream to {Fly}},
+	url = {http://arxiv.org/abs/2501.14377},
+	doi = {10.48550/arXiv.2501.14377},
+	abstract = {Autonomous drone racing has risen as a challenging robotic benchmark for testing the limits of learning, perception, planning, and control. Expert human pilots are able to agilely fly a drone through a race track by mapping the real-time feed from a single onboard camera directly to control commands. Recent works in autonomous drone racing attempting direct pixel-tocommands control policies (without explicit state estimation) have relied on either intermediate representations that simplify the observation space or performed extensive bootstrapping using Imitation Learning (IL). This paper introduces an approach that learns policies from scratch, allowing a quadrotor to autonomously navigate a race track by directly mapping raw onboard camera pixels to control commands, just as human pilots do. By leveraging model-based reinforcement learning (RL)—specifically DreamerV3—we train visuomotor policies capable of agile flight through a race track using only raw pixel observations. While model-free RL methods such as PPO struggle to learn under these conditions, DreamerV3 efficiently acquires complex visuomotor behaviors. Moreover, because our policies learn directly from pixel inputs, the perception-aware reward term employed in previous RL approaches to guide the training process is no longer needed. Our experiments demonstrate in both simulation and real-world flight how the proposed approach can be deployed on agile quadrotors. This approach advances the frontier of vision-based autonomous flight and shows that modelbased RL is a promising direction for real-world robotics.},
+	language = {en},
+	urldate = {2026-02-13},
+	publisher = {arXiv},
+	author = {Romero, Angel and Shenai, Ashwin and Geles, Ismail and Aljalbout, Elie and Scaramuzza, Davide},
+	month = jan,
+	year = {2025},
+	note = {arXiv:2501.14377 [cs]},
+	keywords = {Computer Science - Robotics},
+	annote = {Comment: 11 pages, 7 Figures},
+	file = {PDF:C\:\\Users\\adame\\Zotero\\storage\\EQ5MSDS3\\Romero et al. - 2025 - Dream to Fly Model-Based Reinforcement Learning for Vision-Based Drone Flight.pdf:application/pdf},
+}
+
+
+@misc{verraest_skydreamer_2025,
+	title = {{SkyDreamer}: {Interpretable} {End}-to-{End} {Vision}-{Based} {Drone} {Racing} with {Model}-{Based} {Reinforcement} {Learning}},
+	shorttitle = {{SkyDreamer}},
+	url = {http://arxiv.org/abs/2510.14783},
+	doi = {10.48550/arXiv.2510.14783},
+	abstract = {Autonomous drone racing (ADR) systems have recently achieved champion-level performance, yet remain highly specific to drone racing. While end-to-end vision-based methods promise broader applicability, no system to date simultaneously achieves full sim-to-real transfer, onboard execution, and champion-level performance. In this work, we present SkyDreamer, to the best of our knowledge, the first end-to-end vision-based ADR policy that maps directly from pixel-level representations to motor commands. SkyDreamer builds on informed Dreamer, a model-based reinforcement learning approach where the world model decodes to privileged information only available during training. By extending this concept to end-to-end visionbased ADR, the world model effectively functions as an implicit state and parameter estimator, greatly improving interpretability. SkyDreamer runs fully onboard without external aid, resolves visual ambiguities by tracking progress using the state decoded from the world model’s hidden state, and requires no extrinsic camera calibration, enabling rapid deployment across different drones without retraining. Real-world experiments show that SkyDreamer achieves robust, high-speed flight, executing tight maneuvers such as an inverted loop, a split-S and a ladder, reaching speeds of up to 21 m/s and accelerations of up to 6 g. It further demonstrates a non-trivial visual sim-to-real transfer by operating on poor-quality segmentation masks, and exhibits robustness to battery depletion by accurately estimating the maximum attainable motor RPM and adjusting its flight path in real-time. These results highlight SkyDreamer’s adaptability to important aspects of the reality gap, bringing robustness while still achieving extremely high-speed, agile flight.},
+	language = {en},
+	urldate = {2026-02-13},
+	publisher = {arXiv},
+	author = {Verraest, Aderik and Bahnam, Stavrow and Ferede, Robin and Croon, Guido de and Wagter, Christophe De},
+	month = oct,
+	year = {2025},
+	note = {arXiv:2510.14783 [cs]},
+	keywords = {Computer Science - Robotics},
+	file = {PDF:C\:\\Users\\adame\\Zotero\\storage\\9QIK9E2H\\Verraest et al. - 2025 - SkyDreamer Interpretable End-to-End Vision-Based Drone Racing with Model-Based Reinforcement Learni.pdf:application/pdf},
+}
+
+
+@misc{hafner_mastering_2024,
+	title = {Mastering {Diverse} {Domains} through {World} {Models}},
+	url = {http://arxiv.org/abs/2301.04104},
+	doi = {10.48550/arXiv.2301.04104},
+	abstract = {Developing a general algorithm that learns to solve tasks across a wide range of applications has been a fundamental challenge in artificial intelligence. Although current reinforcement learning algorithms can be readily applied to tasks similar to what they have been developed for, configuring them for new application domains requires significant human expertise and experimentation. We present DreamerV3, a general algorithm that outperforms specialized methods across over 150 diverse tasks, with a single configuration. Dreamer learns a model of the environment and improves its behavior by imagining future scenarios. Robustness techniques based on normalization, balancing, and transformations enable stable learning across domains. Applied out of the box, Dreamer is the first algorithm to collect diamonds in Minecraft from scratch without human data or curricula. This achievement has been posed as a significant challenge in artificial intelligence that requires exploring farsighted strategies from pixels and sparse rewards in an open world. Our work allows solving challenging control problems without extensive experimentation, making reinforcement learning broadly applicable.},
+	language = {en},
+	urldate = {2026-02-13},
+	publisher = {arXiv},
+	author = {Hafner, Danijar and Pasukonis, Jurgis and Ba, Jimmy and Lillicrap, Timothy},
+	month = apr,
+	year = {2024},
+	note = {arXiv:2301.04104 [cs]},
+	keywords = {Computer Science - Artificial Intelligence, Computer Science - Machine Learning, Statistics - Machine Learning},
+	annote = {Comment: Website: https://danijar.com/dreamerv3},
+	file = {PDF:C\:\\Users\\adame\\Zotero\\storage\\HZ85UE94\\Hafner et al. - 2024 - Mastering Diverse Domains through World Models.pdf:application/pdf},
+}
+
+
+
+@article{zhang_back_2025,
+	title = {Back to {Newton}'s {Laws}: {Learning} {Vision}-based {Agile} {Flight} via {Differentiable} {Physics}},
+	volume = {7},
+	issn = {2522-5839},
+	shorttitle = {Back to {Newton}'s {Laws}},
+	url = {http://arxiv.org/abs/2407.10648},
+	doi = {10.1038/s42256-025-01048-0},
+	abstract = {Swarm navigation in cluttered environments is a grand challenge in robotics. This work combines deep learning with first-principle physics through differentiable simulation to enable autonomous navigation of multiple aerial robots through complex environments at high speed. Our approach optimizes a neural network control policy directly by backpropagating loss gradients through the robot simulation using a simple point-mass physics model and a depth rendering engine. Despite this simplicity, our method excels in challenging tasks for both multi-agent and single-agent applications with zeroshot sim-to-real transfer. In multi-agent scenarios, our system demonstrates self-organized behavior, enabling autonomous coordination without communication or centralized planning—an achievement not seen in existing traditional or learningbased methods. In single-agent scenarios, our system achieves a 90\% success rate in navigating through complex environments, significantly surpassing the 60\% success rate of the previous state-of-the-art approach. Our system can operate without state estimation and adapt to dynamic obstacles. In real-world forest environments, it navigates at speeds up to 20 m/s, doubling the speed of previous imitation learning-based solutions. Notably, all these capabilities are deployed on a budget-friendly \$21 computer, costing less than 5\% of a GPU-equipped board used in existing systems. Video demonstrations are available at https://youtu.be/LKg9hJqc2cc.},
+	language = {en},
+	number = {6},
+	urldate = {2026-02-23},
+	journal = {Nature Machine Intelligence},
+	author = {Zhang, Yuang and Hu, Yu and Song, Yunlong and Zou, Danping and Lin, Weiyao},
+	month = jun,
+	year = {2025},
+	note = {arXiv:2407.10648 [cs]},
+	keywords = {Computer Science - Robotics},
+	pages = {954--966},
+	file = {PDF:C\:\\Users\\adame\\Zotero\\storage\\5NH3KIKU\\Zhang et al. - 2025 - Back to Newton's Laws Learning Vision-based Agile Flight via Differentiable Physics.pdf:application/pdf},
+}
+
+
+
+@misc{zhang_diffaero_2025,
+	title = {{DiffAero}: {A} {GPU}-{Accelerated} {Differentiable} {Simulation} {Framework} for {Efficient} {Quadrotor} {Policy} {Learning}},
+	shorttitle = {{DiffAero}},
+	url = {http://arxiv.org/abs/2509.10247},
+	doi = {10.48550/arXiv.2509.10247},
+	abstract = {This letter introduces DiffAero, a lightweight, GPU-accelerated, and fully differentiable simulation framework designed for efficient quadrotor control policy learning. DiffAero supports both environment-level and agent-level parallelism and integrates multiple dynamics models, customizable sensor stacks (IMU, depth camera, and LiDAR), and diverse flight tasks within a unified, GPU-native training interface. By fully parallelizing both physics and rendering on the GPU, DiffAero eliminates CPU-GPU data transfer bottlenecks and delivers orders-of-magnitude improvements in simulation throughput. In contrast to existing simulators, DiffAero not only provides high-performance simulation but also serves as a research platform for exploring differentiable and hybrid learning algorithms. Extensive benchmarks and real-world flight experiments demonstrate that DiffAero and hybrid learning algorithms combined can learn robust flight policies in hours on consumer-grade hardware. The code is available at https://github.com/flyingbitac/diffaero.},
+	language = {en},
+	urldate = {2026-02-13},
+	publisher = {arXiv},
+	author = {Zhang, Xinhong and Wang, Runqing and Ren, Yunfan and Sun, Jian and Fang, Hao and Chen, Jie and Wang, Gang},
+	month = sep,
+	year = {2025},
+	note = {arXiv:2509.10247 [cs]},
+	keywords = {Computer Science - Robotics},
+	annote = {Comment: 8 pages, 11 figures, 1 table},
+	file = {PDF:C\:\\Users\\adame\\Zotero\\storage\\25E7PLB7\\Zhang et al. - 2025 - DiffAero A GPU-Accelerated Differentiable Simulation Framework for Efficient Quadrotor Policy Learn.pdf:application/pdf},
+}
+
+
+
+@inproceedings{heeg_learning_2025,
+	title = {Learning {Quadrotor} {Control} {From} {Visual} {Features} {Using} {Differentiable} {Simulation}},
+	url = {http://arxiv.org/abs/2410.15979},
+	doi = {10.1109/ICRA55743.2025.11128641},
+	abstract = {The sample inefficiency of reinforcement learning (RL) remains a significant challenge in robotics. RL requires large-scale simulation and can still cause long training times, slowing research and innovation. This issue is particularly pronounced in vision-based control tasks where reliable state estimates are not accessible Differentiable simulation offers an alternative by enabling gradient back-propagation through the dynamics model, providing low-variance analytical policy gradients and, hence, higher sample efficiency. However, its usage for real-world robotic tasks has yet been limited. This work demonstrates the great potential of differentiable simulation for learning quadrotor control. We show that training in differentiable simulation significantly outperforms model-free RL in terms of both sample efficiency and training time, allowing a policy to learn to recover a quadrotor in seconds when providing vehicle states and in minutes when relying solely on visual features. The key to our success is two-fold. First, the use of a simple surrogate model for gradient computation greatly accelerates training without sacrificing control performance. Second, combining state representation learning with policy learning enhances convergence speed in tasks where only visual features are observable. These findings highlight the potential of differentiable simulation for real-world robotics and offer a compelling alternative to conventional RL approaches.},
+	language = {en},
+	urldate = {2026-02-13},
+	booktitle = {2025 {IEEE} {International} {Conference} on {Robotics} and {Automation} ({ICRA})},
+	author = {Heeg, Johannes and Song, Yunlong and Scaramuzza, Davide},
+	month = may,
+	year = {2025},
+	note = {arXiv:2410.15979 [cs]},
+	keywords = {Computer Science - Robotics},
+	pages = {4033--4039},
+	annote = {Comment: Accepted for presentation at the IEEE International Conference on Robotics and Automation (ICRA) 2025},
+	file = {PDF:C\:\\Users\\adame\\Zotero\\storage\\YGIHVG7K\\Heeg et al. - 2025 - Learning Quadrotor Control From Visual Features Using Differentiable Simulation.pdf:application/pdf},
+}
+
+
+
+@misc{pan_learning_2026,
+	title = {Learning on the {Fly}: {Rapid} {Policy} {Adaptation} via {Differentiable} {Simulation}},
+	shorttitle = {Learning on the {Fly}},
+	url = {http://arxiv.org/abs/2508.21065},
+	doi = {10.48550/arXiv.2508.21065},
+	abstract = {Learning control policies in simulation enables rapid, safe, and cost-effective development of advanced robotic capabilities. However, transferring these policies to the real world remains difficult due to the sim-to-real gap, where unmodeled dynamics and environmental disturbances can degrade policy performance. Existing approaches, such as domain randomization and Real2Sim2Real pipelines, can improve policy robustness, but either struggle under out-of-distribution conditions or require costly offline retraining. In this work, we approach these problems from a different perspective. Instead of relying on diverse training conditions before deployment, we focus on rapidly adapting the learned policy in the real world in an online fashion. To achieve this, we propose a novel online adaptive learning framework that unifies residual dynamics learning with realtime policy adaptation inside a differentiable simulation. Starting from a simple dynamics model, our framework refines the model continuously with real-world data to capture unmodeled effects and disturbances such as payload changes and wind. The refined dynamics model is embedded in a differentiable simulation framework, enabling gradient backpropagation through the dynamics and thus rapid, sample-efficient policy updates beyond the reach of classical RL methods like PPO. All components of our system are designed for rapid adaptation, enabling the policy to adjust to unseen disturbances within 5 seconds of training. We validate the approach on agile quadrotor control under various disturbances in both simulation and the real world. Our framework reduces hovering error by up to 81\% compared to L1-MPC and 55\% compared to DATT, while also demonstrating robustness in vision-based control without explicit state estimation.},
+	language = {en},
+	urldate = {2026-02-13},
+	publisher = {arXiv},
+	author = {Pan, Jiahe and Xing, Jiaxu and Reiter, Rudolf and Zhai, Yifan and Aljalbout, Elie and Scaramuzza, Davide},
+	month = jan,
+	year = {2026},
+	note = {arXiv:2508.21065 [cs]},
+	keywords = {Computer Science - Robotics},
+	file = {PDF:C\:\\Users\\adame\\Zotero\\storage\\3GH9FNYX\\Pan et al. - 2026 - Learning on the Fly Rapid Policy Adaptation via Differentiable Simulation.pdf:application/pdf},
+}
+
+
+
+@misc{ren_learning_2026,
+	title = {Learning {Agile} {Quadrotor} {Flight} in the {Real} {World}},
+	url = {http://arxiv.org/abs/2602.10111},
+	doi = {10.48550/arXiv.2602.10111},
+	abstract = {Learning-based controllers have achieved impressive performance in agile quadrotor flight but typically rely on massive training in simulation, necessitating accurate system identification for effective Sim2Real transfer. However, even with precise modeling, fixed policies remain susceptible to out-of-distribution scenarios, ranging from external aerodynamic disturbances to internal hardware degradation. To ensure safety under these evolving uncertainties, such controllers are forced to operate with conservative safety margins, inherently constraining their agility outside of controlled settings. While online adaptation offers a potential remedy, safely exploring physical limits remains a critical bottleneck due to data scarcity and safety risks. To bridge this gap, we propose a self-adaptive framework that eliminates the need for precise system identification or offline Sim2Real transfer. We introduce Adaptive Temporal Scaling (ATS) to actively explore platform physical limits, and employ online residual learning to augment a simple nominal model. \{\vphantom{\}}Based on the learned hybrid model, we further propose Real-world Anchored Short-horizon Backpropagation Through Time (RASH-BPTT) to achieve efficient and robust in-flight policy updates. Extensive experiments demonstrate that our quadrotor reliably executes agile maneuvers near actuator saturation limits. The system evolves a conservative base policy with a peak speed of 1.9 m/s to 7.3 m/s within approximately 100 seconds of flight time. These findings underscore that real-world adaptation serves not merely to compensate for modeling errors, but as a practical mechanism for sustained performance improvement in aggressive flight regimes.},
+	urldate = {2026-02-16},
+	publisher = {arXiv},
+	author = {Ren, Yunfan and Zhu, Zhiyuan and Xing, Jiaxu and Scaramuzza, Davide},
+	month = feb,
+	year = {2026},
+	note = {arXiv:2602.10111 [cs]},
+	keywords = {Computer Science - Robotics},
+	file = {Full Text PDF:C\:\\Users\\adame\\Zotero\\storage\\YSJGIQ4V\\Ren et al. - 2026 - Learning Agile Quadrotor Flight in the Real World.pdf:application/pdf;Snapshot:C\:\\Users\\adame\\Zotero\\storage\\L6ETJ8FX\\2602.html:text/html},
+}
+
+
+
+@misc{paszke_pytorch_2019,
+	title = {{PyTorch}: {An} {Imperative} {Style}, {High}-{Performance} {Deep} {Learning} {Library}},
+	shorttitle = {{PyTorch}},
+	url = {http://arxiv.org/abs/1912.01703},
+	doi = {10.48550/arXiv.1912.01703},
+	abstract = {Deep learning frameworks have often focused on either usability or speed, but not both. PyTorch is a machine learning library that shows that these two goals are in fact compatible: it provides an imperative and Pythonic programming style that supports code as a model, makes debugging easy and is consistent with other popular scientific computing libraries, while remaining efficient and supporting hardware accelerators such as GPUs. In this paper, we detail the principles that drove the implementation of PyTorch and how they are reflected in its architecture. We emphasize that every aspect of PyTorch is a regular Python program under the full control of its user. We also explain how the careful and pragmatic implementation of the key components of its runtime enables them to work together to achieve compelling performance. We demonstrate the efficiency of individual subsystems, as well as the overall speed of PyTorch on several common benchmarks.},
+	urldate = {2026-05-07},
+	publisher = {arXiv},
+	author = {Paszke, Adam and Gross, Sam and Massa, Francisco and Lerer, Adam and Bradbury, James and Chanan, Gregory and Killeen, Trevor and Lin, Zeming and Gimelshein, Natalia and Antiga, Luca and Desmaison, Alban and Köpf, Andreas and Yang, Edward and DeVito, Zach and Raison, Martin and Tejani, Alykhan and Chilamkurthy, Sasank and Steiner, Benoit and Fang, Lu and Bai, Junjie and Chintala, Soumith},
+	month = dec,
+	year = {2019},
+	note = {arXiv:1912.01703 [cs]},
+	keywords = {Computer Science - Machine Learning, Computer Science - Mathematical Software, Statistics - Machine Learning},
+	annote = {Comment: 12 pages, 3 figures, NeurIPS 2019},
+	file = {Preprint PDF:C\:\\Users\\adame\\Zotero\\storage\\75B4IZNC\\Paszke et al. - 2019 - PyTorch An Imperative Style, High-Performance Deep Learning Library.pdf:application/pdf;Snapshot:C\:\\Users\\adame\\Zotero\\storage\\VA8HP5G2\\1912.html:text/html},
+}
+
+
+@misc{abadi_tensorflow_2016,
+	title = {{TensorFlow}: {A} system for large-scale machine learning},
+	shorttitle = {{TensorFlow}},
+	url = {http://arxiv.org/abs/1605.08695},
+	doi = {10.48550/arXiv.1605.08695},
+	abstract = {TensorFlow is a machine learning system that operates at large scale and in heterogeneous environments. TensorFlow uses dataflow graphs to represent computation, shared state, and the operations that mutate that state. It maps the nodes of a dataflow graph across many machines in a cluster, and within a machine across multiple computational devices, including multicore CPUs, general-purpose GPUs, and custom designed ASICs known as Tensor Processing Units (TPUs). This architecture gives flexibility to the application developer: whereas in previous "parameter server" designs the management of shared state is built into the system, TensorFlow enables developers to experiment with novel optimizations and training algorithms. TensorFlow supports a variety of applications, with particularly strong support for training and inference on deep neural networks. Several Google services use TensorFlow in production, we have released it as an open-source project, and it has become widely used for machine learning research. In this paper, we describe the TensorFlow dataflow model in contrast to existing systems, and demonstrate the compelling performance that TensorFlow achieves for several real-world applications.},
+	urldate = {2026-05-07},
+	publisher = {arXiv},
+	author = {Abadi, Martín and Barham, Paul and Chen, Jianmin and Chen, Zhifeng and Davis, Andy and Dean, Jeffrey and Devin, Matthieu and Ghemawat, Sanjay and Irving, Geoffrey and Isard, Michael and Kudlur, Manjunath and Levenberg, Josh and Monga, Rajat and Moore, Sherry and Murray, Derek G. and Steiner, Benoit and Tucker, Paul and Vasudevan, Vijay and Warden, Pete and Wicke, Martin and Yu, Yuan and Zheng, Xiaoqiang},
+	month = may,
+	year = {2016},
+	note = {arXiv:1605.08695 [cs]},
+	keywords = {Computer Science - Artificial Intelligence, Computer Science - Distributed, Parallel, and Cluster Computing},
+	annote = {Comment: 18 pages, 9 figures; v2 has a spelling correction in the metadata},
+	file = {Preprint PDF:C\:\\Users\\adame\\Zotero\\storage\\8YZ3IMLX\\Abadi et al. - 2016 - TensorFlow A system for large-scale machine learning.pdf:application/pdf;Snapshot:C\:\\Users\\adame\\Zotero\\storage\\W5RI5K8V\\1605.html:text/html},
+}
+
+@software{jax2018github,
+  author = {James Bradbury and Roy Frostig and Peter Hawkins and Matthew James Johnson and Yash Katariya and Chris Leary and Dougal Maclaurin and George Necula and Adam Paszke and Jake Vander{P}las and Skye Wanderman-{M}ilne and Qiao Zhang},
+  title = {{JAX}: composable transformations of {P}ython+{N}um{P}y programs},
+  url = {http://github.com/jax-ml/jax},
+  version = {0.3.13},
+  year = {2018},
+}
+
+
+@article{zhang_learning-based_2025,
+	title = {A {Learning}-{Based} {Quadcopter} {Controller} {With} {Extreme} {Adaptation}},
+	volume = {41},
+	copyright = {https://ieeexplore.ieee.org/Xplorehelp/downloads/license-information/IEEE.html},
+	issn = {1552-3098, 1941-0468},
+	url = {https://ieeexplore.ieee.org/document/11025148/},
+	doi = {10.1109/TRO.2025.3577037},
+	abstract = {This article introduces a learning-based low-level controller for quadcopters, which adaptively controls quadcopters with signiﬁcant variations in mass, size, and actuator capabilities. Our approach leverages a combination of imitation learning and reinforcement learning, creating a fast-adapting and general control framework for quadcopters that eliminates the need for precise model estimation or manual tuning. The controller estimates a latent representation of the vehicle’s system parameters from sensor-action history, enabling it to adapt swiftly to diverse dynamics. Extensive evaluations in simulation demonstrate the controller’s ability to generalize to unseen quadcopter parameters, with an adaptation range up to 16 times broader than the training set. In real-world tests, the controller is successfully deployed on quadcopters with mass differences of 3.7 times and propeller constants varying by more than 100 times, while also showing rapid adaptation to disturbances such as off-center payloads and motor failures. These results highlight the potential of our controller to simplify the design process and enhance the reliability of autonomous drone operations in unpredictable environments.},
+	language = {en},
+	urldate = {2026-02-12},
+	journal = {IEEE Transactions on Robotics},
+	author = {Zhang, Dingqi and Loquercio, Antonio and Tang, Jerry and Wang, Ting-Hao and Malik, Jitendra and Mueller, Mark W.},
+	year = {2025},
+	pages = {3948--3964},
+	annote = {Comment: Accepted for the Transaction on Robotics (T-RO), April 2025},
+	file = {PDF:C\:\\Users\\adame\\Zotero\\storage\\XKGVZIDD\\Zhang et al. - 2025 - A Learning-Based Quadcopter Controller With Extreme Adaptation.pdf:application/pdf;Snapshot:C\:\\Users\\adame\\Zotero\\storage\\FYG4X7AJ\\2409.html:text/html},
+}
+
+
+@inproceedings{lee_geometric_2010,
+	title = {Geometric tracking control of a quadrotor {UAV} on {SE}(3)},
+	issn = {0191-2216},
+	url = {https://ieeexplore.ieee.org/document/5717652/},
+	doi = {10.1109/CDC.2010.5717652},
+	abstract = {This paper provides new results for the tracking control of a quadrotor unmanned aerial vehicle (UAV). The UAV has four input degrees of freedom, namely the magnitudes of the four rotor thrusts, that are used to control the six translational and rotational degrees of freedom, and to achieve asymptotic tracking of four outputs, namely, three position variables for the vehicle center of mass and the direction of one vehicle body-fixed axis. A globally defined model of the quadrotor UAV rigid body dynamics is introduced as a basis for the analysis. A nonlinear tracking controller is developed on the special Euclidean group SE(3) and it is shown to have desirable closed loop properties that are almost global. Several numerical examples, including an example in which the quadrotor recovers from being initially upside down, illustrate the versatility of the controller.},
+	urldate = {2026-03-09},
+	booktitle = {49th {IEEE} {Conference} on {Decision} and {Control} ({CDC})},
+	author = {Lee, Taeyoung and Leok, Melvin and McClamroch, N. Harris},
+	month = dec,
+	year = {2010},
+	note = {ISSN: 0191-2216},
+	keywords = {Trajectory, Rotors, Asymptotic stability, Attitude control, Propellers, Stability analysis, Unmanned aerial vehicles},
+	pages = {5420--5425},
+	file = {Full Text PDF:C\:\\Users\\adame\\Zotero\\storage\\TB3TW6PI\\Lee et al. - 2010 - Geometric tracking control of a quadrotor UAV on SE(3).pdf:application/pdf},
+}
+
+
+@misc{kingma_adam_2017,
+	title = {Adam: {A} {Method} for {Stochastic} {Optimization}},
+	shorttitle = {Adam},
+	url = {http://arxiv.org/abs/1412.6980},
+	doi = {10.48550/arXiv.1412.6980},
+	abstract = {We introduce Adam, an algorithm for first-order gradient-based optimization of stochastic objective functions, based on adaptive estimates of lower-order moments. The method is straightforward to implement, is computationally efficient, has little memory requirements, is invariant to diagonal rescaling of the gradients, and is well suited for problems that are large in terms of data and/or parameters. The method is also appropriate for non-stationary objectives and problems with very noisy and/or sparse gradients. The hyper-parameters have intuitive interpretations and typically require little tuning. Some connections to related algorithms, on which Adam was inspired, are discussed. We also analyze the theoretical convergence properties of the algorithm and provide a regret bound on the convergence rate that is comparable to the best known results under the online convex optimization framework. Empirical results demonstrate that Adam works well in practice and compares favorably to other stochastic optimization methods. Finally, we discuss AdaMax, a variant of Adam based on the infinity norm.},
+	urldate = {2026-05-07},
+	publisher = {arXiv},
+	author = {Kingma, Diederik P. and Ba, Jimmy},
+	month = jan,
+	year = {2017},
+	note = {arXiv:1412.6980 [cs]},
+	keywords = {Computer Science - Machine Learning},
+	annote = {Comment: Published as a conference paper at the 3rd International Conference for Learning Representations, San Diego, 2015},
+	file = {Preprint PDF:C\:\\Users\\adame\\Zotero\\storage\\WPWL9LQN\\Kingma and Ba - 2017 - Adam A Method for Stochastic Optimization.pdf:application/pdf;Snapshot:C\:\\Users\\adame\\Zotero\\storage\\8F9FV8IS\\1412.html:text/html},
+}
+
+
+
+@article{baca_mrs_2021,
+	title = {The {MRS} {UAV} {System}: {Pushing} the {Frontiers} of {Reproducible} {Research}, {Real}-world {Deployment}, and {Education} with {Autonomous} {Unmanned} {Aerial} {Vehicles}},
+	volume = {102},
+	issn = {0921-0296, 1573-0409},
+	shorttitle = {The {MRS} {UAV} {System}},
+	url = {https://link.springer.com/10.1007/s10846-021-01383-5},
+	doi = {10.1007/s10846-021-01383-5},
+	language = {en},
+	number = {1},
+	urldate = {2026-05-11},
+	journal = {Journal of Intelligent \& Robotic Systems},
+	author = {Baca, Tomas and Petrlik, Matej and Vrba, Matous and Spurny, Vojtech and Penicka, Robert and Hert, Daniel and Saska, Martin},
+	month = may,
+	year = {2021},
+	pages = {26},
+	file = {PDF:C\:\\Users\\adame\\Zotero\\storage\\5SS46SDP\\Baca et al. - 2021 - The MRS UAV System Pushing the Frontiers of Reproducible Research, Real-world Deployment, and Educa.pdf:application/pdf},
+}
+
+
+
+@book{lewis_optimal_2012,
+	title = {Optimal {Control}},
+	isbn = {978-1-118-12272-3},
+	url = {https://books.google.cz/books?id=U3Gtlot_hYEC},
+	publisher = {Wiley},
+	author = {Lewis, F. L. and Vrabie, D. and Syrmos, V. L.},
+	year = {2012},
+}
+
+
+
+@article{hanover_autonomous_2024,
+	title = {Autonomous {Drone} {Racing}: {A} {Survey}},
+	volume = {40},
+	issn = {1552-3098, 1941-0468},
+	shorttitle = {Autonomous {Drone} {Racing}},
+	url = {http://arxiv.org/abs/2301.01755},
+	doi = {10.1109/TRO.2024.3400838},
+	abstract = {Over the last decade, the use of autonomous drone systems for surveying, search and rescue, or last-mile delivery has increased exponentially. With the rise of these applications comes the need for highly robust, safety-critical algorithms that can operate drones in complex and uncertain environments. Additionally, flying fast enables drones to cover more ground, increasing productivity and further strengthening their use case. One proxy for developing algorithms used in high-speed navigation is the task of autonomous drone racing, where researchers program drones to fly through a sequence of gates and avoid obstacles as quickly as possible using onboard sensors and limited computational power. Speeds and accelerations exceed over 80 kph and 4 g, respectively, raising significant challenges across perception, planning, control, and state estimation. To achieve maximum performance, systems require real-time algorithms that are robust to motion blur, high dynamic range, model uncertainties, aerodynamic disturbances, and often unpredictable opponents. This survey covers the progression of autonomous drone racing across model-based and learning-based approaches. We provide an overview of the field, its evolution over the years, and conclude with the biggest challenges and open questions to be faced in the future.},
+	language = {en},
+	urldate = {2026-02-13},
+	journal = {IEEE Transactions on Robotics},
+	author = {Hanover, Drew and Loquercio, Antonio and Bauersfeld, Leonard and Romero, Angel and Penicka, Robert and Song, Yunlong and Cioffi, Giovanni and Kaufmann, Elia and Scaramuzza, Davide},
+	year = {2024},
+	note = {arXiv:2301.01755 [cs]},
+	keywords = {Computer Science - Robotics},
+	pages = {3044--3067},
+	annote = {Comment: 26 pages},
+	file = {PDF:C\:\\Users\\adame\\Zotero\\storage\\VGX7KBIE\\Hanover et al. - 2024 - Autonomous Drone Racing A Survey.pdf:application/pdf},
+}
+
+
+
+@misc{qin_time-optimal_2024,
+	title = {Time-{Optimal} {Gate}-{Traversing} {Planner} for {Autonomous} {Drone} {Racing}},
+	url = {http://arxiv.org/abs/2309.06837},
+	doi = {10.48550/arXiv.2309.06837},
+	abstract = {In drone racing, the time-minimum trajectory is affected by the drone’s capabilities, the layout of the race track, and the configurations of the gates (e.g., their shapes and sizes). However, previous studies neglect the configuration of the gates, simply rendering drone racing a waypoint-passing task. This formulation often leads to a conservative choice of paths through the gates, as the spatial potential of the gates is not fully utilized. To address this issue, we present a time-optimal planner that can faithfully model gate constraints with various configurations and thereby generate a more time-efficient trajectory while considering the single-rotor-thrust limits. Our approach excels in computational efficiency which only takes a few seconds to compute the full state and control trajectories of the drone through tracks with dozens of different gates. Extensive simulations and experiments confirm the effectiveness of the proposed methodology, showing that the lap time can be further reduced by taking into account the gate’s configuration. We validate our planner in real-world flights and demonstrate super-extreme flight trajectory through race tracks.},
+	language = {en},
+	urldate = {2026-02-13},
+	publisher = {arXiv},
+	author = {Qin, Chao and Michet, Maxime S. J. and Chen, Jingxiang and Liu, Hugh H.-T.},
+	month = may,
+	year = {2024},
+	note = {arXiv:2309.06837 [cs]},
+	keywords = {Computer Science - Robotics},
+	file = {PDF:C\:\\Users\\adame\\Zotero\\storage\\JB75L5AV\\Qin et al. - 2024 - Time-Optimal Gate-Traversing Planner for Autonomous Drone Racing.pdf:application/pdf},
+}
+
+
+@article{foehn_agilicious_2022,
+	title = {Agilicious: {Open}-source and open-hardware agile quadrotor for vision-based flight},
+	volume = {7},
+	issn = {2470-9476},
+	shorttitle = {Agilicious},
+	url = {https://www.science.org/doi/10.1126/scirobotics.abl6259},
+	doi = {10.1126/scirobotics.abl6259},
+	abstract = {Autonomous, agile quadrotor flight raises fundamental challenges for robotics research in terms of perception, planning, learning, and control. A versatile and standardized platform is needed to accelerate research and let practitioners focus on the core problems. To this end, we present Agilicious, a codesigned hardware and software framework tailored to autonomous, agile quadrotor flight. It is completely open source and open hardware and supports both model-based and neural network–based controllers. Also, it provides high thrust-to-weight and torque-to-inertia ratios for agility, onboard vision sensors, graphics processing unit (GPU)–accelerated compute hardware for real-time perception and neural network inference, a real-time flight controller, and a versatile software stack. In contrast to existing frameworks, Agilicious offers a unique combination of flexible software stack and high-performance hardware. We compare Agilicious with prior works and demonstrate it on different agile tasks, using both model-based and neural network–based controllers. Our demonstrators include trajectory tracking at up to 5
+              g
+              and 70 kilometers per hour in a motion capture system, and vision-based acrobatic flight and obstacle avoidance in both structured and unstructured environments using solely onboard perception. Last, we demonstrate its use for hardware-in-the-loop simulation in virtual reality environments. Because of its versatility, we believe that Agilicious supports the next generation of scientific and industrial quadrotor research.
+            
+          , 
+            We provide a codesigned hardware and software framework tailored to autonomous, agile quadrotor flight.},
+	language = {en},
+	number = {67},
+	urldate = {2026-05-12},
+	journal = {Science Robotics},
+	author = {Foehn, Philipp and Kaufmann, Elia and Romero, Angel and Penicka, Robert and Sun, Sihao and Bauersfeld, Leonard and Laengle, Thomas and Cioffi, Giovanni and Song, Yunlong and Loquercio, Antonio and Scaramuzza, Davide},
+	month = jun,
+	year = {2022},
+	pages = {eabl6259},
+	file = {PDF:C\:\\Users\\adame\\Zotero\\storage\\CBBQBFD8\\Foehn et al. - 2022 - Agilicious Open-source and open-hardware agile quadrotor for vision-based flight.pdf:application/pdf},
+}

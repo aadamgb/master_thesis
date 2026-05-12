@@ -8,10 +8,10 @@ Practical implementations must account for model uncertainties, disturbances, an
 
 In this context, Sections \ref{sec:classical} and \ref{sec:learned} review the state-of-the-art control approaches used to achieve high-performance drone racing, covering both classical control techniques and modern learning-based methods.
 \section{Optimal Control Problem} \label{sec:ocp} 
-{\color{red}cite some OC textbook}
+We refer the reader to~\cite{lewis_optimal_2012} 
 
 
-\subsection{General Discrete-Time OCP}
+\subsection{General Discrete-Time Optimal Control Problem}
 In general, a nonlinear discrete-time \ac{OCP} can be formulated as the optimization of a running cost (or loss) function $L_{k}()$, plus a terminal cost function $\phi()$, subject to the system's dynamics $\mathbf{f}_k()$, and the set of permitted states $\mathcal{X}_k$, and controls $\mathcal{U}_k$. 
 
 
@@ -36,7 +36,7 @@ In general, a nonlinear discrete-time \ac{OCP} can be formulated as the optimiza
 
 \end{itemize}
 
-\subsection{Minimum-Time OCP} \label{subsec:minOCP}
+\subsection{Minimum-Time Optimal Control Problem} \label{subsec:minOCP}
 This last formulation of an \ac{OCP} can be further specified for the case of drone racing in several manners.
 Since the main objective is to complete a lap through the racing track as fast as possible, this problem can be written as minimum-time problem.
 
@@ -74,12 +74,12 @@ $\mathcal{X}_k$ as
     \item[] $M$ is the total number of obstacles.
 \end{itemize}
 
-\subsection{Simplified Minimum-Time OCP}~\label{sec:simpmin-OCP}
+\subsection{Simplified Minimum-Time Optimal Control Problem}~\label{sec:simpmin-OCP}
 The original problem formulation (\autoref{subsec:minOCP}) is inherently complex, as it requires simultaneously solving for an optimal trajectory that clears all gates and avoids obstacles while determining the optimal control sequence achievable within the vehicle's dynamics and actuator constraints.
 To make the problem more tractable, this thesis assumes that a reference trajectory or path is provided a priori.
 Consequently, the \acp{OCP} addressed hereafter focus on trajectory tracking or path progress, formulated as follows:
 
-\subsubsection{Trajectory Tracking OCP}
+\subsubsection{Trajectory Tracking}
 In the trajectory tracking \ac{OCP}, the objective is to find the optimal control sequence $\mathbf{U}$ that minimizes the error between a given reference state $\boldsymbol{x}_k^{\text{ref}}$ and the current system state $\boldsymbol{x}_k$, subject to dynamics, actuator, and state constraints.
 While this simplifies the optimization significantly it comes at the cost of reduced robustness.
 By assuming the trajectory is fixed, the system cannot re-optimize the path to accommodate state constraints or environmental changes, effectively limiting the drone's agility compared to a unified spatial-temporal optimization.
@@ -96,29 +96,33 @@ By assuming the trajectory is fixed, the system cannot re-optimize the path to a
 \end{equation}
 
 
-\subsubsection{Path Progress OCP}
-An alternative to reduce the complexity without sacrifiyng much on robsutness is to optimize the progress along a given path. 
-Unlike trajectory tracking, which imposes a strict temporal constraint for every spatial coordinate, the path progress \ac{OCP} treats the speed along the path as a decision variable. 
-This allows the controller to dynamically adjust the vehicle's velocity based on current tracking errors or actuator saturation, ensuring the drone stays on the geometric path even when pushed to its physical limits.
+% \subsubsection{Path Progress}
+% An alternative to reduce the complexity without sacrifiyng much on robsutness is to optimize the progress along a given path. 
+% Unlike trajectory tracking, which imposes a strict temporal constraint for every spatial coordinate, the path progress \ac{OCP} treats the speed along the path as a decision variable. 
+% This allows the controller to dynamically adjust the vehicle's velocity based on current tracking errors or actuator saturation, ensuring the drone stays on the geometric path even when pushed to its physical limits.
 
-\section{Pontryagin's Maximum Principle}
-\todo{I'll probably remove this section...}
+% \section{Pontryagin's Maximum Principle}
+% \todo{I'll probably remove this section...}
 
- maybe solve it using a pmm and Pontryagin's Maximum Principle
+%  maybe solve it using a pmm and Pontryagin's Maximum Principle
 
-commment on: Since it is impossible to perfectly model the state transition equation, and the state estimation is not perfect, 
-the optimal solution breaks under real world conditions.
+% commment on: Since it is impossible to perfectly model the state transition equation, and the state estimation is not perfect, 
+% the optimal solution breaks under real world conditions.
 
 \section{Classical Control approaches}\label{sec:classical}
 
-\todo{Don't dive deep in these, just comment relevant stuff}
+% \todo{Don't dive deep in these, just comment relevant stuff}
 \subsection{Differential Flatness Based Control}
 \subsection{Model Predictive Control}
 
 \section{Learning-Based approaches}\label{sec:learned}
-
-\subsection{Neural Networks?}
+Learning-based approaches can be understood as an optimization methods in which the optimization process is done by intereacting with the environment.
+There are two main types of \ac{RL}, model-based and model-free, each with their own advantages and drawbacks.
+Next we give an overview model-free and model-based \ac{RL} and the most relevant algorithms in the literature of each.
+% \subsection{Neural Networks?}
 \subsection{Model-Free Reinforcement Learning}
+Model-free \ac{RL} does not 
+
 \subsection{Model-Based Reinforcement Learning}
 
 % \section{Differentiable Simulation}
