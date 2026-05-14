@@ -1,0 +1,85 @@
+\documentclass{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\definecolor{tabblue}{rgb}{0.0000, 0.4470, 0.7410}
+\definecolor{taborange}{rgb}{0.8500, 0.3250, 0.0980}
+\definecolor{tabgreen}{rgb}{0.4660, 0.6740, 0.1880}
+\definecolor{tabyellow}{rgb}{0.9290, 0.6940, 0.1250}
+\definecolor{tabpurple}{rgb}{0.4940, 0.1840, 0.5560}
+
+\begin{document}
+\begin{tikzpicture}
+
+
+
+\begin{axis}[
+    name=plot1,
+    anchor=left of south west,
+    xshift=0.5cm,
+    width=14cm,
+    height=5cm,
+    grid=both,
+    minor grid style={dashed, gray!30},
+    major grid style={dashed, gray!30},
+    minor tick num=1,
+    xmin=0,
+    xmax=16,
+    % ymin=0,
+    xlabel={Time [s]},
+    ylabel={Vel. [m/s],  Hdg. [rad/s]},
+    legend pos=north east,
+    legend style={font=\footnotesize, xshift=2cm, yshift=0.2cm, draw=none},
+    legend columns=1,
+    title= LVHR Commands
+    % xtick distance=1,
+]
+
+% % SRT
+% \addplot[tabblue, line width=1.2pt, tabgreen]
+% table[
+%     y expr=-\thisrow{Loss},
+%     x=Step,
+%     col sep=comma,
+% ] {data/metrics_srt.csv};\addlegendentry{SRT}
+
+% % CTBR
+% \addplot[tabblue, line width=1.2pt, tabblue]
+% table[
+%     y expr=-\thisrow{Loss},
+%     x=Step,
+%     col sep=comma,
+% ] {data/metrics_ctbr.csv};\addlegendentry{CTBR}
+
+% LVHR
+\addplot[tabblue, line width=1.2pt, red]
+table[x=time, y=vx,
+    col sep=comma,
+] {data/lvhr_actions.csv};\addlegendentry{vx}
+\addplot[tabblue, line width=1.2pt, green]
+table[x=time, y=vy,
+    col sep=comma,
+] {data/lvhr_actions.csv};\addlegendentry{vy}
+\addplot[tabblue, line width=1.2pt, blue]
+table[x=time, y=vz,
+    col sep=comma,
+] {data/lvhr_actions.csv};\addlegendentry{vz}
+\addplot[tabblue, line width=1.2pt, orange]
+table[x=time, y=psi_dot,
+    col sep=comma,
+] {data/lvhr_actions.csv};\addlegendentry{$\dot{\eta}$}
+
+% % LVHR+g
+% \addplot[tabblue, line width=1.2pt, tabpurple]
+% table[
+%     y expr=-\thisrow{Loss},
+%     x=Step,
+%     col sep=comma,
+% ] {data/metrics_lvhr+g.csv};\addlegendentry{LVHR+g}
+
+
+
+\end{axis}
+
+\end{tikzpicture}
+\end{document}

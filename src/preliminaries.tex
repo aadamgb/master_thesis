@@ -37,7 +37,7 @@ In general, a nonlinear discrete-time \ac{OCP} can be formulated as the optimiza
 \end{itemize}
 
 \subsection{Minimum-Time Optimal Control Problem} \label{subsec:minOCP}
-This last formulation of an \ac{OCP} can be further specified for the case of drone racing in several manners.
+The last formulation of an \ac{OCP} can be further specified for the case of drone racing in several manners.
 Since the main objective is to complete a lap through the racing track as fast as possible, this problem can be written as minimum-time problem.
 
 
@@ -116,13 +116,57 @@ By assuming the trajectory is fixed, the system cannot re-optimize the path to a
 \subsection{Model Predictive Control}
 
 \section{Learning-Based approaches}\label{sec:learned}
-Learning-based approaches can be understood as an optimization methods in which the optimization process is done by intereacting with the environment.
-There are two main types of \ac{RL}, model-based and model-free, each with their own advantages and drawbacks.
+Learning-based approaches can be understood as optimization methods in which the optimization process is done by intereacting with the environment~\cite{huang_model-based_2020}.
+There are two main types of \ac{RL}, model-based and model-free, each have with their own advantages and drawbacks.
 Next we give an overview model-free and model-based \ac{RL} and the most relevant algorithms in the literature of each.
 % \subsection{Neural Networks?}
 \subsection{Model-Free Reinforcement Learning}
-Model-free \ac{RL} does not 
+In model-free \ac{RL}, the neither the environment nor the dynamics of the agent are taking into account for the optimization process.
+Instead, the policy is optimized by gathering data from interacting with the environment. 
+The two main methods to do this, are Q-Learning and Policy Optimization.
+% \subsubsection{Q-Learning}
+% In Q-Learning the idea is to map the values of the possible actions given the current state and store those values into a table.
+% Druing training, Bellman's equation is used to update the values of the Q-table, and when training has converged an optimal policy $\pi^*$ has been found since dor each state the table indicates the best action~\cite{Sutton1998}.
+% \begin{equation}
+%     \pi^*(s) = \arg\max_a Q^*(s,a)
+% \end{equation}
+% Q-Learning is a formulation of \ac{DP}, for smiple scenarios such us finindg the optimal policy to exit a maze it works, howerver for more complex environments it is computationally coslty and and unfesible approach.
+% To relax the computational cost, \ac{DQN} was proposed in~\cite{mnih_playing_nodate}, where instead of storing the values in a Q table, a neural network is optimized to approximate the values.
+
+
+% In model-free \ac{RL}, neither the environment model nor the agent dynamics are explicitly considered during the optimization process.
+% Instead, the policy is optimized by collecting data through interactions with the environment.
+% The two main approaches for doing this are Q-learning and policy optimization.
+
+\subsubsection{Q-Learning}
+
+In Q-learning, the objective is to estimate the value of taking a given action at a particular state and store these values in a Q-table.
+During training, Bellman’s equation is used to iteratively update the entries of the table.
+Once training converges, an optimal policy $\pi^*$ can be obtained, since the Q-table provides the action with the highest expected return for each state~\cite{Sutton1998}.
+
+\begin{equation}
+    \pi^*(s) = \arg\max_a Q^*(s,a)
+\end{equation}
+
+Q-learning can be interpreted as a formulation of \ac{DP}.
+For simple problems, such as finding the optimal strategy to escape a maze, this approach performs well.
+However, for high-dimensional or complex environments, storing and updating the Q-table becomes computationally infeasible.
+
+To overcome this limitation, \ac{DQN} was introduced in~\cite{mnih_playing_nodate}.
+Instead of explicitly storing the Q-values in a table, a neural network is trained to approximate the action-value function.
+
+
+\subsubsection{Policy Optimization}
+In policy optimization methods, instead of learning the action-value function and deriving an optimal policy by selecting the best action at a given state, the policy is learned directly through the parameters of a neural network $\theta$~\cite{Sutton1998}.
+These parameters are optimized with respect to an objective function $J(\theta)$ that encodes the desired behavior of the policy.
+
+\begin{equation}\label{opt_theta}
+    \theta^* = \arg \max_{\theta} \mathbb{E}_{\tau \sim \pi_\theta} \left[ R(\tau) \right]
+\end{equation}
+
+In this framework, policy optimization methods aim to find the optimal parameters $\theta^*$ such that the resulting policy $\pi_{\theta}(a|s)$ selects actions $a \in \mathcal{A}$ for states $s \in \mathcal{S}$ that maximize the expected return over trajectories $\tau = \{s_0, a_0, s_1, a_1, \dots\}$.
+
 
 \subsection{Model-Based Reinforcement Learning}
 
-% \section{Differentiable Simulation}
+\section{Differentiable Simulation}

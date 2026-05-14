@@ -143,7 +143,7 @@ In our simulator we saturate the yaw rate to $\pm 3$ rad/s and the yaw acceleart
 
 
 
-\section{Model-Free against Model-Based}\label{sec:baseline}
+\section{Model-Free and Model-Based evaluation}\label{sec:baseline}
 In this section, we compare two policies, one optimized using model-free \ac{RL} with \ac{PPO}, and the other using model-based \ac{RL} with \ac{BPTT}.
 The comparison is performed in terms of sample efficiency, mean reward, performance, transferability, and robustness.
 \subsection{Training Time}
@@ -218,7 +218,7 @@ We then analyze how the loss evolves throughout training.
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/sample-eff-ca/hypotheses.pdf}
-    \caption{Sample efficency of the different control abstractions.}
+    \caption{Loss verus time step for the different control abstractions.}
     \label{samp-eff-ca}
 \end{figure}
 
@@ -246,14 +246,41 @@ The data from \autoref{fig:uzh_ca} and \autoref{tab:uzh_ca} indicates that the X
 
 \begin{table}[H]
     \centering
-    \caption{Position and Velocity \ac{RMSE} of the control abstractions.}
+    \caption{Position and Velocity \ac{RMSE} of the control abstractions, mean $\pm$ std over 5 runs.}
 \begin{tabular}{ccccc}
     \hline
 RMSE  & SRT  & CTBR & LVHR & LVHR+g \\ \hline
-$\mathbf{p}$ & 0.14 & 0.14 & 0.14 & 0.14  \\
-$\mathbf{v}$ & 0.14 & 0.14 & 0.14 & 0.14 \\ \hline
+Position [m]  & $0.225\pm 0.031$ & $0.334\pm 0.008$ & $\mathbf{0.132\pm 0.003}$ & $0.201\pm 0.003$  \\
+Velocity [m/s]  & $\mathbf{0.190\pm 0.002}$ & $0.180\pm 0.002$ & $0.219\pm 0.027$ & $0.224\pm 0.008$ \\ \hline
 \end{tabular}
 \end{table}
+
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/srt-actions/hypotheses.pdf}
+    \caption{}
+    \label{fig:srt-action}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/srt-actions/hypotheses.pdf}
+    \caption{}
+    \label{fig:srt-action}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/lvhr-actions/hypotheses.pdf}
+    \caption{}
+    \label{fig:lvhr-action}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/lvhr-actions/hypotheses.pdf}
+    \caption{}
+    \label{fig:lvhr-action}
+\end{figure}
 
 \subsection{Transferability and Robustness}
 \begin{figure}[H]
