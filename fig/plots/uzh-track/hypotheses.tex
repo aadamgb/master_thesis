@@ -96,43 +96,47 @@
     % SRT
     \addplot[
         color=tabgreen,
-        % line width=1.5pt,
+        line width=1.0pt,
     ]
     table[
         x=time,
         y expr={sqrt((\thisrow{px}-\thisrow{px_ref})^2 + (\thisrow{py}-\thisrow{py_ref})^2 + (\thisrow{pz}-\thisrow{pz_ref})^2)},
         col sep=comma,
+        each nth point={10},
     ] {data/uzh-05-srt.csv};
 
     % CTBR
     \addplot[
         color=tabblue,
-        % line width=1.5pt,
+        line width=1.0pt,
     ]
     table[
         x=time,
         y expr={sqrt((\thisrow{px}-\thisrow{px_ref})^2 + (\thisrow{py}-\thisrow{py_ref})^2 + (\thisrow{pz}-\thisrow{pz_ref})^2)},
         col sep=comma,
+        each nth point={10},
     ] {data/uzh-05-ctbr.csv};
     % LVHR
     \addplot[
         color=taborange,
-        % line width=1.5pt,
+        line width=1.0pt,
     ]
     table[
         x=time,
         y expr={sqrt((\thisrow{px}-\thisrow{px_ref})^2 + (\thisrow{py}-\thisrow{py_ref})^2 + (\thisrow{pz}-\thisrow{pz_ref})^2)},
         col sep=comma,
+        each nth point={10},
     ] {data/uzh-05-lvhr.csv};
     % LVHR+g
     \addplot[
         color=tabpurple,
-        % line width=1.5pt,
+        line width=1.0pt,
     ]
     table[
         x=time,
         y expr={sqrt((\thisrow{px}-\thisrow{px_ref})^2 + (\thisrow{py}-\thisrow{py_ref})^2 + (\thisrow{pz}-\thisrow{pz_ref})^2)},
         col sep=comma,
+        each nth point={10},
     ] {data/uzh-05-lvhr+g.csv};
 \end{axis}
 
@@ -159,41 +163,47 @@
     % SRT
     \addplot[
         color=tabgreen,
-        % line width=1.5pt,
+        line width=1.0pt,
     ]
     table[
         x=time,
         y expr={sqrt((\thisrow{vx}-\thisrow{vx_ref})^2 + (\thisrow{vy}-\thisrow{vy_ref})^2 + (\thisrow{vz}-\thisrow{vz_ref})^2)},
         col sep=comma,
+        each nth point={10},
     ] {data/uzh-05-srt.csv};
 
     % CTBR
     \addplot[
         color=tabblue,
-        % line width=1.5pt,
+        line width=1.0pt,
     ]
     table[
         x=time,
         y expr={sqrt((\thisrow{vx}-\thisrow{vx_ref})^2 + (\thisrow{vy}-\thisrow{vy_ref})^2 + (\thisrow{vz}-\thisrow{vz_ref})^2)},
         col sep=comma,
+        each nth point={10},
     ] {data/uzh-05-ctbr.csv};
     % LVHR
     \addplot[
         color=taborange,
+        line width=1.0pt,
     ]
     table[
         x=time,
         y expr={sqrt((\thisrow{vx}-\thisrow{vx_ref})^2 + (\thisrow{vy}-\thisrow{vy_ref})^2 + (\thisrow{vz}-\thisrow{vz_ref})^2)},
         col sep=comma,
+        each nth point={10},
     ] {data/uzh-05-lvhr.csv};
     % LVHR+g
     \addplot[
         color=tabpurple,
+        line width=1.0pt,
     ]
     table[
         x=time,
         y expr={sqrt((\thisrow{vx}-\thisrow{vx_ref})^2 + (\thisrow{vy}-\thisrow{vy_ref})^2 + (\thisrow{vz}-\thisrow{vz_ref})^2)},
         col sep=comma,
+        each nth point={10},
     ] {data/uzh-05-lvhr+g.csv};
 \end{axis}
 
@@ -218,22 +228,22 @@
     \addplot[line width=1.0pt, tabgreen]
         table[x=time, 
         y expr={\thisrow{T1} + \thisrow{T2} + \thisrow{T3} + \thisrow{T4}},
-        col sep=comma] {data/uzh-05-srt.csv};
+        col sep=comma, each nth point={10}] {data/uzh-05-srt.csv};
     % CTBR
     \addplot[line width=1.0pt, tabblue]
         table[x=time, 
         y expr={\thisrow{T1} + \thisrow{T2} + \thisrow{T3} + \thisrow{T4}},
-        col sep=comma] {data/uzh-05-ctbr.csv};
+        col sep=comma, each nth point={10}] {data/uzh-05-ctbr.csv};
     % LVHR
     \addplot[line width=1.0pt, taborange]
         table[x=time, 
         y expr={\thisrow{T1} + \thisrow{T2} + \thisrow{T3} + \thisrow{T4}},
-        col sep=comma] {data/uzh-05-lvhr.csv};
+        col sep=comma, each nth point={10}] {data/uzh-05-lvhr.csv};
     % LVHR+g
     \addplot[line width=1.0pt, tabpurple]
         table[x=time, 
         y expr={\thisrow{T1} + \thisrow{T2} + \thisrow{T3} + \thisrow{T4}},
-        col sep=comma] {data/uzh-05-lvhr+g.csv};
+        col sep=comma, each nth point={10}] {data/uzh-05-lvhr+g.csv};
 \end{axis}
 
 

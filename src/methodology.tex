@@ -298,7 +298,7 @@ Adittionally, an error on the angular velocity of the rotation is introduced as,
     \mathbf{e}_{\boldsymbol{\omega}} = \boldsymbol{\omega} - \mathbf{R}^\top \mathbf{R}_{\text{cmd}}\boldsymbol{\omega}_{\text{cmd}}
 \end{equation}
 where $\boldsymbol{\omega}_{\text{cmd}} = \begin{bmatrix}
-    0 & 0 & \dot{\psi}_{\text{cmd}}\end{bmatrix}^\top$. 
+    0 & 0 & \dot{\eta}_{\text{cmd}}\end{bmatrix}^\top$. 
 Note that the error between the desired rotational velocity and the current rotational velocity line on different tangent planes to the unit sphere, 
 $\dot{\mathbf{R}} \in \mathrm{T}_{\mathbf{R}} SO(3)$ and $\dot{\mathbf{R}}_{\text{cmd}} \in \mathrm{T}_{\mathbf{R}_{\text{cmd}}} SO(3)$.
 For this reason, as explained in \cite{Lee}, $\dot{\mathbf{R}}_{\text{cmd}}$ is transformed into a vector in the $\mathrm{T}_{\mathbf{R}} SO(3)$ space to be able to compare it to $\dot{\mathbf{R}}$ and obtain the error; \autoref{eq:geo_ang}.

@@ -1,0 +1,97 @@
+\documentclass{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\definecolor{tabblue}{rgb}{0.0000, 0.4470, 0.7410}
+\definecolor{taborange}{rgb}{0.8500, 0.3250, 0.0980}
+\definecolor{tabgreen}{rgb}{0.4660, 0.6740, 0.1880}
+\definecolor{tabyellow}{rgb}{0.9290, 0.6940, 0.1250}
+\definecolor{tabpurple}{rgb}{0.4940, 0.1840, 0.5560}
+\definecolor{tabcyan}{rgb}{0.0000, 0.7490, 0.7490}
+\definecolor{tabpink}{rgb}{0.9000, 0.4000, 0.7000}
+
+\begin{document}
+\begin{tikzpicture}
+
+\begin{axis}[
+    name=plot1,
+    xshift=0.5cm,
+    width=14cm,
+    height=5cm,
+    grid=both,
+    minor grid style={dashed, gray!30},
+    major grid style={dashed, gray!30},
+    minor tick num=1,
+    xmin=0.01,
+    xmax=16,
+    xlabel={},
+    xticklabels={},
+    ylabel={$\tau$ [N·m]},
+    legend pos=north east,
+    legend style={xshift=2cm, yshift=0.2cm, draw=none},
+    legend columns=1,
+    title= LVHR+g 
+]
+
+\addplot[line width=1.0pt, red, each nth point={10}]
+table[x=time, y=vx, col sep=comma]{data/lvhr_actions.csv};
+\addlegendentry{$v_x$}
+
+\addplot[line width=1.0pt, green, each nth point={10}]
+table[x=time, y=vy, col sep=comma]{data/lvhr_actions.csv};
+\addlegendentry{$v_y$}
+
+\addplot[line width=1.0pt, blue, each nth point={10}]
+table[x=time, y=vz, col sep=comma]{data/lvhr_actions.csv};
+\addlegendentry{$v_z$}
+
+\addplot[line width=1.0pt, orange, each nth point={10}]
+table[x=time, y=psi_dot, col sep=comma]{data/lvhr_actions.csv};
+\addlegendentry{$\dot{\eta}$}
+
+% Dummy plot for Fz legend entry (invisible in this axis)
+\addplot[line width=1.0pt, orange, forget plot, opacity=0] coordinates {(0,0)};
+\addlegendimage{line width=1.0pt, orange}
+\addlegendentry{$Fz$}
+
+\addplot[line width=1.0pt, tabpurple, forget plot, opacity=0] coordinates {(0,0)};
+\addlegendimage{line width=1.0pt, tabpurple}
+\addlegendentry{$k_v$}
+\addplot[line width=1.0pt, tabcyan, forget plot, opacity=0] coordinates {(0,0)};
+\addlegendimage{line width=1.0pt, tabcyan}
+\addlegendentry{$kR$}
+\addplot[line width=1.0pt, tabpink, forget plot, opacity=0] coordinates {(0,0)};
+\addlegendimage{line width=1.0pt, tabpink}
+\addlegendentry{$k_\omega$}
+
+\end{axis}
+
+\begin{axis}[
+    name=plot2,
+    at={(plot1.below south west)},
+    yshift=-1.5cm,
+    width=14cm,
+    height=3cm,
+    grid=both,
+    minor grid style={dashed, gray!30},
+    major grid style={dashed, gray!30},
+    minor tick num=1,
+    xmin=0.0,
+    xmax=16,
+    xlabel={Time [s]},
+    ylabel={Gain},
+]
+
+\addplot[line width=1.0pt, tabpurple, each nth point={10}]
+table[x=time, y=kv, col sep=comma]{data/lvhr_g_actions.csv};
+
+\addplot[line width=1.0pt, tabcyan, each nth point={10}]
+table[x=time, y=kR, col sep=comma]{data/lvhr_g_actions.csv};
+
+\addplot[line width=1.0pt, tabpink, each nth point={10}]
+table[x=time, y=kOmega, col sep=comma]{data/lvhr_g_actions.csv};
+
+\end{axis}
+
+\end{tikzpicture}
+\end{document}

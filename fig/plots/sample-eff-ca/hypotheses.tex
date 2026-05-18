@@ -54,7 +54,7 @@
     minor tick num=1,
     % xmode=log,
     xmin=0,
-    xmax={4*10^7},
+    xmax={3*10^7},
     ymin=-16,
     xlabel={Step},
     ylabel={Loss},
@@ -65,7 +65,7 @@
 ]
 
 % SRT
-\addplot[tabblue, line width=1.2pt, tabgreen]
+\addplot[tabblue, line width=1.0pt, tabgreen]
 table[
     y expr=-\thisrow{Loss},
     x=Step,
@@ -73,7 +73,7 @@ table[
 ] {data/metrics_srt.csv};\addlegendentry{SRT}
 
 % CTBR
-\addplot[tabblue, line width=1.2pt, tabblue]
+\addplot[tabblue, line width=1.0pt, tabblue]
 table[
     y expr=-\thisrow{Loss},
     x=Step,
@@ -81,7 +81,7 @@ table[
 ] {data/metrics_ctbr.csv};\addlegendentry{CTBR}
 
 % LVHR
-\addplot[tabblue, line width=1.2pt, taborange]
+\addplot[tabblue, line width=1.0pt, taborange]
 table[
     y expr=-\thisrow{Loss},
     x=Step,
@@ -89,7 +89,7 @@ table[
 ] {data/metrics_lvhr.csv};\addlegendentry{LVHR}
 
 % LVHR+g
-\addplot[tabblue, line width=1.2pt, tabpurple]
+\addplot[tabblue, line width=1.0pt, tabpurple]
 table[
     y expr=-\thisrow{Loss},
     x=Step,

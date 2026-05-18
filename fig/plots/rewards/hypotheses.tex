@@ -25,9 +25,9 @@
     title={Continuous Reward},
 ]
 
-\addplot[tabblue, thick]
+\addplot[tabblue, line width=1pt]
 table[x=Step, y expr=-\thisrow{Value}, col sep=comma] {data/bptt.csv}; \addlegendentry{BPTT}
-\addplot[taborange, thick]
+\addplot[taborange, line width=1pt]
 table[x=Step, y=Value, col sep=comma] {data/traj_tracking_run_7.csv};\addlegendentry{PPO}
 
 
@@ -54,9 +54,9 @@ table[x=Step, y=Value, col sep=comma] {data/traj_tracking_run_7.csv};\addlegende
     title={Discrete Reward},
 ]
 
-\addplot[tabblue, thick]
+\addplot[tabblue, line width=1pt]
 table[x=Step, y expr=-\thisrow{Value}, col sep=comma] {data/bptt.csv}; 
-\addplot[taborange, thick]
+\addplot[taborange, line width=1pt]
 table[x=Step, y=Value, col sep=comma] {data/traj_tracking_run_7.csv};
 
 \end{axis}

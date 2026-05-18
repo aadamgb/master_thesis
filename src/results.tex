@@ -31,7 +31,7 @@ For a fair comparison, the randomized processes use a common seed during the tra
 \subsubsection{Lap Time and Succes Rate}
 
 Ultimately, the primary objective of \ac{ADR} is to traverse a sequence of gates as fast as possible.
-The two metrics used to evaluate this objective are the lap time $T_f$ and the success rate $\mathit{SR}$.
+The two metrics used to evaluate this objective are the lap time $T_f$ and the \ac{SR}.
 
 The lap time $T_f$ is defined as the time elapsed from the start of the episode until the drone passes the final gate.
 The success rate is defined as the ratio of successfully passed gates $G_p$ to the total number of gates $G$ in the racing track,
@@ -143,6 +143,173 @@ In our simulator we saturate the yaw rate to $\pm 3$ rad/s and the yaw acceleart
 
 
 
+
+
+\section{Control Abstraction Evaluation}\label{sec:ablation}
+In this section, we evaluate how the implemented control abstractions affect the sample efficiency, racing performance, as well as the transferability and robustness of the learned control policies.
+
+\subsection{Sample Efficency}
+To evaluate sample efficiency, the four policies are trained for 40 million steps under identical conditions, including the same randomization settings, loss function, network architecture, learning rate, and hyperparameters.
+We then analyze how the loss evolves throughout training.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/sample-eff-ca/hypotheses.pdf}
+    \caption{Loss verus time step for the different control abstractions.}
+    \label{samp-eff-ca}
+\end{figure}
+
+From \autoref{samp-eff-ca}, it can be observed that, as discussed in \autoref{met:ca}, the \ac{SRT} policy requires the longest training time to converge, since the network must implicitly learn the mapping between motor commands and body rates.
+Although this approach is slower to train, it has the advantage of requiring no controller gains or manual tuning.
+In contrast, the \ac{CTBR} policy converges significantly faster, reaching convergence after approximately 1.5 million steps.
+The geometric control abstractions, \ac{LVHR} and \ac{LVHR}+g, converge even faster, requiring only around 0.5 million steps.
+Despite their improved convergence speed, its woth noting that latter policies rely on carefully tuned gains to ensure stable behavior, which can be time consuming and task-dependant.
+
+% \todo{Plot gradients of backward and foorward passes to comare their quality..}
+
+\subsection{Performance}
+To evaluate performance, the policies are further trained on a specific racing track.
+The selected track is commonly used in the literature, as it contains straight sections, high-curvature segments, and a split-S gate configuration, making it suitable for benchmarking agile flight performance.
+This circuit is commonly referred to as the UZH track, as it was designed by the University of Zurich.
+
+To generate trajectories passing through the gates, the time-optimal gate traversal planner proposed in~\cite{qin_time-optimal_2024} is used.
+The planner generates trajectories that account for both the gate geometry and the quadrotor dynamics.
+Training directly on the optimal trajectory consistently resulted in failure to track the reference.
+We hypothesize that the optimization becomes trapped in local minima, preventing the policy from converging to a stable solution.
+To facilitate learning, a curriculum-based training strategy is adopted.
+Initially, the trajectory speed is scaled down to 10\% of the original reference speed.
+Once an episode achieves an RMSE below $0.15$~m, the trajectory speed is increased by an additional 10\%.
+Using this approach, the policies are able to track the trajectory at up to 60\% of the original speed, which remains significantly below the optimal performance.
+This limitation requires further investigation, particularly regarding the design of the loss function and the neural network architecture.
+
+\autoref{tab:uzh_ca} and \autoref{fig:uzh_ca} present the tracking results of the four control abstractions on the UZH track at 60\% of the reference speed, where the policies achieve a maximum speed of 10 m/s.
+\begin{table}[H]
+    \centering
+    \caption{Position and Velocity \ac{RMSE} of the control abstractions, mean $\pm$ std over 5 runs.}
+    \label{tab:uzh_ca}
+    \begin{tabular}{ccccc}
+    \hline
+RMSE  & SRT  & CTBR & LVHR & LVHR+g \\ \hline
+Position [m]  & $0.225\pm 0.031$ & $0.334\pm 0.008$ & $\mathbf{0.132\pm 0.003}$ & $0.201\pm 0.003$  \\
+Velocity [m/s]  & $0.190\pm 0.002$ & $\mathbf{0.180\pm 0.002}$ & $0.219\pm 0.027$ & $0.224\pm 0.008$ \\ \hline
+\end{tabular}
+\end{table}
+
+
+The results presented in \autoref{fig:uzh_ca} and \autoref{tab:uzh_ca} indicate that the \ac{LVHR} control abstraction achieves the lowest position tracking error, while \ac{CTBR} obtains the lowest velocity tracking error.
+At this suboptimal speed, all policies achieve a \ac{SR} of 100\%, with no gate collisions occurring during the experiments.
+
+Furthermore, the policies exhibit broadly similar behavior.
+The collective thrust commands follow comparable patterns across all control abstractions.
+The \ac{SRT} and \ac{LVHR}+g policies appear to lag slightly behind the reference trajectory, whereas the \ac{CTBR} policy tends to move ahead of the reference and produces the most oscillatory control commands.
+Although the \ac{LVHR} policy achieves the best position tracking performance overall, its velocity tracking error increases significantly toward the end of the trajectory.
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/uzh-track/hypotheses.pdf}
+    \caption{Tracking error of the different control abstractions for the UZH racing track.}
+    \label{fig:uzh_ca}
+\end{figure}
+
+% \begin{table}[H]
+%     \centering
+%     \caption{Position and Velocity \ac{RMSE} of the control abstractions, mean $\pm$ std over 5 runs.}
+%     \label{tab:uzh_ca}
+%     \begin{tabular}{ccccc}
+%     \hline
+% RMSE  & SRT  & CTBR & LVHR & LVHR+g \\ \hline
+% Position [m]  & $0.225\pm 0.031$ & $0.334\pm 0.008$ & $\mathbf{0.132\pm 0.003}$ & $0.201\pm 0.003$  \\
+% Velocity [m/s]  & $0.190\pm 0.002$ & $\mathbf{0.180\pm 0.002}$ & $0.219\pm 0.027$ & $0.224\pm 0.008$ \\ \hline
+% \end{tabular}
+% \end{table}
+
+Analyzing the commands of each control abstraction individually reveals information in policy behavior.
+For the \ac{SRT} policy, in fig:srt-action it can be seen that the rotor commands follow a trend similar to the collective thrust profile shown in \autoref{fig:uzh_ca}.
+The policy successfully learns to rotate the quadrotor by generating differential thrust between the rotors.
+Around $12$~s, high-frequency oscillations can be observed in the commands; this interval corresponds to the split-S section of the track, where aggressive rotational maneuvers are required.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/commands-srt/hypotheses.pdf}
+    \caption{Single rotor thrusts commands for the UZH trajectory.}
+    \label{fig:srt-action}
+\end{figure}
+
+From \autoref{fig:ctbr-action}, it can be observed that the control commands are relatively jittery.
+The pitch and roll moments are the most aggressive, reaching peak values of approximately $0.05~\mathrm{N\cdot m}$ during the split-S maneuver.
+In contrast, the yaw moments remain close to $0.0~\mathrm{N\cdot m}$, since maintaining the heading aligned with the gates was not explicitly prioritized during training.
+
+The platform has a maximum \ac{TWR} of 6.9, corresponding to a maximum thrust of approximately $82~\mathrm{N}$.
+For the evaluated trajectory, the maximum commanded thrust is around $14~\mathrm{N}$, which corresponds to only $17\%$ of the maximum available thrust.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/commands-ctbr/hypotheses.pdf}
+    \caption{Collective thrust and body rates commands for the UZH trajectory.}
+    \label{fig:ctbr-action}
+\end{figure}
+
+The velocity and heading-rate commands shown in \autoref{fig:lvhr-action} exhibit a similar structure throughout the trajectory.
+The commanded velocities along the body $x$ and body $y$ axes have the largest magnitudes, while the heading rate and vertical velocity $v_z$ remain close to zero for most of the flight.
+
+The main advantage of this control abstraction is the smoothness of the generated commands.
+Additionally, as shown in \autoref{samp-eff-ca}, this policy achieves the fastest convergence during training.
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/commands-lvhr/hypotheses.pdf}
+    \caption{Linear velocities and heading rate commands for the UZH trajectory.}
+    \label{fig:lvhr-action}
+\end{figure}
+
+Finally, in the current setup, augmenting the policy to output the gains of the geometric controller does not appear to provide significant improvements.
+The gains are initialized with the same values used in the \ac{LVHR} policy, namely $k_v = 0.6$, $k_R = 0.2$, and $k_\omega = 0.05$.
+However, in this case, the policy outputs scaling factors between $0$ and $1$ that modulate these gains.
+
+As shown in \autoref{fig:lvhr-g-action}, the gains remain relatively constant throughout the trajectory, raising the question of whether the feature justified in the current setup.
+Nevertheless, it is difficult to draw definitive conclusions from this experiment, since the evaluated trajectory remains far from optimal and the actuators operate well below saturation for most of the flight.
+
+Further investigation will be conducted in future work, as we believe this approach could be beneficial in more aggressive flight regimes or under varying operating conditions, potentially providing advantages over fixed-gain geometric controllers.
+As discussed in~\cite{boufrioua_gain_2022}, ``it is widely known that this controller design approach provides better stability and performance results for slowly varying parameters''~\cite{rugh_analytical_1991}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/commands-lvhr+g/hypotheses.pdf}
+    \caption{Linear velocities, heading rate and controller gains commands for the UZH trajectory.}
+    \label{fig:lvhr-g-action}
+\end{figure}
+
+\subsection{Robustness}
+
+\subsection{Transferability}
+
+
+To analyze the how the controllers transfer to a high fidelity simulator, we have implemented the controller as a ROS node in C++ and integrated it within the MRS uav stack~\cite{baca_mrs_2021} in gazebo.
+
+We selected the \ac{CTBR} policy to test as this control abstraction is widely used aerial robotics, and it is the only one currently supported by the mrs uav PixHawk 4 \ac{API}.
+In future work we will implement the other control abstractions in the px4 api to test them in gazebo, particlarly the \ac{LVHR}+g. But for now the \ac{CTBR} controller serves a s a good baseline to evaluate transferability, this way in fig. we compare the position and velocity \ac{RMSE} between our simulator and gazebo, in gazebo we use both ground turth state estimation and a more realistic state estimator which is closer to real flight conditions.
+
+
+\section{Surrogate Gradient Analysis}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/gradients/hypotheses.pdf}
+    \caption{Gradients.}
+    \label{fig:gradients}
+\end{figure}
+
+\section{Real World Validation}\label{sec:realworld}
+
+RMSE: 6.11020 m | RMSE: 4.25100 m  | Max Speed: 8.11 m/s
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/uzh-real-flight/hypotheses.pdf}
+    \caption{Real world trajectory.}
+    \label{fig:real-world}
+\end{figure}
+
+
+
 \section{Model-Free and Model-Based evaluation}\label{sec:baseline}
 In this section, we compare two policies, one optimized using model-free \ac{RL} with \ac{PPO}, and the other using model-based \ac{RL} with \ac{BPTT}.
 The comparison is performed in terms of sample efficiency, mean reward, performance, transferability, and robustness.
@@ -160,7 +327,7 @@ It is worth mentioning that the wall time is highly dependant on the frequency a
 For this comparison, the policies are optimized when losses for 50 stpes for 1024 parallel environments are collected, that is to say, every 51200 stpes. 
 
 \subsection{Discrete and Continuous Rewards}
-
+\todo{}
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/rewards/hypotheses.pdf}
@@ -205,106 +372,3 @@ where     $\theta = \omega \cdot t \cdot dt$  and $\omega = \text{speed}/\text{s
 %     \caption{\todo{This is a placeholder figure, (I need to get the actual data)}Wind response, gazebo?}
 %     \label{fig:wind}
 % \end{figure}
-
-
-\section{Control Abstraction Evaluation}\label{sec:ablation}
-In this section, we evaluate how the implemented control abstractions affect the sample efficiency, racing performance, as well as the transferability and robustness of the learned control policies.
-
-\subsection{Sample Efficency}
-To evaluate sample efficiency, the four policies are trained for 40 million steps under identical conditions, including the same randomization settings, loss function, network architecture, learning rate, and hyperparameters.
-We then analyze how the loss evolves throughout training.
-
-
-\begin{figure}[H]
-    \centering
-    \includegraphics{fig/plots/sample-eff-ca/hypotheses.pdf}
-    \caption{Loss verus time step for the different control abstractions.}
-    \label{samp-eff-ca}
-\end{figure}
-
-From \autoref{samp-eff-ca}, it can be observed that, as discussed in \autoref{met:ca}, the \ac{SRT} policy requires the longest training time to converge, since the network must implicitly learn the mapping between motor commands and body rates.
-Although this approach is slower to train, it has the advantage of requiring no controller gains or manual tuning.
-In contrast, the \ac{CTBR} policy converges significantly faster, reaching convergence after approximately 1.5 million steps.
-The geometric control abstractions, \ac{LVHR} and \ac{LVHR}+g, converge even faster, requiring only around 0.5 million steps.
-Despite their improved convergence speed, its woth noting that latter policies rely on carefully tuned gains to ensure stable behavior, which can be time consuming and task-dependant.
-
-% \todo{Plot gradients of backward and foorward passes to comare their quality..}
-
-\subsection{Performance}
-To evaluate performance, the policies are further trained on a specific racing track.
-The selected track is commonly used in the literature, as it contains straight sections, high-curvature segments, and a split-S gate configuration, making it suitable for benchmarking agile flight performance.
-This circuit is commonly referred to as the UZH track, as it was designed by the University of Zurich.
-
-To generate trajectories passing through the gates, the time-optimal gate traversal planner proposed in~\cite{qin_time-optimal_2024} is used.
-\begin{figure}[H]
-    \centering
-    \includegraphics{fig/plots/uzh-track/hypotheses.pdf}
-    \caption{Tracking error of the different control abstractions for the UZH racing track.}
-    \label{fig:uzh_ca}
-\end{figure}
-The data from \autoref{fig:uzh_ca} and \autoref{tab:uzh_ca} indicates that the X control abstraction achieves the best tracking perfromance with a \ac{RMSE} of X a succes rate of X and lap time of X.
-
-\begin{table}[H]
-    \centering
-    \caption{Position and Velocity \ac{RMSE} of the control abstractions, mean $\pm$ std over 5 runs.}
-\begin{tabular}{ccccc}
-    \hline
-RMSE  & SRT  & CTBR & LVHR & LVHR+g \\ \hline
-Position [m]  & $0.225\pm 0.031$ & $0.334\pm 0.008$ & $\mathbf{0.132\pm 0.003}$ & $0.201\pm 0.003$  \\
-Velocity [m/s]  & $\mathbf{0.190\pm 0.002}$ & $0.180\pm 0.002$ & $0.219\pm 0.027$ & $0.224\pm 0.008$ \\ \hline
-\end{tabular}
-\end{table}
-
-
-
-\begin{figure}[H]
-    \centering
-    \includegraphics{fig/plots/srt-actions/hypotheses.pdf}
-    \caption{}
-    \label{fig:srt-action}
-\end{figure}
-\begin{figure}[H]
-    \centering
-    \includegraphics{fig/plots/srt-actions/hypotheses.pdf}
-    \caption{}
-    \label{fig:srt-action}
-\end{figure}
-\begin{figure}[H]
-    \centering
-    \includegraphics{fig/plots/lvhr-actions/hypotheses.pdf}
-    \caption{}
-    \label{fig:lvhr-action}
-\end{figure}
-\begin{figure}[H]
-    \centering
-    \includegraphics{fig/plots/lvhr-actions/hypotheses.pdf}
-    \caption{}
-    \label{fig:lvhr-action}
-\end{figure}
-
-\subsection{Transferability and Robustness}
-\begin{figure}[H]
-    \centering
-    \subfloat[\todo{}Fixed gains\label{fig:adapt_gains_top}]{%
-        \includegraphics[width=1.0\textwidth, height=0.3\textwidth]{fig/photos/placehldrs/adapt_gains}
-    }\\[0.5em]
-    \subfloat[\todo{}Adaptive gains\label{fig:adapt_gains_bottom}]{%
-        \includegraphics[width=01.0\textwidth, height=0.3\textwidth]{fig/photos/placehldrs/adapt_gains}
-    }
-
-    \caption{Adaptive gains comparison}
-    \label{fig:adapt_gains}
-\end{figure}
-% \section{Transferability to MRS UAV System}\label{sec:transferability}
-
-
-\section{Surrogate Gradient Analysis}
-\section{Real World Validation}\label{sec:realworld}
-
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1.0\textwidth]{fig/photos/placehldrs/realwrld-flight.png}
-    \caption{\todo{This is a placeholder figure, (I need to get the actual data)}Real world flights}
-    \label{fig:real-flight}
-\end{figure}

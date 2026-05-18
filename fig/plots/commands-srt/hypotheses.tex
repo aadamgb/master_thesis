@@ -30,54 +30,29 @@
     xlabel={Time [s]},
     ylabel={Thrust [N]},
     legend pos=north east,
-    legend style={font=\footnotesize, xshift=2cm, yshift=0.2cm, draw=none},
+    legend style={ xshift=2cm, yshift=0.2cm, draw=none},
     legend columns=1,
-    title= SRT Commands
+    title= SRT
     % xtick distance=1,
 ]
 
-% % SRT
-% \addplot[tabblue, line width=1.2pt, tabgreen]
-% table[
-%     y expr=-\thisrow{Loss},
-%     x=Step,
-%     col sep=comma,
-% ] {data/metrics_srt.csv};\addlegendentry{SRT}
-
-% % CTBR
-% \addplot[tabblue, line width=1.2pt, tabblue]
-% table[
-%     y expr=-\thisrow{Loss},
-%     x=Step,
-%     col sep=comma,
-% ] {data/metrics_ctbr.csv};\addlegendentry{CTBR}
-
-% LVHR
-\addplot[tabblue, line width=1.2pt, red]
+% SRT
+\addplot[tabblue, line width=1.0pt, red, each nth point={10}]
 table[x=time, y=t1,
     col sep=comma,
 ] {data/srt_actions.csv};\addlegendentry{T1}
-\addplot[tabblue, line width=1.2pt, green]
+\addplot[tabblue, line width=1.0pt, green, each nth point={10}]
 table[x=time, y=t2,
     col sep=comma,
 ] {data/srt_actions.csv};\addlegendentry{T2}
-\addplot[tabblue, line width=1.2pt, blue]
+\addplot[tabblue, line width=1.0pt, blue, each nth point={10}]
 table[x=time, y=t3,
     col sep=comma,
 ] {data/srt_actions.csv};\addlegendentry{T3}
-\addplot[tabblue, line width=1.2pt, orange]
+\addplot[tabblue, line width=1.0pt, orange, each nth point={10}]
 table[x=time, y=t4,
     col sep=comma,
 ] {data/srt_actions.csv};\addlegendentry{T4}
-
-% % LVHR+g
-% \addplot[tabblue, line width=1.2pt, tabpurple]
-% table[
-%     y expr=-\thisrow{Loss},
-%     x=Step,
-%     col sep=comma,
-% ] {data/metrics_lvhr+g.csv};\addlegendentry{LVHR+g}
-
 
 
 \end{axis}

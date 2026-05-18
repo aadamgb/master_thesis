@@ -1,0 +1,72 @@
+\documentclass{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\definecolor{tabblue}{rgb}{0.0000, 0.4470, 0.7410}
+\definecolor{taborange}{rgb}{0.8500, 0.3250, 0.0980}
+\definecolor{tabred}{rgb}{0.6350, 0.0780, 0.1840}
+\begin{document}
+\begin{tikzpicture}
+
+% ---- Main axis (steps) ----
+\begin{axis}[
+    name=plot1,
+    width=7.5cm,
+    height=5cm,
+    grid=both,
+    minor grid style={dashed, gray!30},
+    major grid style={dashed, gray!30},
+    minor tick num=1,
+    xmin=0,
+    xmax={2.5*10^7},
+    ymin=-8.2,
+    xlabel={Steps},
+    ylabel={Loss},
+    legend pos=south east,
+    % title={Continuous Reward},
+]
+
+
+\addplot[tabblue, line width=1pt]
+table[x=Step, y expr=-\thisrow{Loss}, col sep=comma] {data/metrics_ctbr_simple.csv}; \addlegendentry{simple}
+\addplot[tabred, line width=1pt]
+table[x=Step, y expr=-\thisrow{Loss}, col sep=comma] {data/metrics_ctbr_full.csv}; \addlegendentry{full}
+\end{axis}
+
+
+\begin{axis}[
+    name=plot2,
+    at={(plot1.right of south east)},
+    anchor=left of south west,
+    xshift=0.5cm,
+    width=7.5cm,
+    height=5cm,
+    grid=both,
+    minor grid style={dashed, gray!30},
+    major grid style={dashed, gray!30},
+    minor tick num=1,
+    % xmode=log,
+    xmin=0,
+    xmax={2.5*10^7},
+    % xmax={25000},
+    ymin=0,
+    xlabel={Step},
+    ylabel={Gradient Norm},
+    % title={Discrete Reward},
+]
+
+\addplot[tabblue, line width=1pt]
+table[x expr=\thisrow{Step}*1000, y=GradientNorm, col sep=comma, each nth point={10}] {data/gradient_norms_ctbr_simple.csv};
+
+\addplot[tabred, line width=1pt]
+table[x expr=\thisrow{Step}*1000, y=GradientNorm, col sep=comma, each nth point={10}] {data/gradient_norms_ctbr_full.csv}; 
+
+% \addplot[tabblue, line width=1pt]
+% table[x=Step, y expr=-\thisrow{Loss}, col sep=comma] {data/metrics_ctbr_simple.csv}; \addlegendentry{simple}
+% \addplot[tabred, line width=1pt]
+% table[x=Step, y expr=-\thisrow{Loss}, col sep=comma] {data/metrics_ctbr_full.csv}; \addlegendentry{full}
+
+\end{axis}
+
+\end{tikzpicture}
+\end{document}
