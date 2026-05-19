@@ -144,7 +144,7 @@ The drag force is expressed as:
 \begin{equation}
     \mathbf{F}^{\mathcal{B}}_D = -\tfrac{1}{2}\rho \|\mathbf{v}^{\mathcal{B}}\| \mathbf{C}_D \mathbf{A} \mathbf{v}^{\mathcal{B}}
 \end{equation}
-where $\rho$ denotes the air density, $\mathbf{A} = \mathrm{diag}(A_{b1}, A_{b2}, A_{b3})$ represents the reference area along each body axis, and $\mathbf{C}_D = \mathrm{diag}(A_{b1}, A_{b2}, A_{b3})$ is a diagonal matrix of non-dimensional drag coefficients.
+where $\rho$ denotes the air density, $\mathbf{A} = \mathrm{diag}(A_{b1}, A_{b2}, A_{b3})$ represents the reference area along each body axis, and $\mathbf{C_D} = \mathrm{diag}(C_{D_{b1}}, C_{D_{b2}}, C_{D_{b3}})$  is a diagonal matrix of non-dimensional drag coefficients.
 The velocity must be expressed in the body frame, obtained as $\mathbf{v}^{\mathcal{B}} = \mathbf{R}(\mathbf{q})^\top \mathbf{v}^{\mathcal{W}}$.
 
 
@@ -216,7 +216,7 @@ The highest level of abstraction that is implement consists on commanding \ac{LV
     v_{i, \text{cmd}} = (2u_{i} - 1)  v_{i, \text{max}}, \quad i \in \{1, 2, 3\}
 \end{equation}
 \begin{equation}\label{eq:geo_omega}
-    \omega_{3, \text{cmd}} = \dot{\psi}_{\text{cmd}} = (2u_{4} - 1)  \dot{\psi}_{ \text{max}}
+    \omega_{3, \text{cmd}} = \dot{\eta}_{\text{cmd}} = (2u_{4} - 1)  \dot{\eta}_{ \text{max}}
 \end{equation}
 
 \noindent where $\psi$ denotes the yaw angle and $v_{i,\text{cmd}}$ represents the commanded linear velocity along each body axis. 

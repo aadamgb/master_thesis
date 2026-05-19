@@ -26,7 +26,7 @@
     xmax=16,
     xlabel={},
     xticklabels={},
-    ylabel={$\tau$ [N·m]},
+    ylabel={Vel. [m/s],  Hdg. [rad/s]},
     legend pos=north east,
     legend style={xshift=2cm, yshift=0.2cm, draw=none},
     legend columns=1,
@@ -50,9 +50,9 @@ table[x=time, y=psi_dot, col sep=comma]{data/lvhr_actions.csv};
 \addlegendentry{$\dot{\eta}$}
 
 % Dummy plot for Fz legend entry (invisible in this axis)
-\addplot[line width=1.0pt, orange, forget plot, opacity=0] coordinates {(0,0)};
-\addlegendimage{line width=1.0pt, orange}
-\addlegendentry{$Fz$}
+% \addplot[line width=1.0pt, orange, forget plot, opacity=0] coordinates {(0,0)};
+% \addlegendimage{line width=1.0pt, orange}
+% \addlegendentry{$Fz$}
 
 \addplot[line width=1.0pt, tabpurple, forget plot, opacity=0] coordinates {(0,0)};
 \addlegendimage{line width=1.0pt, tabpurple}

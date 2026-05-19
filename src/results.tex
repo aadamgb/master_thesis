@@ -231,7 +231,7 @@ Around $12$~s, high-frequency oscillations can be observed in the commands; this
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/commands-srt/hypotheses.pdf}
-    \caption{Single rotor thrusts commands for the UZH trajectory.}
+    \caption{Commanded single rotor thrusts for the UZH trajectory.}
     \label{fig:srt-action}
 \end{figure}
 
@@ -245,7 +245,7 @@ For the evaluated trajectory, the maximum commanded thrust is around $14~\mathrm
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/commands-ctbr/hypotheses.pdf}
-    \caption{Collective thrust and body rates commands for the UZH trajectory.}
+    \caption{Commanded collective thrust and body rates for the UZH trajectory.}
     \label{fig:ctbr-action}
 \end{figure}
 
@@ -257,7 +257,7 @@ Additionally, as shown in \autoref{samp-eff-ca}, this policy achieves the fastes
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/commands-lvhr/hypotheses.pdf}
-    \caption{Linear velocities and heading rate commands for the UZH trajectory.}
+    \caption{Commanded linear velocities and heading rate for the UZH trajectory.}
     \label{fig:lvhr-action}
 \end{figure}
 
@@ -274,23 +274,33 @@ As discussed in~\cite{boufrioua_gain_2022}, ``it is widely known that this contr
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/commands-lvhr+g/hypotheses.pdf}
-    \caption{Linear velocities, heading rate and controller gains commands for the UZH trajectory.}
+    \caption{Commanded linear velocities, heading rate and controller gains for the UZH trajectory.}
     \label{fig:lvhr-g-action}
 \end{figure}
 
-\subsection{Robustness}
+
 
 \subsection{Transferability}
 
 
-To analyze the how the controllers transfer to a high fidelity simulator, we have implemented the controller as a ROS node in C++ and integrated it within the MRS uav stack~\cite{baca_mrs_2021} in gazebo.
+To evaluate how the controllers transfer to a high-fidelity simulator, we implemented a neural nework controller as a ROS node in C++ and integrated into the MRS UAV system~\cite{baca_mrs_2021} within Gazebo.
+The \ac{CTBR} policy was selected for evaluation, as this control abstraction is widely used in aerial robotics and is currently the only one supported by the MRS UAV Pixhawk~4~\cite{mrs_uav_px4} \ac{API}.
+In future work, the remaining control abstractions will also be implemented within the PX4 interface, particularly the \ac{LVHR}+g approach.
+Nevertheless, the \ac{CTBR} controller provides a suitable baseline for evaluating transferability.
 
-We selected the \ac{CTBR} policy to test as this control abstraction is widely used aerial robotics, and it is the only one currently supported by the mrs uav PixHawk 4 \ac{API}.
-In future work we will implement the other control abstractions in the px4 api to test them in gazebo, particlarly the \ac{LVHR}+g. But for now the \ac{CTBR} controller serves a s a good baseline to evaluate transferability, this way in fig. we compare the position and velocity \ac{RMSE} between our simulator and gazebo, in gazebo we use both ground turth state estimation and a more realistic state estimator which is closer to real flight conditions.
-
+Using this setup, we compare the position and velocity \ac{RMSE} obtained in our simulator against the results in Gazebo.
+In Gazebo, two configurations are considered: one using ground-truth state estimation and another using a more realistic state estimator representative of real flight conditions.
 
 \section{Surrogate Gradient Analysis}
+In this section, we analyze the effect of using surrogate gradients during the policy optimization process.
+The gradient is backpropagated from the loss function to the policy parameters through the chain rule.
+As discussed in \autoref{sec:diff-opt}, the gradients are computed numerically from the computational graph.
+Certain operations, such as \autoref{eq:motspd}, can be highly sensitive to small perturbations, leading to unstable gradients and making the optimization process more difficult.
 
+This behavior can be observed in \autoref{fig:gradients}, where the loss and gradient norm are plotted against the training steps for two different approaches: a simplified backpropagated model that omits motor dynamics, and the full model including the motor dynamics.
+At the beginning of training, both approaches exhibit similar behavior.
+However, the full model eventually converges to a suboptimal solution and fails to track the trajectory successfully.
+By analyzing the gradient norm of the full model, larger oscillations can be observed, which we believe are responsible for the unstable optimization and suboptimal convergence.
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/gradients/hypotheses.pdf}
@@ -298,13 +308,23 @@ In future work we will implement the other control abstractions in the px4 api t
     \label{fig:gradients}
 \end{figure}
 
+\subsection{Robustness}
+
 \section{Real World Validation}\label{sec:realworld}
 
-RMSE: 6.11020 m | RMSE: 4.25100 m  | Max Speed: 8.11 m/s
+On the 16th of April 2026, during the MRS testing campaign, we conducted a real-world flight experiment.
+At that stage, the simulator was still in an early phase of development; actuator dynamics and aerodynamic drag were not yet modeled, and policy training relied on ground-truth state information.
+
+As a result, there was a significant mismatch between the simulator and real flight conditions.
+This led to poor trajectory tracking performance, with position and velocity \ac{RMSE} values of $6.11~\mathrm{m}$ and $4.25~\mathrm{m/s}$, respectively.
+Although the overall performance was limited, \autoref{fig:real-world} shows that the general shape of the trajectory was still preserved.
+This suggests that \ac{DR} contributed positively to policy transferability in real-world conditions.
+Additionally, the experiment provided valuable insights and data that were later used to improve the simulator.
+% RMSE: 6.11020 m | RMSE: 4.25100 m  | Max Speed: 8.11 m/s
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/uzh-real-flight/hypotheses.pdf}
-    \caption{Real world trajectory.}
+    \caption{Real world flight data, UZH track trajectory tracking.}
     \label{fig:real-world}
 \end{figure}
 
