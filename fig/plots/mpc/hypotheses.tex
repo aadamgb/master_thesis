@@ -1,0 +1,111 @@
+\documentclass{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\definecolor{tabblue}{rgb}{0.0000, 0.4470, 0.7410}
+\definecolor{taborange}{rgb}{0.8500, 0.3250, 0.0980}
+\definecolor{tabgreen}{rgb}{0.4660, 0.6740, 0.1880}
+\definecolor{tabyellow}{rgb}{0.9290, 0.6940, 0.1250}
+\definecolor{tabpurple}{rgb}{0.4940, 0.1840, 0.5560}
+
+\begin{document}
+\begin{tikzpicture}
+
+% ---- Main axis (steps) ----
+% \begin{axis}[
+%     name=plot1,
+%     width=7.5cm,
+%     height=5cm,
+%     grid=both,
+%     minor grid style={dashed, gray!30},
+%     major grid style={dashed, gray!30},
+%     minor tick num=1,
+%     xmin=0,
+%     xmax={5*10^7},
+%     % ymin=-10,
+%     xlabel={Steps},
+%     ylabel={Mean Reward},
+%     legend pos=south east,
+% ]
+
+% \addplot[tabblue, thick]
+% table[x=Step, y expr=-\thisrow{Value}, col sep=comma] {data/bptt.csv}; \addlegendentry{BPTT}
+% \addplot[taborange, thick]
+% table[x=Step, y=Value, col sep=comma] {data/traj_tracking_run_7.csv};\addlegendentry{PPO}
+
+
+% \end{axis}
+
+% % Extract first wall time (hardcode after checking CSV)
+\pgfmathsetmacro{\tzero}{1777203379.9603095}
+
+
+
+\begin{axis}[
+    name=plot2,
+    % at={(plot1.right of south east)},
+    anchor=left of south west,
+    xshift=0.5cm,
+    width=9.5cm,
+    height=7cm,
+    grid=both,
+    minor grid style={dashed, gray!30},
+    major grid style={dashed, gray!30},
+    minor tick num=1,
+    % xmode=log,
+    % xmin=0,
+    % xmax={3*10^7},
+    % ymin=-16,
+    xlabel={$x_1$},
+    ylabel={$x_2$},
+    legend pos=south east,
+    legend style={font=\footnotesize},
+    legend columns=2,
+    % xtick distance=1,
+]
+
+% Opt
+
+
+
+% \addplot[color=gray, mark=diamond*, mark size=0.7pt, line width=0.5pt, opacity=0.5, forget plot]
+% table[
+%     y=x2,
+%     x=x1,
+%     col sep=comma,
+% ] {data/mpc_plot_pred.csv};
+
+% \foreach \i in {1,...,1}{
+    \addplot[color=gray, mark=diamond*, mark size=0.5pt, line width=0.5pt, opacity=0.5, forget plot]
+    table[
+        y=x2,
+        x=x1,
+        col sep=comma,
+        % row filter/.code={
+        %     \getthisrow{series}{val}
+        %     \edef\test{x_pred_\i}
+        %     \ifx\val\test\else\pgfplotsfilterreject\fi
+        % }
+    ] {data/mpc_plot_pred.csv};
+% }
+
+\addplot[color=tabblue, mark=o, mark size=1.0pt, line width=1.5pt]
+table[
+    y=x2,
+    x=x1,
+    col sep=comma,
+] {data/mpc_plot_opt.csv};\addlegendentry{$x(k)$}
+
+% Pred
+% \addplot[tabblue, line width=1.0pt, tabblue]
+% table[
+%     y expr=-\thisrow{Loss},
+%     x=Step,
+%     col sep=comma,
+% ] {data/mpc_plot_pred.csv};
+
+
+\end{axis}
+
+\end{tikzpicture}
+\end{document}

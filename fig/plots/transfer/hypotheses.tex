@@ -1,0 +1,165 @@
+\documentclass{standalone}
+
+% \begin{filecontents*}{\jobname.bib}
+% @misc{dummy,
+%     author = {Placeholder},
+%     title  = {Placeholder Reference},
+%     year   = {1900}
+% }
+% \end{filecontents*}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% \makeatletter
+% \AtEndDocument{%
+%     \immediate\write\@auxout{\string\citation{dummy}}%
+%     \immediate\write\@auxout{\string\bibstyle{plain}}%
+%     \immediate\write\@auxout{\string\bibdata{\jobname}}%
+% }
+% \makeatother
+
+\definecolor{tabblue}{rgb}{0.0000, 0.4470, 0.7410}
+\definecolor{taborange}{rgb}{0.8500, 0.3250, 0.0980}
+\definecolor{tabgreen}{rgb}{0.4660, 0.6740, 0.1880}
+\definecolor{tabred}{rgb}{0.6350, 0.0780, 0.1840}
+
+\begin{document}
+
+\begin{tikzpicture}
+
+% --- Plot 1 ---
+
+\begin{axis}[
+            name=plot1,
+            width=7cm,
+            height=8cm,
+            view={30}{80},         
+            grid=both,              
+            minor tick num=1,       
+            xlabel={x [m]},
+            ylabel={y [m]},
+            zlabel={z [m]},
+            % colorbar,
+            % colormap/viridis,
+            % % colorbar style={ylabel={$\lVert v \rVert$ [m/s]}},
+            point meta max=8,
+            % title={Real World Flight Experiment}
+        ]
+\addplot3[
+    dashed,
+    line width=1pt,
+] table[
+    x=ref_x, y=ref_y, z=ref_z,
+    col sep=comma,
+] {data/real_traj.csv};
+
+% \addplot3[
+%     scatter,
+%     only marks,                        % removes the connecting line entirely
+%     scatter src=explicit,              % use the meta column directly
+%     point meta=explicit,
+%     mark=*,
+%     % mark size=1pt,
+% ] table[
+%     x=x, y=y, z=z,
+%     meta=velocity,
+%     col sep=comma,
+% ] {data/real_traj.csv};
+
+\end{axis}
+
+
+% --- Plot 2 (duplicate to the right) ---
+
+\begin{axis}[
+            name=plot2,
+            at={(plot1.east)},
+            anchor=west,
+            xshift=3cm,
+            width=7cm,
+            height=8cm,
+            view={30}{80},         
+            grid=both,              
+            minor tick num=1,       
+            xlabel={x [m]},
+            ylabel={y [m]},
+            zlabel={z [m]},
+            % colorbar,
+            % colormap/viridis,
+            % colorbar style={ylabel={$\lVert v \rVert$ [m/s]}},
+            % point meta max=8,
+            % title={Real World Flight Experiment (copy)}
+        ]
+\addplot3[
+    dashed,
+    line width=1pt,
+] table[
+    x=ref_x, y=ref_y, z=ref_z,
+    col sep=comma,
+] {data/real_traj.csv};
+
+% \addplot3[
+%     scatter,
+%     only marks,                        % removes the connecting line entirely
+%     scatter src=explicit,              % use the meta column directly
+%     point meta=explicit,
+%     mark=*,
+%     mark size=1pt,
+% ] table[
+%     x=x, y=y, z=z,
+%     meta=velocity,
+%     col sep=comma,
+% ] {data/real_traj.csv};
+
+\end{axis}
+
+% --- Plot 3 (duplicate to the right) ---
+
+\begin{axis}[
+            name=plot3,
+            at={(plot2.east)},
+            anchor=west,
+            xshift=3cm,
+            width=7cm,
+            height=8cm,
+            view={30}{80},         
+            grid=both,              
+            minor tick num=1,       
+            xlabel={x [m]},
+            ylabel={y [m]},
+            zlabel={z [m]},
+            colorbar,
+            colormap/viridis,
+            colorbar style={ylabel={$\lVert v \rVert$ [m/s]}},
+            point meta max=8,
+            % title={Real World Flight Experiment (copy)}
+        ]
+\addplot3[
+    dashed,
+    line width=1pt,
+] table[
+    x=ref_x, y=ref_y, z=ref_z,
+    col sep=comma,
+] {data/real_traj.csv};
+
+\addplot3[
+    scatter,
+    only marks,                        % removes the connecting line entirely
+    scatter src=explicit,              % use the meta column directly
+    point meta=explicit,
+    mark=*,
+    mark size=1pt,
+] table[
+    x=x, y=y, z=z,
+    meta=velocity,
+    col sep=comma,
+] {data/real_traj.csv};
+
+\end{axis}
+
+
+
+\end{tikzpicture}
+
+\end{document}

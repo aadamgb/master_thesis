@@ -97,31 +97,7 @@ To assess transferability, the policies trained in the proposed differentiable s
 Since the differentiable physics and model-free \ac{RL} policies are optimized under different paradigms, the sim-to-sim performance gap is analyzed for each method, measuring the degradation in success rate $\mathit{SR}$ and lap time $T_f$ relative to the results obtained in the training simulator.
 Additionally, robustness to external disturbances is evaluated by exposing the trained policies to wind perturbations during deployment, without any retraining or fine-tuning.
 
-\section{Simulator Validation}\label{sec:qualitative}
-As detailed in \autoref{sec:sim_frame}, our simulator utilizes a simplified model of quadrotor dynamics and aerodynamics. 
-To maintain a computationally efficient and generalizable framework, we omit secondary effects such as battery depletion on thrust, complex aerodynamic effects, and the propellers rotational inertia. 
-While these unmodeled dynamics can cumulatively lead to a significant sim-to-real gap, we aim to address this mismatch through \ac{DR}.
-To validate the reliability of this simplified approach, we benchmark our simulator's behavior against Gazebo, a high-fidelity physics engine widely adopted by the robotics community. 
-Specifically, we utilize the UAV models provided by the MRS UAV System within the Gazebo environment as our ground-truth reference for comparison.
 
-We separelty asses the respones of the body rates against a unit step, a variable amplitude and a variable frequency signals.
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=1.0\textwidth]{./fig/plots/omega-xy-val/hypotheses.pdf}
-  \caption{Pitch/Roll responses to unit step, variable amblitude and variable frequency signals.}
-  \label{fig:wx-y-val}
-\end{figure}
-For the pitch and roll responses, the behavior observed in Gazebo and in our simulator is consistent.
-Minor discrepancies can be observed in the response of integration of the unit-step error, together with a slight overshoot in the variable-frequency signal.
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=1.0\textwidth]{./fig/plots/omega-z-val/hypotheses.pdf}
-  \caption{Yaw response to unit step, variable amblitude and variable frequency signals.}
-  \label{fig:wz-val}
-\end{figure}
-
-Similarly, the yaw reponse are close but there is some mismathc on the variable freuqency signal.
-In our simulator we saturate the yaw rate to $\pm 3$ rad/s and the yaw acceleartion to $\pm 5$ rad/$s^2$ to match with Gazebo. 
 % \begin{figure}[H]
 %   \centering
 %   \includegraphics[width=1.0\textwidth]{./fig/plots/throttle-val/hypotheses.pdf}

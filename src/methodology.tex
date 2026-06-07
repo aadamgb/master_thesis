@@ -13,17 +13,7 @@ Lastly, \autoref{sec:diff_opt} details how differentiability is leveraged to opt
 
 
 
-\section{Learning Environment}\label{sec:sim_frame}
-% {\color{blue}Make cool diagram}
-% \autoref{fig:cool-diagram}
-\begin{figure}[H]
-    \centering
-    \resizebox{0.6\textwidth}{!}{\input{fig/tikz/sim_arch_diagram.tex}}
-    \caption{Schematics of the learning environment. The black arrows show the forward pass from the policy outputs to the loss function and the red arrows indicate the backward pass. Not thatduring the backward pass the motor dynamics are skipped.}
-    \label{fig:cool-diagram}
-\end{figure}
-\todo{: Correct the diagram!!}
-\subsection{Quadrotor Model}\label{sec:quad_model}
+\section{Quadrotor Model}\label{sec:quad_model}
 In the simulated environments, the quadcopter is modeeld as a 6 \ac{dof} rigid body.
 The inertial world frame $\mathcal{W}$ is defined by the fixed orthonormal basis $\{\hat{\mathbf{e}}_1, \hat{\mathbf{e}}_2, \hat{\mathbf{e}}_3\}$ while the non-inertial body-fixed frame $\mathcal{B}$ by the  orthonormal basis $\{\hat{\mathbf{b}}_1, \hat{\mathbf{b}}_2, \hat{\mathbf{b}}_3\}$, which is attached to the vehicle's center of mass.  
 The state of the \ac{UAV} is given by $\mathbf{x} = [\mathbf{p}, \mathbf{v}, \mathbf{q}, \boldsymbol{\omega}, \mathbf{\Omega}]^\top$ where the position $\mathbf{p} \in \real^3$, velocity $\mathbf{v} \in \real^3$, and acceleration are represented in the world frame $\mathcal{W} \in \mathbb{R}^3$. 
@@ -77,29 +67,30 @@ Finally, $\mathbf{J}$ is the diagonal inertia matrix, $k_m$ is the motor time co
 \end{figure}
 
 In the body frame $\mathcal{B}$, the individual motor thrusts $T_i, \ i=1,..,4$, are assumed to be perpendicular to the $\{\hat{\mathbf{b}}_1,\hat{\mathbf{b}}_2\}$ plane.
-The magnitudes of collective thrust $F_T$, and body torques $\boldsymbol{\tau}^\mathcal{B}$, can be obtained from \autoref{eq:full_alloc}.
+The magnitudes of collective thrust $F_T$, and body torques $\boldsymbol{\tau}^\mathcal{B}$, can be obtained from \autoref{eq:simp_alloc}.
 To be strictly rigourous, the torques produced by the rotor's angular acceleration and gyroscopic effects should be accounted for.
+Where $\boldsymbol{\Gamma}$ is the allocation matrix. Nonetheless, these effects produced by the rotor speeds, can be neglected the mapping simplifies to,
 
 
 
-\begin{equation}
-      \begin{bmatrix}
-    F_T \\
-    \boldsymbol{\tau}^\mathcal{B}
-  \end{bmatrix} = \boldsymbol{\Gamma} \mathbf{T} + \begin{bmatrix}
-        0 & 0 & 0 & 0 \\
-        0 & 0 & 0 & 0 \\
-        0 & 0 & 0 & 0 \\
-        J_p & -J_p & J_p & -J_p
-    \end{bmatrix} \dot{\boldsymbol{\Omega}} + \begin{bmatrix}
-        0 & 0 & 0 & 0 \\
-        J_p \omega_{b2} & -J_p \omega_{b2} & J_p \omega_{b2} & -J_p \omega_{b2} \\
-        -J_p \omega_{b1} & J_p \omega_{b1} & -J_p \omega_{b1} & J_p \omega_{b1} \\
-        0 & 0 & 0 & 0
-    \end{bmatrix} \boldsymbol{\Omega}
-    \label{eq:full_alloc}
-\end{equation}
-Where $\boldsymbol{\Gamma}$ is the allocation matrix and $J_p$ the propeller's inertia. Nonetheless, these effects produced by the rotor speeds, can be neglected and \autoref{eq:full_alloc} simplifies to \autoref{eq:simp_alloc},
+% \begin{equation}
+%       \begin{bmatrix}
+%     F_T \\
+%     \boldsymbol{\tau}^\mathcal{B}
+%   \end{bmatrix} = \boldsymbol{\Gamma} \mathbf{T} + \begin{bmatrix}
+%         0 & 0 & 0 & 0 \\
+%         0 & 0 & 0 & 0 \\
+%         0 & 0 & 0 & 0 \\
+%         J_p & -J_p & J_p & -J_p
+%     \end{bmatrix} \dot{\boldsymbol{\Omega}} + \begin{bmatrix}
+%         0 & 0 & 0 & 0 \\
+%         J_p \omega_{b2} & -J_p \omega_{b2} & J_p \omega_{b2} & -J_p \omega_{b2} \\
+%         -J_p \omega_{b1} & J_p \omega_{b1} & -J_p \omega_{b1} & J_p \omega_{b1} \\
+%         0 & 0 & 0 & 0
+%     \end{bmatrix} \boldsymbol{\Omega}
+%     \label{eq:full_alloc}
+% \end{equation}
+% Where $\boldsymbol{\Gamma}$ is the allocation matrix and $J_p$ the propeller's inertia. Nonetheless, these effects produced by the rotor speeds, can be neglected and \autoref{eq:full_alloc} simplifies to \autoref{eq:simp_alloc},
 
 
 \begin{equation}
@@ -148,7 +139,7 @@ where $\rho$ denotes the air density, $\mathbf{A} = \mathrm{diag}(A_{b1}, A_{b2}
 The velocity must be expressed in the body frame, obtained as $\mathbf{v}^{\mathcal{B}} = \mathbf{R}(\mathbf{q})^\top \mathbf{v}^{\mathcal{W}}$.
 
 
-\subsection{Control Abstraction}\label{met:ca}
+\section{Control Abstraction}\label{met:ca}
 The control abstraction refers to the modality of the policy outputs used to control the quadrotor.
 The choice of control abstraction affects both the performance of the controller for a given task and the sample efficiency during training.
 For this reason, it is worthwhile to investigate and implement multiple control abstractions.
@@ -160,7 +151,7 @@ An intermediate level of abstraction outputs the collective thrust and the desir
 The highest level of abstraction outputs desired linear velocities and yaw rate, which are converted into a wrench using an $\mathrm{SO}(3)$ geometric controller~\cite{lee_geometric_2010}, and subsequently mapped to rotor thrusts in a manner analogous to the collective thrust and body rate formulation.
 The mathematical formulation of these transformations is presented next.
 
-\subsubsection{Single Rotor Thrust} \label{sec:srt}
+\subsection{Single Rotor Thrust} \label{sec:srt}
 When the \ac{SRT} control mode is choosen, the only transformation to be applied is scaling the policy output $\boldsymbol{u} \in [0, 1]\in \real^4$ to the actuator limits, $\mathbf{T_{\text{cmd}}} \in [T_{\text{min}}, T_{\text{max}} ]$.
 Therefore, the transformation is as simple as; 
 
@@ -189,7 +180,7 @@ Modeling the motor dynamics presents more realistic data which the policy will e
 However, for training purposes it has been decided to skip the motor dynamics during the backporopagation pass as including them, significantly destabilizes the gradients computation.
 Particularly, the mapping of \autoref{eq:motspd} produces high variations on the gradient, degrading the training performance and sample efficiency.  
 
-\subsubsection{Collective Thrust and Body Rates}
+\subsection{Collective Thrust and Body Rates}
 When \ac{CTBR} control mode is selected, the normalized outputs of the policy $\boldsymbol{u} \in [0, 1]\in \real^4$, are mapped to collective thrust and body rates. 
 The scaling is as follows,
 
@@ -208,7 +199,7 @@ Once the rates are calculated, they can be converted to torque values,
 \end{equation}
 aditionally, a proportinal gain $k_p$ can be introduced to adjust the stiffness of the conversion.
 Given the commanded collective thrust and torques, the motor thursts can be obtained from \autoref{eq:alloc} and then the same procudeure of \autoref{sec:srt} is applied during the forward and backward passes.
-\subsubsection{Linear Velocities and Heading Rate}
+\subsection{Linear Velocities and Heading Rate}\label{subsec:lvhr}
 
 The highest level of abstraction that is implement consists on commanding \ac{LVHR}. With this control mode, the policy outputs are scaled as,
 
@@ -258,7 +249,7 @@ The heading vector, serves an auxiliary vector to compute $\mathbf{\hat{b}}_2$ a
 
 \noindent In this way, the commanded orientation is defined by $\mathbf{R}_{\text{cmd}} = \begin{bmatrix}
     \hat{\mathbf{b}}_1 & \hat{\mathbf{b}}_2 & \hat{\mathbf{b}}_3
-\end{bmatrix}$ and the error between the commanded orientation and the current orientation is computed as in \cite{Lee}.
+\end{bmatrix}$ and the error between the commanded orientation and the current orientation is computed as in \cite{lee_geometric_2010}.
 
 \begin{equation}\label{eq:atterr}
     \mathbf{e}_R = \frac{1}{2} \left( \mathbf{R}_{\text{cmd}}^\top \mathbf{R} - \mathbf{R}^\top \mathbf{R}_{\text{cmd}} \right)^\vee 
@@ -312,7 +303,7 @@ The \textit{hat map} $\hat{\cdot} \colon \mathbb{R}^3 \to \mathfrak{so}(3)$ is d
 In this manner, the commanded collective thrust \autoref{eq:geo_thrust}, and commanded torques \autoref{eq:geo_tau}, can be mapped to single rotor thrust commands to apply the same procedure of the last control modes during the forward and backward passes.
 
 
-\subsubsection{Linear Velocity Heading Rate and Gains}
+\subsection{Linear Velocity Heading Rate and Gains}
 
 Finally, the last control mode implemented is an augmentation of the \ac{LVHR} controller.
 In this formulation, the policy outputs high-level commands in the form of desired linear velocities and yaw rate, rather than directly commanding individual rotor thrusts.
@@ -340,7 +331,7 @@ Thus, when this control mode is selected, the policy outputs are, the same as \a
 %                                  Domain Randomization
 % ====================================================================================
 
-\subsection{Domain Randomization}\label{subsec:DR}
+\section{Domain Randomization}\label{subsec:DR}
 To improve the transferability of the policy and to prevent the it from ovrefitting to a specific environment, \ac{DR} is implemented in our methodology as it is well-stabilshed strategy in the field.
 
 A domain can be defined as a specific subset of all possible \ac{POMDP} environments. 
@@ -561,130 +552,6 @@ Then, the reference velocity and acceleartion are approximated as the discrete d
 
 % \subsection{Path Progress}
 
-\section{Differentiable Optimization} \label{sec:diff-opt}
-
-Under the paradigm of differentiable optimization, we no longer treat the quadrotor model as a "black-box".
-The main idea of this thesis is to leverage the simulator's automatic differentiation engine to compute the exact analytical gradient of the cumulative loss $J_k$ with respect to the control policy network.
-In this section we provide an overview on how the optimization process works.
-
-\subsection{Computational Graph and Backpropagation}
-The gradient of the cummulative stage cost function $J_k$ with respect to the network parameters $\theta$ is given by the chain rule as,
-\begin{equation}
-    \nabla_\theta J_k =
-    \frac{1}{B}\frac{1}{H} \sum_{i=1}^{B} \sum_{h=k}^{k+H-1}
-    \frac{\partial \mathcal{L}_h}{\partial \mathbf{x}_h}
-    \frac{\partial \mathbf{x}_h}{\partial \mathbf{u}_{h-1}}
-    \frac{\partial \mathbf{u}_{h-1}}{\partial \theta}
-\end{equation}
-\noindent where $\frac{\partial \mathcal{L}_h}{\partial \mathbf{x}_h}$ is the gradient of
-the stage loss with respect to the state, $\frac{\partial \mathbf{x}_h}{\partial
-\mathbf{u}_{h-1}}$ encodes the change in the dynamics regarding the applied controls, and
-$\frac{\partial \mathbf{u}_{h-1}}{\partial \theta}$ is the gradient of the control output
-with respect to the policy parameters.
-Since the gradient is accumulated through time due to the recursive dependence of the state on previous states and control inputs, this procedure is known as \ac{BPTT}.
-
-To compute this gradient analytically, an automatic differentiation engine is used. 
-Many \ac{ML} frameworks, such as PyTorch~\cite{paszke_pytorch_2019}, TensorFlow~\cite{abadi_tensorflow_2016}, and JAX~\cite{jax2018github}, among others, provide autodiff capabilities. 
-At present, JAX is regarded as a high-performance framework for numerical \ac{ML} computing. 
-However, for this simulator, PyTorch has been selected due to its intuitive interface, extensive documentation, and lower implementation complexity.
-
-\begin{figure}[H]
-    \centering
-    \include{fig/tikz/comp_graph-2}
-    \caption{Computational graph of the numerical operations of the forward and backward passes.}
-    \label{fig:com-graph}
-\end{figure}
-
-
-To illustrate how gradients are computed, consider the next function $f(x, y) = y(xy)^2$. Its gradient is
- $\nabla f = \begin{bmatrix}
-    \frac{\partial f}{\partial x} & \frac{\partial f}{\partial y}
-\end{bmatrix} = \begin{bmatrix}
-    2xy^3 & 3x^2y^2
-\end{bmatrix}$ and evaluating at $x=1$ and $y=2$, we get $\nabla f(1,2) = \begin{bmatrix}
-    16 & 12
-\end{bmatrix}$.
-In PyTorch, this gradient is computed using a computational graph which is constructed during the forward pass.
-Each mathematical operation is stored as a node in this graph.
-During backporopagation, PyTorch applies automatic differentiation to traverse the graph from the output back to the input and applying the chain rule to accumulate gradients.
-The computational graph shown in \autoref{fig:com-graph} represents this process and Algortihm~\ref{alg:backprop} presents the pesudocode.
-% \autoref{fig:com-graph} storing each operation is built, then the b
-In practice, the calculation of the gradients is done simply by calling \textbf{u.backward()} in PyTorch.
-
-
-\begin{algorithm}
-\caption{Example Backpropagation for the function $u(x,y) = y(xy)^2$}
-
-\begin{algorithmic}
-\Require $x \in \real, \ y \in \real$
-\Ensure $\frac{\partial u}{\partial x},\ \frac{\partial u}{\partial y}$
-
-\State \textbf{--- Forward Pass (Build Computational Graph) ---}
-\State $x \gets \texttt{tensor}(1.0,\ \texttt{requires\_grad=True})$ \Comment{Leaf node}
-\State $y \gets \texttt{tensor}(2.0,\ \texttt{requires\_grad=True})$ \Comment{Leaf node}
-\State $z \gets x \times y$ \Comment{Node: \texttt{MulBackward}}
-\State $w \gets z^2$ \Comment{Node: \texttt{PowBackward}}
-\State $u \gets w \times y$ \Comment{Output Node: \texttt{MulBackward}}
-
-\State \textbf{--- Backward Pass (Reverse-Mode Autodiff) ---}
-\State Initialize $\frac{\partial u}{\partial u} \gets 1$
-\State $\frac{\partial u}{\partial w} \gets \frac{\partial u}{\partial u} \cdot y = 1 \cdot 2 = 2$ \Comment{Backprop through $u = w \cdot y$}
-\State $\frac{\partial u}{\partial y} \mathrel{+}= \frac{\partial u}{\partial u} \cdot w = 1 \cdot 4 = 4$ \Comment{Accumulate $y$ gradient from this node}
-\State $\frac{\partial u}{\partial z} \gets \frac{\partial u}{\partial w} \cdot 2z = 2 \cdot 2 = 4$ \Comment{Backprop through $w = z^2$}
-\State $\frac{\partial u}{\partial x} \gets \frac{\partial u}{\partial z} \cdot y = 4 \cdot 2 = 8$ \Comment{Backprop through $z = x \cdot y$} 
-
-\State $\frac{\partial u}{\partial y} \mathrel{+}= \frac{\partial u}{\partial z} \cdot x = 4 \cdot 1 = 4$ \Comment{Accumulate $y$ gradient from this node}
-
-\State \textbf{--- Results ---}
-\State $\frac{\partial u}{\partial x} = 16,\quad \frac{\partial u}{\partial y} = 4 + 4 + 4 = 12$
-
-\end{algorithmic}
-\label{alg:backprop}
-\end{algorithm}
-
-% \todo{Explain the surrogate gradient thing!!!}
-Adittionally, PyTorch allows to custimoize the computational graph in a manner that the forward and backward pass do not need to be identical.
-As shown in \autoref{fig:cool-diagram}, this feature is leveraged to skip the motor dynamics during the backward pass.
-This is done to obtain cleaner gradients since the derivative of \autoref{eq:motspd} is very sensitive due to the small values of the constant $a_0\sim 10^{-7}$ and the square root.
-
-\subsection{Optimization Process}
-Given the gradient $\nabla_\theta J$ computed via \ac{BPTT} the policy parameters are updated using the Adaptive Moment Estimation (Adam) optimizer~\cite{kingma_adam_2017}.
-Adam is a variant of \ac{SGD}, in standard \ac{SGD} the model parameters are updated proportionnally to the gradient in its opposite direction,
-
-\begin{equation}
-    \theta_{k+1} = \theta_k - \alpha\nabla_\theta J_k
-\end{equation}
-where $\alpha$ inidcates the learning rate. The main disatvantages of standard \ac{SGD} is that near the optimum, the gradient decreases rquiring more steps to converge and each parameter is updated equally.
-Adam solves this issues by combining two other variations of \ac{SGD}: Momentum and \ac{RMSP}.
-
-\begin{itemize}
-    \item Momentum accumulates an avarage of past gradients sustaining progress along the directions of consistent descent and dampening oscillations in high curvature directions.
-    \item \ac{RMSP} avarages the square of the gradients, which are used to scale the learning rate of each parameter individually, hence, parmeters with high historical gradients revice smaller updates than those with smaller gradientes 
-\end{itemize}
-Adam unifies these two concepts through the first and second moment estimates, $m$ and $v_k$ respectively, which are updated as,
-
-\begin{equation}
-    m_k = \beta_1 m_{k-1} + (1-\beta_1)\nabla_\theta J_{k-1}
-\end{equation}
-\begin{equation}
-    v_k = \beta_2 v_{k-1} + (1-\beta_2)(\nabla_\theta J_{k-1})^2
-\end{equation}
-where $\beta_1$ and $\beta_2$ are hyperparameters usually set to $0.9$ and $0.999$ respectively. Since both moments are initialized at zero $m_0 = v_0 = 0$, the estimates are biased towards zero in the early iterations of training.
-For this reason, each moment is normalized to,
-
-\begin{equation}
-    \hat{m}_t = \frac{m_t}{1 - \beta_1^k}
-\end{equation}
-\begin{equation}
-    \hat{v}_t = \frac{v_t}{1 - \beta_2^k}.
-\end{equation}
-The final prameter update is given by,
-\begin{equation}
-    \theta_{k+1} = \theta_k - \alpha\, \frac{\hat{m}_k}{\sqrt{\hat{v}_t} + \epsilon}
-    \label{eq:adam}
-\end{equation}
-where $\epsilon \ll 1$ is a small constant introduced for numerical stability.
-
 
 % \begin{algorithm}
 % \caption{Adam, algorithm proposed in \cite{}.}\label{alg:adam}
@@ -710,9 +577,24 @@ where $\epsilon \ll 1$ is a small constant introduced for numerical stability.
 % \end{algorithm}
 
 \section{Summary}
+
 To summirize the methodology, the training workflow is the following. First the user selects the training task, refered in the code as environemnt env=[tt,\ pp], which are either; trajectory tracking or path progress.
 The user also selects the control abstraction/mode cm=[srt,\ ctbr,\ lvhr,\ lvhr+g] which defines the control mapping function $g_{\text{cm}}()$ from the policy outputs $\boldsymbol{\pi_\theta}(\mathbf{o})$ to the control inputs $\mathbf{u}$. 
 Finally, the user introduces the number of parallel environments $B$, the number of episodes $N$, the number of steps $K$, the optimization horizon $H$ and other hyperparameters such as the learning rate $\alpha$, randomization percentage $p$, termination distance threshold $d_\text{max}$, etc. 
+
+% \section{Learning Environment}\label{sec:sim_frame}
+% {\color{blue}Make cool diagram}
+% \autoref{fig:cool-diagram}
+
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.7\textwidth}{!}{\input{fig/tikz/sim_arch_diagram.tex}}
+    \caption{Schematics of the learning environment. The black arrows show the forward pass from the policy outputs to the loss function and the red arrows indicate the backward pass. Not thatduring the backward pass the motor dynamics are skipped.}
+    \label{fig:cool-diagram}
+\end{figure}
+\todo{: Correct the diagram!!}
+
 
 Once all these parameters are set, training proceeds as follows:
 % \begin{algorithm}

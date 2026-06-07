@@ -1,14 +1,18 @@
 %!TEX root = ../main.tex
 
 \chapter{Preliminaries \label{pre}}
-This chapter covers important theoretical aspects relevant for this thesis.
-Section \ref{sec:ocp} formulates the \ac{OCP} of drone racing and presents a theoretical solution based on the application of \ac{PMP}.
-The optimal solution derived from \ac{PMP} serves primarily as an upper theoretical bound, as many of its underlying assumptions do not hold in real-world scenarios.
-Practical implementations must account for model uncertainties, disturbances, and system constraints that deviate from the idealized formulation.
+This chapter covers relevant theory for this thesis.
+% Section \ref{sec:ocp} formulates the \ac{OCP} of drone racing and presents a theoretical solution based on the application of \ac{PMP}.
+% The optimal solution derived from \ac{PMP} serves primarily as an upper theoretical bound, as many of its underlying assumptions do not hold in real-world scenarios.
+% Practical implementations must account for model uncertainties, disturbances, and system constraints that deviate from the idealized formulation.
 
-In this context, Sections \ref{sec:classical} and \ref{sec:learned} review the state-of-the-art control approaches used to achieve high-performance drone racing, covering both classical control techniques and modern learning-based methods.
+% In this context, Sections \ref{sec:classical} and \ref{sec:learned} review the state-of-the-art control approaches used to achieve high-performance drone racing, covering both classical control techniques and modern learning-based methods.
+\todo{}
 \section{Optimal Control Problem} \label{sec:ocp} 
-We refer the reader to~\cite{lewis_optimal_2012} \todo{}
+According to \cite{sussmann_300_1997}, optimal control was born in 1687 in the Netherlands when Johan Bernoulli published his solution to the brachystochrone problem.
+Optimal control can be regarded as an extension of calculus of variations, with the aim of finidng a control policy that minimizes a cost function.
+In this section, we formulate optimal control problems related to this thesis.
+% We refer the reader to~\cite{lewis_optimal_2012}
 
 
 \subsection{General Discrete-Time Optimal Control Problem}
@@ -110,11 +114,80 @@ By assuming the trajectory is fixed, the system cannot re-optimize the path to a
 % the optimal solution breaks under real world conditions.
 
 \section{Classical Control approaches}\label{sec:classical}
+Given the \ac{OCP} formulated in last sections, by solving the quadratic program, a trajectory of control inputs that minimizes the cost function can be obtained.
+However, in this direct approach, the control is open-loop.
+Henece it is not robust to external disturbances and model mistmaches. 
+In the classical literature, a well stablished approach to adress this issue is \ac{MPC}.
+
+On the other hand, "the states and the inputs can be written as algebraic functions of four carefully selected flat outputs and their derivatives"~\cite{mellinger_minimum_2011}.
+Leveraging this property, motors command can be directly obtained from a given trajectory to be tracked.
+
+Many other quadrotor control methods are well stablished on the lituerature, ranging from Proportional Derivative Integral (PID) cotnrollers, Linear Quadratic Regulators (LQR), $\mathcal{L}_2$ adaptive control, $H_\infty$ norm minimization, $\mu$-sythesis and many others, each with their own advatages and disatvantages. 
+Howver, in this section we give an overview of \ac{MPC} and \ac{DFBC} as we find them the most relevant for this thesis.
+
+
+\subsection{Model Predictive Control}
+Reciding horizion control or also known as \ac{MPC} is a direct approach to solving an \ac{OCP}.
+The key idea behind this method is to solve the control problem for a given prediction horizion of $N_p$ steps.
+As a solution we obtain the control inputs that minimize the cost function for that horizion, nonetheless we only take 2 or 3 steps, $N_c$ of those controls and discard the rest.
+Then we solve again the control problem with the updated states, and repeat the process.  
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/mpc/hypotheses.pdf}
+    \caption{Example of regulation using model predictive control (example from~\cite{hurakModelPredictive}).}
+    \label{mpc}
+\end{figure}
+
+The main advatage of this method is that it reamains robust to disturbnaces and handles well constrains on the control inputs and states.
+However, it is computationally coslty and can present numerical convergence issues.
+
+
 
 % \todo{Don't dive deep in these, just comment relevant stuff}
 \subsection{Differential Flatness Based Control}
-\subsection{Model Predictive Control}
+As shown in \cite{mellinger_minimum_2011}, the quadrotor's state and control inputs can be expressed as algebraic function of carefully selected flat outputs.
+Choosing the position of the center of mass $\mathbf{r} = [r_x, r_y, r_z]^\top$ and its heading angle $\eta$ as outputs, the quadorotor's $\mathbf{\hat{b}}_3$ unit vector has the same direction as its thrust vector which corresponds to its acceleration,
+\begin{equation}
+    \mathbf{t} = \ddot{\mathbf{r}} + [0, 0, g]^\top
+\end{equation}
+\begin{equation}
+    \mathbf{\hat{b}}_3 = \frac{\mathbf{t}}{||\mathbf{t}||}.
+\end{equation}
+From the heading angle, the heading vector $\mathbf{h}$ can be obtained, and subsequently the $\mathbf{\hat{b}_2}$ and $\mathbf{\hat{b}_1}$ axis,
+\begin{equation}
+    \mathbf{h} = [\cos \eta, \sin \eta, 0]^\top
+\end{equation}
+\begin{equation}
+    \mathbf{\hat{b}}_2 = \frac{\mathbf{\hat{b}}_3 \times \mathbf{h}}{||\mathbf{\hat{b}}_3 \times \mathbf{h}||}
+\end{equation}
+\begin{equation}
+     \mathbf{\hat{b}}_1 =  \mathbf{\hat{b}}_2  \times  \mathbf{\hat{b}}_3 
+\end{equation}
+which defines the attitude of the drone, $\mathbf{R(\phi,\theta,\psi) = [\mathbf{\hat{b}}_1, \mathbf{\hat{b}}_2, \mathbf{\hat{b}}_3]}$. 
+From Newton's equation of motion we have that the translational dynamics are,
+\begin{equation}\label{trans_dyn}
+    m \ddot{r} = -mg \hat{\mathbf{e}}_3 + T_c \hat{\mathbf{b}}_3
+\end{equation}
+and from Euler equation, we get the rotational dynamics,
 
+\begin{equation}
+    \boldsymbol{\tau} = \mathbf{J}\boldsymbol{\dot{\omega}}  + \boldsymbol{\omega} \times \mathbf{J} \boldsymbol{\omega} 
+\end{equation} 
+where $\mathbf{J}$ is the inertia matrix and $\boldsymbol{\dot{\omega}}$ are the body angluar rates. The first derivative of \autoref{trans_dyn} gives,
+\begin{equation}\label{trans_dyn_der}
+    m \dddot{r} = \dot{T_c}_1 \hat{\mathbf{b}}_3 + \boldsymbol{\omega} \times u_1 \hat{\mathbf{b}}_3.
+\end{equation}
+The change in collective thurst $\dot{T_c}$ corresponds to the projection $\dot{T_c} = \hat{\mathbf{b}}_3 \cdot m \dddot{\mathbf{r}}$, substituiting in \autoref{trans_dyn_der},
+we can obtain the vector $\mathbf{h}_{\omega} = \boldsymbol{\omega}\times \hat{\mathbf{b}}_3$,
+\begin{equation}
+    \mathbf{h}_{\omega} = \frac{m}{u_1} (\ddot{\mathbf{r}} - (\hat{\mathbf{b}}_3 \cdot \ddot{\mathbf{r}})\hat{\mathbf{b}}_3)
+\end{equation}
+which allows to obtain the angular velocities.
+To completely define the quadrotor's state we need the angular accelerations $\dot{\boldsymbol{\omega}}$ which can be obtained from the second derivative of \autoref{trans_dyn}.
+Hence, the control inputs are function of the flat outputs as $u_1 = T_c = m ||\mathbf{t}||$, and $[u_2, u_3, u_4]^\top = \boldsymbol{\tau}$.
+
+This property is exploited in \autoref{subsec:lvhr} to determine the attitude of the quadrotor and design a geometric controller. 
 \section{Learning-Based approaches}\label{sec:learned}
 Learning-based approaches can be understood as optimization methods in which the optimization process is done by intereacting with the environment~\cite{huang_model-based_2020}.
 There are two main types of \ac{RL}, model-based and model-free, each have with their own advantages and drawbacks.
@@ -156,7 +229,7 @@ To overcome this limitation, \ac{DQN} was introduced in~\cite{mnih_playing_nodat
 Instead of explicitly storing the Q-values in a table, a neural network is trained to approximate the action-value function.
 
 
-\subsubsection{Policy Optimization}
+\subsubsection{Policy Gradient}
 In policy optimization methods, instead of learning the action-value function and deriving an optimal policy by selecting the best action at a given state, the policy is learned directly through the parameters of a neural network $\theta$~\cite{Sutton1998}.
 These parameters are optimized with respect to an objective function $J(\theta)$ that encodes the desired behavior of the policy.
 
@@ -166,7 +239,132 @@ These parameters are optimized with respect to an objective function $J(\theta)$
 
 In this framework, policy optimization methods aim to find the optimal parameters $\theta^*$ such that the resulting policy $\pi_{\theta}(a|s)$ selects actions $a \in \mathcal{A}$ for states $s \in \mathcal{S}$ that maximize the expected return over trajectories $\tau = \{s_0, a_0, s_1, a_1, \dots\}$.
 
+\subsubsection{Proximal Policy Optimization}
 
 \subsection{Model-Based Reinforcement Learning}
 
-\section{Differentiable Simulation}
+% \section{Differentiable Simulation}
+
+\section{Differentiable Optimization} \label{sec:diff-opt}
+
+Under the paradigm of differentiable optimization, we no longer treat the quadrotor model as a "black-box".
+The main idea of this thesis is to leverage the simulator's automatic differentiation engine to compute the exact analytical gradient of the cumulative loss $J_k$ with respect to the control policy network.
+In this section we provide an overview on how the optimization process works.
+
+\subsection{Computational Graph and Backpropagation}
+The gradient of the cummulative stage cost function $J_k$ with respect to the network parameters $\theta$ is given by the chain rule as,
+\begin{equation}
+    \nabla_\theta J_k =
+    \frac{1}{B}\frac{1}{H} \sum_{i=1}^{B} \sum_{h=k}^{k+H-1}
+    \frac{\partial \mathcal{L}_h}{\partial \mathbf{x}_h}
+    \frac{\partial \mathbf{x}_h}{\partial \mathbf{u}_{h-1}}
+    \frac{\partial \mathbf{u}_{h-1}}{\partial \theta}
+\end{equation}
+\noindent where $\frac{\partial \mathcal{L}_h}{\partial \mathbf{x}_h}$ is the gradient of
+the stage loss with respect to the state, $\frac{\partial \mathbf{x}_h}{\partial
+\mathbf{u}_{h-1}}$ encodes the change in the dynamics regarding the applied controls, and
+$\frac{\partial \mathbf{u}_{h-1}}{\partial \theta}$ is the gradient of the control output
+with respect to the policy parameters.
+Since the gradient is accumulated through time due to the recursive dependence of the state on previous states and control inputs, this procedure is known as \ac{BPTT}.
+
+To compute this gradient analytically, an automatic differentiation engine is used. 
+Many \ac{ML} frameworks, such as PyTorch~\cite{paszke_pytorch_2019}, TensorFlow~\cite{abadi_tensorflow_2016}, and JAX~\cite{jax2018github}, among others, provide autodiff capabilities. 
+At present, JAX is regarded as a high-performance framework for numerical \ac{ML} computing. 
+However, for this simulator, PyTorch has been selected due to its intuitive interface, extensive documentation, and lower implementation complexity.
+
+\begin{figure}[H]
+    \centering
+    \include{fig/tikz/comp_graph-2}
+    \caption{Computational graph of the numerical operations of the forward and backward passes.}
+    \label{fig:com-graph}
+\end{figure}
+
+
+To illustrate how gradients are computed, consider the next function $f(x, y) = y(xy)^2$. Its gradient is
+ $\nabla f = \begin{bmatrix}
+    \frac{\partial f}{\partial x} & \frac{\partial f}{\partial y}
+\end{bmatrix} = \begin{bmatrix}
+    2xy^3 & 3x^2y^2
+\end{bmatrix}$ and evaluating at $x=1$ and $y=2$, we get $\nabla f(1,2) = \begin{bmatrix}
+    16 & 12
+\end{bmatrix}$.
+In PyTorch, this gradient is computed using a computational graph which is constructed during the forward pass.
+Each mathematical operation is stored as a node in this graph.
+During backporopagation, PyTorch applies automatic differentiation to traverse the graph from the output back to the input and applying the chain rule to accumulate gradients.
+The computational graph shown in \autoref{fig:com-graph} represents this process and Algortihm~\ref{alg:backprop} presents the pesudocode.
+% \autoref{fig:com-graph} storing each operation is built, then the b
+In practice, the calculation of the gradients is done simply by calling \textbf{u.backward()} in PyTorch.
+
+
+\begin{algorithm}
+\caption{Example Backpropagation for the function $u(x,y) = y(xy)^2$}
+
+\begin{algorithmic}
+\Require $x \in \real, \ y \in \real$
+\Ensure $\frac{\partial u}{\partial x},\ \frac{\partial u}{\partial y}$
+
+\State \textbf{--- Forward Pass (Build Computational Graph) ---}
+\State $x \gets \texttt{tensor}(1.0,\ \texttt{requires\_grad=True})$ \Comment{Leaf node}
+\State $y \gets \texttt{tensor}(2.0,\ \texttt{requires\_grad=True})$ \Comment{Leaf node}
+\State $z \gets x \times y$ \Comment{Node: \texttt{MulBackward}}
+\State $w \gets z^2$ \Comment{Node: \texttt{PowBackward}}
+\State $u \gets w \times y$ \Comment{Output Node: \texttt{MulBackward}}
+
+\State \textbf{--- Backward Pass (Reverse-Mode Autodiff) ---}
+\State Initialize $\frac{\partial u}{\partial u} \gets 1$
+\State $\frac{\partial u}{\partial w} \gets \frac{\partial u}{\partial u} \cdot y = 1 \cdot 2 = 2$ \Comment{Backprop through $u = w \cdot y$}
+\State $\frac{\partial u}{\partial y} \mathrel{+}= \frac{\partial u}{\partial u} \cdot w = 1 \cdot 4 = 4$ \Comment{Accumulate $y$ gradient from this node}
+\State $\frac{\partial u}{\partial z} \gets \frac{\partial u}{\partial w} \cdot 2z = 2 \cdot 2 = 4$ \Comment{Backprop through $w = z^2$}
+\State $\frac{\partial u}{\partial x} \gets \frac{\partial u}{\partial z} \cdot y = 4 \cdot 2 = 8$ \Comment{Backprop through $z = x \cdot y$} 
+
+\State $\frac{\partial u}{\partial y} \mathrel{+}= \frac{\partial u}{\partial z} \cdot x = 4 \cdot 1 = 4$ \Comment{Accumulate $y$ gradient from this node}
+
+\State \textbf{--- Results ---}
+\State $\frac{\partial u}{\partial x} = 16,\quad \frac{\partial u}{\partial y} = 4 + 4 + 4 = 12$
+
+\end{algorithmic}
+\label{alg:backprop}
+\end{algorithm}
+
+% \todo{Explain the surrogate gradient thing!!!}
+Adittionally, PyTorch allows to custimoize the computational graph in a manner that the forward and backward pass do not need to be identical.
+As shown in \autoref{fig:cool-diagram}, this feature is leveraged to skip the motor dynamics during the backward pass.
+This is done to obtain cleaner gradients since the derivative of \autoref{eq:motspd} is very sensitive due to the small values of the constant $a_0\sim 10^{-7}$ and the square root.
+
+\subsection{Optimization Process}
+Given the gradient $\nabla_\theta J$ computed via \ac{BPTT} the policy parameters are updated using the Adaptive Moment Estimation (Adam) optimizer~\cite{kingma_adam_2017}.
+Adam is a variant of \ac{SGD}, in standard \ac{SGD} the model parameters are updated proportionnally to the gradient in its opposite direction,
+
+\begin{equation}
+    \theta_{k+1} = \theta_k - \alpha\nabla_\theta J_k
+\end{equation}
+where $\alpha$ inidcates the learning rate. The main disatvantages of standard \ac{SGD} is that near the optimum, the gradient decreases rquiring more steps to converge and each parameter is updated equally.
+Adam solves this issues by combining two other variations of \ac{SGD}: Momentum and \ac{RMSP}.
+
+\begin{itemize}
+    \item Momentum accumulates an avarage of past gradients sustaining progress along the directions of consistent descent and dampening oscillations in high curvature directions.
+    \item \ac{RMSP} avarages the square of the gradients, which are used to scale the learning rate of each parameter individually, hence, parmeters with high historical gradients revice smaller updates than those with smaller gradientes 
+\end{itemize}
+Adam unifies these two concepts through the first and second moment estimates, $m$ and $v_k$ respectively, which are updated as,
+
+\begin{equation}
+    m_k = \beta_1 m_{k-1} + (1-\beta_1)\nabla_\theta J_{k-1}
+\end{equation}
+\begin{equation}
+    v_k = \beta_2 v_{k-1} + (1-\beta_2)(\nabla_\theta J_{k-1})^2
+\end{equation}
+where $\beta_1$ and $\beta_2$ are hyperparameters usually set to $0.9$ and $0.999$ respectively. Since both moments are initialized at zero $m_0 = v_0 = 0$, the estimates are biased towards zero in the early iterations of training.
+For this reason, each moment is normalized to,
+
+\begin{equation}
+    \hat{m}_t = \frac{m_t}{1 - \beta_1^k}
+\end{equation}
+\begin{equation}
+    \hat{v}_t = \frac{v_t}{1 - \beta_2^k}.
+\end{equation}
+The final prameter update is given by,
+\begin{equation}
+    \theta_{k+1} = \theta_k - \alpha\, \frac{\hat{m}_k}{\sqrt{\hat{v}_t} + \epsilon}
+    \label{eq:adam}
+\end{equation}
+where $\epsilon \ll 1$ is a small constant introduced for numerical stability.

@@ -14,26 +14,29 @@
         \node[bar, fill=blue!50, minimum width=\wC cm, right=0pt of b2] (b3) {$v_{\text{max}} = 2.0$ m/s};
         \node[bar, fill=blue!65, minimum width=\wD cm, right=0pt of b3] (b4) {\color{white} $v_{\text{max}} = 10$ m/s};
         \node[bar, fill=blue!85, minimum width=\wE cm, right=0pt of b4] (b5) {\color{white} $v_{\text{max}} = 22$ m/s};
-        \node[bar, fill=blue!85, minimum width=\wF cm, right=0pt of b5] (b6) {\color{white} $v_{\text{max}} = 22$ m/s};
+        \node[bar, fill=blue!85, minimum width=\wF cm, right=0pt of b5] (b6) {\color{white} $v_{\text{max}} = 41$ m/s};
         % \node[bar, fill=blue!85, minimum width=\wF cm, right=0pt of b6] (b7) {\color{white} $v_{\text{max}} = 22$ m/s};
 
         % Year Markers and Bullets
         % 2016
-        \draw[timeline] (b1.north west) -- (b1.south west) node[above=1.0cm, yearlabel] {2016};
-        \node[below=1.0cm] at (b1.south west) {IROS ADR I};
+        \draw[timeline] (b1.north west) -- (b1.south west) node[above=1.5cm, yearlabel] {2016};
+        \node[below=0.5cm] at (b1.south west) {IROS ADR I};
         
         % 2017
         \draw[timeline] (b2.north west) -- (b2.south west) node[below=0.8cm, yearlabel] {2017};
-        
+        \node[above=1.0cm] at (b2.south west) {IROS ADR II};
         % 2018
-        \draw[timeline] (b3.north west) -- (b3.south west) node[above=0.8cm, yearlabel] {2018};
-        
+        \draw[timeline] (b3.north west) -- (b3.south west) node[above=1.5cm, yearlabel] {2018};
+        \node[below=0.5cm] at (b3.south west) {IROS ADR III};
         % 2019
         \draw[timeline] (b4.north west) -- (b4.south west) node[below=0.8cm, yearlabel] {2019};
-        
+        \node[above=1.0cm] at (b4.south west) {AlphaPilot};
         % 2022
-        \draw[timeline] (b5.north west) -- (b5.south west) node[above=0.8cm, yearlabel] {2022};
-        
+        \draw[timeline] (b5.north west) -- (b5.south west) node[above=1.5cm, yearlabel] {2022};
+        \node[below=0.5cm] at (b5.south west) {Swiss Drone Days};
+
+        \draw[timeline] (b6.north west) -- (b6.south west) node[below=0.8cm, yearlabel] {2025};
+        \node[above=1.0cm] at (b6.south west) {A2RL S1};
         % Final vertical line
         \draw[timeline] (b5.north east) -- (b5.south east);
 

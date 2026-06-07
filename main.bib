@@ -630,3 +630,105 @@
   url = {https://github.com/ctu-mrs/mrs_uav_px4_api/tree/master},
   date = {2026-05-18}
 }
+
+
+
+@article{hert_mrs_2023,
+	title = {{MRS} {Drone}: {A} {Modular} {Platform} for {Real}-{World} {Deployment} of {Aerial} {Multi}-{Robot} {Systems}},
+	volume = {108},
+	issn = {1573-0409},
+	shorttitle = {{MRS} {Drone}},
+	url = {https://doi.org/10.1007/s10846-023-01879-2},
+	doi = {10.1007/s10846-023-01879-2},
+	abstract = {This paper presents a modular autonomous Unmanned Aerial Vehicle (UAV) platform called the Multi-robot System (MRS) Drone that can be used in a large range of indoor and outdoor applications. The MRS Drone features unique modularity changes in actuators, frames, and sensory configuration. As the name suggests, the platform is specially tailored for deployment within a MRS group. The MRS Drone contributes to the state-of-the-art of UAV platforms by allowing smooth real-world deployment of multiple aerial robots, as well as by outperforming other platforms with its modularity. For real-world multi-robot deployment in various applications, the platform is easy to both assemble and modify. Moreover, it is accompanied by a realistic simulator to enable safe pre-flight testing and a smooth transition to complex real-world experiments. In this manuscript, we present mechanical and electrical designs, software architecture, and technical specifications to build a fully autonomous multi UAV system. Finally, we demonstrate the full capabilities and the unique modularity of the MRS Drone in various real-world applications that required a diverse range of platform configurations.},
+	language = {en},
+	number = {4},
+	urldate = {2026-06-03},
+	journal = {Journal of Intelligent \& Robotic Systems},
+	author = {Hert, Daniel and Baca, Tomas and Petracek, Pavel and Kratky, Vit and Penicka, Robert and Spurny, Vojtech and Petrlik, Matej and Vrba, Matous and Zaitlik, David and Stoudek, Pavel and Walter, Viktor and Stepan, Petr and Horyna, Jiri and Pritzl, Vaclav and Sramek, Martin and Ahmad, Afzal and Silano, Giuseppe and Licea, Daniel Bonilla and Stibinger, Petr and Nascimento, Tiago and Saska, Martin},
+	month = jul,
+	year = {2023},
+	keywords = {Research and development, UAV applications, UAV platforms},
+	pages = {64},
+	file = {Full Text PDF:C\:\\Users\\adame\\Zotero\\storage\\7S5UK6PI\\Hert et al. - 2023 - MRS Drone A Modular Platform for Real-World Deployment of Aerial Multi-Robot Systems.pdf:application/pdf},
+}
+
+
+@article{kalman,
+    Author = {Kalman, Rudolph Emil},
+    Title = {A New Approach to Linear Filtering and Prediction Problems},
+    Journal = {Transactions of the ASME--Journal of Basic Engineering},
+    Volume = {82},
+    Number = {Series D},
+    Pages = {35--45},
+    Year = {1960}
+}
+
+
+
+@inproceedings{wan_unscented_2000,
+	address = {Lake Louise, Alta., Canada},
+	title = {The unscented {Kalman} filter for nonlinear estimation},
+	isbn = {978-0-7803-5800-3},
+	url = {http://ieeexplore.ieee.org/document/882463/},
+	doi = {10.1109/ASSPCC.2000.882463},
+	abstract = {The Extended Kalman Filter (EKF) has become a standard technique used in a number of nonlinear estimation and machine learning applications. These include estimating the state of a nonlinear dynamic system, estimating parameters for nonlinear system identiﬁcation (e.g., learning the weights of a neural network), and dual estimation (e.g., the Expectation Maximization (EM) algorithm) where both states and parameters are estimated simultaneously. This paper points out the ﬂaws in using the EKF, and introduces an improvement, the Unscented Kalman Filter (UKF), proposed by Julier and Uhlman [5]. A central and vital operation performed in the Kalman Filter is the propagation of a Gaussian random variable (GRV) through the system dynamics. In the EKF, the state distribution is approximated by a GRV, which is then propagated analytically through the ﬁrst-order linearization of the nonlinear system. This can introduce large errors in the true posterior mean and covariance of the transformed GRV, which may lead to sub-optimal performance and sometimes divergence of the ﬁlter. The UKF addresses this problem by using a deterministic sampling approach. The state distribution is again approximated by a GRV, but is now represented using a minimal set of carefully chosen sample points. These sample points completely capture the true mean and covariance of the GRV, and when propagated through the true nonlinear system, captures the posterior mean and covariance accurately to the 3rd order (Taylor series expansion) for any nonlinearity. The EKF, in contrast, only achieves ﬁrst-order accuracy. Remarkably, the computational complexity of the UKF is the same order as that of the EKF.},
+	language = {en},
+	urldate = {2026-06-03},
+	booktitle = {Proceedings of the {IEEE} 2000 {Adaptive} {Systems} for {Signal} {Processing}, {Communications}, and {Control} {Symposium} ({Cat}. {No}.{00EX373})},
+	publisher = {IEEE},
+	author = {Wan, E.A. and Van Der Merwe, R.},
+	year = {2000},
+	pages = {153--158},
+	file = {PDF:C\:\\Users\\adame\\Zotero\\storage\\GYZUM2CX\\Wan and Van Der Merwe - 2000 - The unscented Kalman filter for nonlinear estimation.pdf:application/pdf},
+}
+
+
+
+
+@inproceedings{mellinger_minimum_2011,
+	address = {Shanghai, China},
+	title = {Minimum snap trajectory generation and control for quadrotors},
+	isbn = {978-1-61284-386-5},
+	url = {http://ieeexplore.ieee.org/document/5980409/},
+	doi = {10.1109/ICRA.2011.5980409},
+	abstract = {We address the controller design and the trajectory generation for a quadrotor maneuvering in three dimensions in a tightly constrained setting typical of indoor environments. In such settings, it is necessary to allow for signiﬁcant excursions of the attitude from the hover state and small angle approximations cannot be justiﬁed for the roll and pitch. We develop an algorithm that enables the real-time generation of optimal trajectories through a sequence of 3-D positions and yaw angles, while ensuring safe passage through speciﬁed corridors and satisfying constraints on velocities, accelerations and inputs. A nonlinear controller ensures the faithful tracking of these trajectories. Experimental results illustrate the application of the method to fast motion (5-10 body lengths/second) in three-dimensional slalom courses.},
+	language = {en},
+	urldate = {2026-02-13},
+	booktitle = {2011 {IEEE} {International} {Conference} on {Robotics} and {Automation}},
+	publisher = {IEEE},
+	author = {Mellinger, Daniel and Kumar, Vijay},
+	month = may,
+	year = {2011},
+	pages = {2520--2525},
+	file = {PDF:C\:\\Users\\adame\\Zotero\\storage\\G64Z8WNI\\Mellinger and Kumar - 2011 - Minimum snap trajectory generation and control for quadrotors.pdf:application/pdf},
+}
+
+
+@misc{hurakModelPredictive,
+	author = {Zdeněk Hurák},
+	title = {{M}odel predictive control ({M}{P}{C}); {B}({E})3{M}35{O}{R}{R}; {O}ptimal and {R}obust {C}ontrol --- hurak.github.io},
+	howpublished = {\url{https://hurak.github.io/orr/discr\_dir\_mpc.html}},
+	year = {2025},
+	note = {[Accessed 07-06-2026]},
+}
+
+
+@article{sussmann_300_1997,
+	title = {300 years of optimal control: from the brachystochrone to the maximum principle},
+	volume = {17},
+	issn = {1941-000X},
+	shorttitle = {300 years of optimal control},
+	url = {https://ieeexplore.ieee.org/document/588098/},
+	doi = {10.1109/37.588098},
+	abstract = {An historical review of the development of optimal control from the publication of the brachystochrone problem by Johann Bernoulli in 1696. Ideas on curve minimization already known at the time are briefly outlined. The brachystochrone problem is stated and Bernoulli's solution is given. Bernoulli's personality and his family are discussed. The article then traces the development of the necessary conditions for a minimum, from the Euler-Lagrange equations to the work of Legendre and Weierstrass and, eventually, the maximum principle of optimal control theory.},
+	number = {3},
+	urldate = {2026-04-01},
+	journal = {IEEE Control Systems Magazine},
+	author = {Sussmann, H.J. and Willems, J.C.},
+	month = jun,
+	year = {1997},
+	keywords = {Cost function, Centralized control, Cities and towns, Equations, History, Mathematics, Optimal control, Reflection, Sufficient conditions},
+	pages = {32--44},
+	file = {Full Text PDF:C\:\\Users\\adame\\Zotero\\storage\\V35G3NA6\\Sussmann and Willems - 1997 - 300 years of optimal control from the brachystochrone to the maximum principle.pdf:application/pdf},
+}
