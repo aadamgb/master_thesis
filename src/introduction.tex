@@ -134,10 +134,17 @@ Since the AlphaPilot competition \cite{lockheedmartinAlphaPilotDrone}, there has
 In \cite{foehnalphapilot2021}, the pipeline combined \ac{VIO} and gate detections within an \ac{EKF} for state estimation, followed by trajectory planning using sampling-based receding horizon methods.
 Control was implemented through a cascade of position and attitude controllers, while \ac{NN}s were used exclusively for visual gate detection.
 Subsequent work in \cite{kaufmannchampion-level2023} retained a similar perception pipeline but replaced planning and control with a feedforward \ac{MLP}, optimized using \ac{PPO} \cite{ppo}.
-In a related setup, \cite{songreaching2023} demonstrated that model-free \ac{RL} could outperform traditional optimal control approaches.
 
-More recent approaches have explored model-based \ac{RL}, where a learned world model enables training through imagined rollouts.
-In \cite{romero_dream_2025, verraest_skydreamer_2025}, the authors adopt an actor--critic architecture inspired by \cite{hafner_mastering_2024}.
+In a related setup, \cite{songreaching2023} demonstrated that model-free \ac{RL} could outperform traditional optimal control approaches.
+The authors attribute the increase in performance of \ac{RL} due to two main factors. 
+First, the ability of model-free \ac{RL} to directly formulate the task goal as part of the optimization function without the need of decomposing the the problem into planning and control.
+This allows their policy to explore a broader range of behaviours thath provide robustness to unmodeled dynamics effects.
+Furthermore, since \ac{RL} is usually modeled as a Markov Decision Process, the tranisition model is probabilisitc, which allows for \ac{DR}.
+"By training in randomized environments, the agent becomes more robust and adaptable, making it more effective at handling disturbances and model uncertainty"~\cite{songreaching2023}.
+
+On a similar note, recent approaches have explored model-based \ac{RL}, where a learned world model enables training through imagined rollouts.
+In \cite{romero_dream_2025, verraest_skydreamer_2025}, the authors adopt an actor-critic architecture inspired by \cite{hafner_mastering_2024}.
+This approach achieved champion-level performance and has the advantage of directly mapping from visual data, raw pixel information, to direct motor commands skipping the need of implementing an intermediate controller.
 While these methods achieve strong performance, they suffer from high training times and limited sample efficiency; for instance, training in \cite{verraest_skydreamer_2025} can take up to 50 hours, significantly slowing down the research cycle.
 
 To address these limitations, recent work has shifted toward differentiable approaches that enable backpropagation of gradients from an objective function through the entire navigation stack, this is known as \ac{BPTT}.
@@ -146,7 +153,7 @@ The work of \cite{zhang_back_2025} pioneered this direction, achieving agile vis
 A differentiable simulation framework is introduced in \cite{zhang_diffaero_2025}, which has inspired the simulator design used in this work.
 Similarly, \cite{heeg_learning_2025} presents an efficient differentiable quadrotor framework implemented in JAX for learning stabilization from visual features, and compares it against standard \ac{PPO}.
 Building on this line of work, \cite{pan_learning_2026, ren_learning_2026} demonstrate real-time policy adaptation using real-world data, leveraging the improved sample efficiency of differentiable methods.
-
+% Aditionally, the authors of \cite{lee_quadrotor_2026} use a differentiable simulator to train a policy capable of avoiding large obstacles, in simulation the 
 \begin{figure}[H]
     \centering
     \resizebox{1.0\textwidth}{!}{\input{fig/tikz/rl_taxonomies.tex}}
@@ -163,8 +170,11 @@ Building on this line of work, \cite{pan_learning_2026, ren_learning_2026} demon
 %     \item How to ensure transferability of learned controllers under unmodeled dynamics (sim-to-real transfer).
 % \end{itemize}
 
-Most recently, 
-\todo{}
+On the other hand, another research direction relevant for this thesis, aims to answer the question of how to tune the gains of a given controller to achieve optimal performance.
+The authors of \cite{loquercio_autotune_2022} show that the faster a trajectory to be tracked is, the more sensitive is the tracking performance to the controller gains.
+This way, they propose an algorithm based on the Metropolis-Hastings sampling \cite{metropolis_equation_1953}, to tune the gains of a \ac{MPC} controller for different segements of a trajectory.
+The trajectory is divded in segments with similar height gradients and minimum time of 2 s per segment. 
+Their approach showed an increase on trajectory tracking succes comparted to another automatic gain tuning method absed on genetic algorithms~\cite{khuwaja_pid_2018}.
 \section{Objectives and Structure}
 
 The primary objective of this thesis is to create a differentiable quadrotor simulator to backpropagate the gradients from a given cost function to the \ac{NN} parameters to command autonomusly a drone.

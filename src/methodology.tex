@@ -274,7 +274,7 @@ The heading vector, serves an auxiliary vector to compute $\mathbf{\hat{b}}_2$ a
     \caption{Geometric interpretation of Equations 3.12--3.15}
 \end{figure}
 
-\noindent The complete derivation of \autoref{eq:atterr} can be found in the original paper, \cite{Lee}. 
+\noindent The complete derivation of \autoref{eq:atterr} can be found in the original paper, \cite{lee_geometric_2010}. 
 To provide intuition, note that if $\mathbf{R}_{\text{cmd}} = \mathbf{R}$, then $\mathbf{R}_{\text{cmd}}^\top \mathbf{R} = \mathbf{I}$ and the error is zero. 
 Otherwise, the matrix $\mathbf{R}_{\text{cmd}}^\top \mathbf{R}$ represents the relative rotation between the current and desired orientations. 
 The skew-symmetric part of this matrix, given by $\frac{1}{2}(\mathbf{R}_{\text{cmd}}^\top \mathbf{R} - \mathbf{R}^\top \mathbf{R}_{\text{cmd}})$, encodes the axis and magnitude of the rotation error. 
@@ -292,7 +292,7 @@ where $\boldsymbol{\omega}_{\text{cmd}} = \begin{bmatrix}
     0 & 0 & \dot{\eta}_{\text{cmd}}\end{bmatrix}^\top$. 
 Note that the error between the desired rotational velocity and the current rotational velocity line on different tangent planes to the unit sphere, 
 $\dot{\mathbf{R}} \in \mathrm{T}_{\mathbf{R}} SO(3)$ and $\dot{\mathbf{R}}_{\text{cmd}} \in \mathrm{T}_{\mathbf{R}_{\text{cmd}}} SO(3)$.
-For this reason, as explained in \cite{Lee}, $\dot{\mathbf{R}}_{\text{cmd}}$ is transformed into a vector in the $\mathrm{T}_{\mathbf{R}} SO(3)$ space to be able to compare it to $\dot{\mathbf{R}}$ and obtain the error; \autoref{eq:geo_ang}.
+For this reason, as explained in \cite{lee_geometric_2010}, $\dot{\mathbf{R}}_{\text{cmd}}$ is transformed into a vector in the $\mathrm{T}_{\mathbf{R}} SO(3)$ space to be able to compare it to $\dot{\mathbf{R}}$ and obtain the error; \autoref{eq:geo_ang}.
 Finally, the torque is set by,
 
 \begin{equation}\label{eq:geo_tau}
@@ -516,12 +516,12 @@ The observation vector is defined as:
 \begin{equation}\label{obs-TT}
 \mathbf{o}_k =
 \begin{bmatrix}
-\mathbf{p}_k^\text{ref} - \mathbf{p}_k \\  
-\mathbf{v}_k^\text{ref} - \mathbf{v}_k \\
-\mathbf{a}_k^\text{ref} \\
-\mathbf{q}_k \\
-\boldsymbol{\omega}_k
-\end{bmatrix}
+\mathbf{p}_k^\text{ref} - \mathbf{p}_k & 
+\mathbf{v}_k^\text{ref} - \mathbf{v}_k & 
+\mathbf{a}_k^\text{ref} &
+\mathbf{q}_k &
+\boldsymbol{\omega}_k &
+\end{bmatrix}^\top
 \in \mathbb{R}^{16}
 \end{equation}
 

@@ -194,9 +194,9 @@ There are two main types of \ac{RL}, model-based and model-free, each have with 
 Next we give an overview model-free and model-based \ac{RL} and the most relevant algorithms in the literature of each.
 % \subsection{Neural Networks?}
 \subsection{Model-Free Reinforcement Learning}
-In model-free \ac{RL}, the neither the environment nor the dynamics of the agent are taking into account for the optimization process.
+In model-free \ac{RL}, neither the environment nor the dynamics of the agent are taken into account for the optimization process.
 Instead, the policy is optimized by gathering data from interacting with the environment. 
-The two main methods to do this, are Q-Learning and Policy Optimization.
+Next, we review three model-free \ac{RL} approaches, Q-Learning, and two Policy Optimization methods; Policy Gradient and \ac{PPO}.
 % \subsubsection{Q-Learning}
 % In Q-Learning the idea is to map the values of the possible actions given the current state and store those values into a table.
 % Druing training, Bellman's equation is used to update the values of the Q-table, and when training has converged an optimal policy $\pi^*$ has been found since dor each state the table indicates the best action~\cite{Sutton1998}.
@@ -234,16 +234,84 @@ In policy optimization methods, instead of learning the action-value function an
 These parameters are optimized with respect to an objective function $J(\theta)$ that encodes the desired behavior of the policy.
 
 \begin{equation}\label{opt_theta}
-    \theta^* = \arg \max_{\theta} \mathbb{E}_{\tau \sim \pi_\theta} \left[ R(\tau) \right]
+    J(\theta^*) = \arg \max_{\theta} \mathbb{E}_{\tau \sim \pi_\theta} \left[ R(\tau) \right]
 \end{equation}
 
 In this framework, policy optimization methods aim to find the optimal parameters $\theta^*$ such that the resulting policy $\pi_{\theta}(a|s)$ selects actions $a \in \mathcal{A}$ for states $s \in \mathcal{S}$ that maximize the expected return over trajectories $\tau = \{s_0, a_0, s_1, a_1, \dots\}$.
 
 \subsubsection{Proximal Policy Optimization}
+This policy optimization method was introduced in 2017 in \cite{ppo} and has become a standard algorithm in \ac{RL}.
+The algorithm adresses instability issues present in policy gradient methods.
+Differentiating \autoref{opt_theta} gives,
+\begin{equation}
+    \nabla_{\theta}J(\theta) = \mathbb{E}_{s,a\sim\pi_{\theta}} [\nabla_{\theta} \log \pi_{\theta}(a|s)Q^{\pi}(s,a)].
+\end{equation}
+In practice, $Q^\pi$ is replaced by an advantage estimate $A^\pi$ to reduce variance.
+Using this vanilla gradient can lead to excecissve parameter updates that destabilize the policy.
+Previously, this issue was adressed in \cite{schulman_trust_2017} where the authors introduce the \ac{TRPO} which fixes a hard KL-divergence constrain.
+Note that KL-divergence measures the difference between two data distributions $D_{KL}(P \| Q) = \mathbb{E}_{x} \log \frac{P(x)}{Q(x)}$.
+\begin{equation}
+\begin{aligned}
+& \underset{\theta}{\text{maximize}} & & \mathbb{E} \left[ \frac{\pi_{\theta}(a_t|s_t)}{\pi_{\theta_{old}}(a_t|s_t)} A_t \right] \ \\
+& \text{subject to} & & D_{KL} (\pi_{\theta_{old}} | \pi_{\theta}) \leq \delta.
+\end{aligned}
+\end{equation}
+
+However, this method involves the calculation of the Hessian, a second-order derivative matrix which is computationally costly and complex.
+Instead of imposing a hard constrain the authors of \cite{ppo} propose two relaxation methods.
+\begin{enumerate}
+    \item \textbf{Adaptive KL Penalty Coefficient}
+    
+    The cost function becomes,
+    \begin{equation}
+        L^{KLPEN}(\theta) = \hat{\mathbb{E}}_{t} \left[ \frac{\pi_{\theta}(a_t | s_t)}{\pi_{\theta_{old}}(a_t | s_t)} \hat{A}_t - \beta \text{KL}[\pi_{\theta_{old}}(\cdot | s_t), \pi_{\theta}(\cdot | s_t)] \right]
+    \end{equation}
+
+    where $\beta$ controls the weight of the penalization when the new update deviates too much from the old policy parameters. \\
+    \item \textbf{Clipped Surrogate Objective}
+    
+    Instead of penalizing the KL divergence, the probability ratio $r_t(\theta) = \frac{\pi_{\theta}(a_t | s_t)}{\pi_{\theta_{\text{old}}}(a_t | s_t)}$ is clipped in the cost function.
+    \begin{equation}
+        L^{CLIP}(\theta) = \hat{\mathbb{E}}_{t} \left[ \min\left(r_t(\theta) \hat{A}_t, \text{clip}(r_t(\theta), 1 - \epsilon, 1 + \epsilon) \hat{A}_t\right) \right]
+    \end{equation}
+    where epsilon is a hyperparameter.
+\end{enumerate}
+The authors claim that the clipped surrogate objective approach performs better.
+Since \ac{PPO} is usually implemented as an actor-critic algorithm a loss term for the critic, $L_t^{VF}(\theta)$, is incorporated, and to encourage exploration, an entropy bonus, $S[\pi_\theta](s_t)$ , is added. 
+
+Hence, the final PPO loss is,
+
+\begin{equation}
+L_t^{CLIP+VF+S}(\theta) = \hat{\mathbb{E}}_t \left[ L_t^{CLIP}(\theta) - c_1 L_t^{VF}(\theta) + c_2 S[\pi_\theta](s_t) \right]   
+\end{equation}
+whera $c_1$ and $c_2$ are weighting factors.
 
 \subsection{Model-Based Reinforcement Learning}
+Model-based \ac{RL} uses infromation of a model to optimize the policy parameters.
+The model can be predifined, or it can be learned by a neural newrok. 
 
-% \section{Differentiable Simulation}
+\subsubsection{Given The Model}
+When the model is know, that is to say, the state equation $\mathbf{x}_{k+1} = f(\mathbf{x}_{k}, \mathbf{u}_{k})$.
+The \ac{RL} architecture can be straightforward, the gradient from the cost function $J$ to the policy parameters can be computed directly by appliyng the chain rule. 
+And the policy is optimized \ac{BPTT} of the accumulated gradient.
+In section \autoref{sec:diff-opt}, we explain in more detail how the optimization porcess works as this is the method we use in our methodology to learn the drone racing policy.
+
+Having knowledge of the model increseas the sample efficeny. 
+However, if the model is not suitable error can accumulate leading to suboptimal performance. 
+A perfect model is not necessary, but it has to capture the important behaviours of the system.
+Additionally, neural newteorks tend to overfit to the training data distribution. 
+To prevent ovrefitting, it is recommended to radnomize model parameters, see \autoref{subsec:DR}.
+\subsubsection{Learn The Model}
+An alternative approach involves learning the state transition dynamics directly from environmental interactions to estimate the state equation $\hat{\mathbf{x}}_{k+1} = \hat{f}_\theta(\mathbf{x}_k, \mathbf{u}_k)$. 
+A notable framework in this domain is the Dreamer architecture \cite{hafner_mastering_2024}.
+Rather than modeling the world in the raw observation space, Dreamer utilizes an encoder to map observations $\mathbf{o}_k$ into stochastic latent representations $\mathbf{z}_k$. 
+The system’s dynamics are then captured by a recurrent state-space model: $\mathbf{h}_{k+1} = f(\mathbf{h}_k, \mathbf{z}_k, \mathbf{u}_k)$. 
+This approach offers two primary advantages: the recurrent state provides essential temporal memory, while the mapping to a stochastic latent space facilitates the processing of high-dimensional inputs, such as raw images.
+
+Once the world model is learned, an actor-critic agent can be trained entirely within this learned environment. 
+This paradigm shares conceptual similarities with Model Predictive Control (MPC), as it allows the agent to account for the impact of current actions on future states.
+In \cite{verraest_skydreamer_2025}, the authors employ a similar architecture to train an Autonomous Drone Racing (ADR) policy that maps pixels directly to motor commands.
+Their method demonstrated champion-levlel performance; however, a drawback of this method is its sample inefficiency, as the authors report that training can require up to 50 hours.
 
 \section{Differentiable Optimization} \label{sec:diff-opt}
 
