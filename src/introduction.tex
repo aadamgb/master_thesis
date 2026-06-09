@@ -148,9 +148,15 @@ This approach achieved champion-level performance and has the advantage of direc
 While these methods achieve strong performance, they suffer from high training times and limited sample efficiency; for instance, training in \cite{verraest_skydreamer_2025} can take up to 50 hours, significantly slowing down the research cycle.
 
 To address these limitations, recent work has shifted toward differentiable approaches that enable backpropagation of gradients from an objective function through the entire navigation stack, this is known as \ac{BPTT}.
-This paradigm avoids treating the quadrotor dynamics as a black box and substantially improves sample efficiency.
+This paradigm avoids treating the quadrotor dynamics as a black box and substantially improves sample efficiency by leveraging the first-order gradient instead of relying on zeroth-order optimization.
+
 The work of \cite{zhang_back_2025} pioneered this direction, achieving agile vision-based flight in cluttered environments using a \ac{CRNN} and a simplified double-integrator model.
-A differentiable simulation framework is introduced in \cite{zhang_diffaero_2025}, which has inspired the simulator design used in this work.
+Their policy achieves zero-shot generalization to the real-world environment, that is to say, no fine-tuining or retraining is required at policy deployement.
+In their set up, they run the policy on a budget-friendly microprocessor and a depth camera, allowing for robust obstacle avoidance without needing an \ac{IMU} or GPS coordinates.
+Additionally, they deploy the policy simulataneously to different drones and observe emerging behaviours such as, waiting the other agents to cross a gate without explicitly adding collaborative terms on the loss function.
+
+Another differentiable simulation framework is introduced in \cite{zhang_diffaero_2025}, which has inspired the simulator design used in this work.
+The simulator supports different training tasks such as hovering, position control, obstacle avoidance and racing scenarios, all differentiable and support parallel environemt execution for policy training.
 Similarly, \cite{heeg_learning_2025} presents an efficient differentiable quadrotor framework implemented in JAX for learning stabilization from visual features, and compares it against standard \ac{PPO}.
 Building on this line of work, \cite{pan_learning_2026, ren_learning_2026} demonstrate real-time policy adaptation using real-world data, leveraging the improved sample efficiency of differentiable methods.
 % Aditionally, the authors of \cite{lee_quadrotor_2026} use a differentiable simulator to train a policy capable of avoiding large obstacles, in simulation the 
@@ -174,7 +180,7 @@ On the other hand, another research direction relevant for this thesis, aims to 
 The authors of \cite{loquercio_autotune_2022} show that the faster a trajectory to be tracked is, the more sensitive is the tracking performance to the controller gains.
 This way, they propose an algorithm based on the Metropolis-Hastings sampling \cite{metropolis_equation_1953}, to tune the gains of a \ac{MPC} controller for different segements of a trajectory.
 The trajectory is divded in segments with similar height gradients and minimum time of 2 s per segment. 
-Their approach showed an increase on trajectory tracking succes comparted to another automatic gain tuning method absed on genetic algorithms~\cite{khuwaja_pid_2018}.
+Their approach showed an increase on trajectory tracking succes comparted to another automatic gain tuning method based on genetic algorithms~\cite{khuwaja_pid_2018}.
 \section{Objectives and Structure}
 
 The primary objective of this thesis is to create a differentiable quadrotor simulator to backpropagate the gradients from a given cost function to the \ac{NN} parameters to command autonomusly a drone.
@@ -185,7 +191,7 @@ As secondary objectives, we perfrom an evaluation of the policy network on Gazeb
 Furthermore, we perform a comparative study between different control modalities, and, model-free against model-based optimization methods.
 \begin{table}[ht]
 \centering
-\caption{Thesis Objectives}
+\caption{Thesis objectives.}
 % \small
 \begin{tabular}{|cc l|}
 \hline

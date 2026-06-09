@@ -257,7 +257,7 @@ Note that KL-divergence measures the difference between two data distributions $
 \end{aligned}
 \end{equation}
 
-However, this method involves the calculation of the Hessian, a second-order derivative matrix which is computationally costly and complex.
+However, this method involves the calculation of the Hessian, a second-order derivative matrix which is computationally costly.
 Instead of imposing a hard constrain the authors of \cite{ppo} propose two relaxation methods.
 \begin{enumerate}
     \item \textbf{Adaptive KL Penalty Coefficient}
@@ -284,7 +284,7 @@ Hence, the final PPO loss is,
 \begin{equation}
 L_t^{CLIP+VF+S}(\theta) = \hat{\mathbb{E}}_t \left[ L_t^{CLIP}(\theta) - c_1 L_t^{VF}(\theta) + c_2 S[\pi_\theta](s_t) \right]   
 \end{equation}
-whera $c_1$ and $c_2$ are weighting factors.
+wher $c_1$ and $c_2$ are weighting factors.
 
 \subsection{Model-Based Reinforcement Learning}
 Model-based \ac{RL} uses infromation of a model to optimize the policy parameters.

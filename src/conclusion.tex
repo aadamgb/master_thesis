@@ -2,3 +2,24 @@
 
 \chapter{Conclusion \label{chap:conclusion}}
 
+In this thesis, we developed a differentiable simulator envirionment to efficently train neural control policies for autonomous drone racing.
+The simulator leverages automatic differentiation to backpropagate the gradients from a loss function to the network parameters, increasing the sample efficeny over \textbf{7x} compared to proximal policy optimization, a standard model-free reinforcement learning algorithm.
+It includes domain randomization to prevent the policy from overfitting and to improve transferability to the real-world environment.
+It supports four control abstractions, going from direct motor comands to a geometric controller with adaptive gains. 
+% and evaluated their sample efficency, tracking performance and robustness agains external disturbances.
+Since the motor model degreades the gradient quality, we implement a surrogate gradient for the backporopagation, in \autoref{sec:sur_grad} we show that this improves the optimization process.
+
+In \autoref{subsec:sample_eff}, we find that the velocity controllers working on the special orthogonal group ${SO}(3)$ converge 3 times faster than the \ac{CTBR} controller and 6 times faster than the \ac{SRT} controller.
+Training is implemented in a curriculum fashion, in which we increase the speed of the trajecotry when the tracking error is lower than a certain threshold.
+With this approach, and the loss function proposed in \autoref{subsec::TT} we achieve a suboptimal tracking up to $10~\mathrm{m/s}$ corrpesonding to only $60\%$ of the optimal racing trajectory.
+The control abstraction that obtains the best tracking error is the \ac{LVHR}, the agumented version of this controller, which outputs the gains of the inner geometric controller has similar tracking results.
+However, in \autoref{subsec:robust} , the \ac{LVHR} controller showed to be the less robust to external disturbances, while its augmented verison seemd to compensate well to external distubances.
+Nonetheless, with the obtained results we conclude that \ac{CTBR} controller achieves the best balance in terms of sample efficency, performance and robsutness.
+
+Aditionally, during the MRS test campaing in on the 16th of April 2026, we deployed the \ac{CTBR} controller on a real UAV platfrom. 
+At this time, the simulator did not model motor delay, aerodynamic effects or noise in state estimation, which lead to a poor tracking performance wit an \ac{RMSE} of $6.11~\mathrm{m}$. 
+However, the controller was still able to stably track the trajectory, which underscores the importance of using domain randomization.
+
+Finally in \autoref{sec:baseline}, we compare our model-based reinforcement learning approach using \ac{BPTT} to model-free reinforcement learning using \ac{PPO}.
+
+

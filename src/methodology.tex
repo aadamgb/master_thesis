@@ -169,7 +169,7 @@ In most cases the following mapping apprixmation is good enough.
     \boldsymbol{T}_{\text{cmd}} \approx k \boldsymbol{\Omega}_{\text{cmd}}^2
 \end{equation}
 
-Then the commanded rotor speeds $\boldsymbol{\Omega}_{\text{cmd}}$, are passed through the following first order motor model \autoref{eq:motmod}, and saturated according to the maximum rotor spee rate, $\dot{\Omega}_{\text{cmd}}$ given by the manufacturer.
+Then the commanded rotor speeds $\boldsymbol{\Omega}_{\text{cmd}}$, are passed through the following first order motor model \autoref{eq:motmod}, and saturated according to the maximum rotor speed rate, $\dot{\Omega}_{\text{cmd}}$ given by the manufacturer.
 
 \begin{equation}\label{eq:motmod}
     H(s) = \frac{1}{k_m + s}
@@ -448,7 +448,7 @@ In our simulation, we formulate them for the trajectory tracking tasks is the ne
 
 % This way, the loss is accumulated over a time window $\sum_{k=t}^{t +T-1}\mathcal{L}_k$, where $t$ indicates the time at ehich the accumulation begings
 
-\subsection{Trajectory Tracking}
+\subsection{Trajectory Tracking}\label{subsec::TT}
 % For the trajectory tracking task, the objective is to minimize a cumulative loss function over a finite time window of length $T$ between a reference state $\mathbf{x}_k^\text{ref}$ and the quadrotor's state $\mathbf{x}_k$. The loss at each timestep $k$, denoted as $\mathcal{L}_k(\mathbf{x}_k^\text{ref}, \mathbf{x}_k)$, is formulated as a weighted sum of the position, velocity, and attitude alignment Euclidean norm errors, plus an additional penalization of the body rates to help stabilize the quadrotor during the early stages of the training process. 
 % The attitude loss is calculated as the cosine similarity between the current body-z axis $\mathbf{\hat{b}}_3$ and the normalized, gravity-compensated reference acceleration $\mathbf{z}_k$,
 
