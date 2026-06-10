@@ -4,11 +4,11 @@
 
 In this chapter, the results of the proposed differentiable simulator are presented and evaluated.
 First, the assessment metrics used throughout the chapter are defined in \refsec{sec:eval_criteria}.
-\todo{validation of the simulator}
+% \todo{validation of the simulator}
 Subsequently, the performance of the proposed method is compared against standard model-free \ac{RL} training and a classical fixed-gain geometric controller in \refsec{sec:baseline}.
 Qualitative results, including trajectory visualizations, velocity profiles, and the transferability of the trained policiesare are presented.
-An ablation study is then conducted in \refsec{sec:ablation} to evaluate the effect of key design choices.
-Finally, preliminary real-world validation results are presented in \refsec{sec:realworld}.
+% An ablation study is then conducted in \refsec{sec:ablation} to evaluate the effect of key design choices.
+% Finally, preliminary real-world validation results are presented in \refsec{sec:realworld}.
 
 \
 
@@ -168,6 +168,8 @@ As discussed in~\cite{boufrioua_gain_2022}, ``it is widely known that this contr
     \label{fig:lvhr-g-action}
 \end{figure}
 
+
+\newpage
 \subsection{Robustness}\label{subsec:robust}
 To evaluate the robustness of the different controllers, we simulate an external wind gust.
 We model it as a constant acceleration of value $8~\mathrm{m/s^2}$ acting on the positive $y$ world axis between $x\in[5,10]$.
@@ -205,9 +207,34 @@ In future work, the remaining control abstractions will also be implemented with
 Nevertheless, the \ac{CTBR} controller provides a suitable baseline for evaluating transferability.
 
 Using this setup, we compare the position and velocity \ac{RMSE} obtained in our simulator against the results in Gazebo.
-In Gazebo, two configurations are considered: one using ground-truth state estimation and another using a more realistic state estimator representative of real flight conditions.
+In Gazebo, two configurations are considered: one using ground-truth state estimation and using "\textit{passthrough}" state estimaton form the MRS UAV stack which is more representative for real flight conditions.
 
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics{fig/plots/uzh-dist/hypotheses.pdf}
+%     \caption{Tracking error of the different controllers with external disturbances.}
+%     \label{fig:uzh_dist}
+% \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/transfer/hypotheses.pdf}
+    \caption{Real world flight data, UZH track trajectory tracking.}
+    \label{fig:transfer}
+\end{figure}
 
+Comparing \autoref{fig:transfer} with \autoref{fig:uzh_ca} it can be observed that there is small degradation in tracking performance when deploying the policy trained in our similator to gazeebo.
+Analyzing the tracking errors 
+\begin{table}[H]
+    \centering
+    \caption{Position and Velocity \ac{RMSE} in Gazebo.}
+    \label{tab:uzh_gazbo}
+    \begin{tabular}{ccc}
+    \hline
+RMSE  & Ground Truth  & Passthrough \\ \hline
+Position [m]  & $$ & $$ \\
+Velocity [m/s]  & $$ & $$ \\ \hline
+\end{tabular}
+\end{table}
 
 \section{Real World Validation}\label{sec:realworld}
 
@@ -222,7 +249,7 @@ Additionally, the experiment provided valuable insights and data that were later
 % RMSE: 6.11020 m | RMSE: 4.25100 m  | Max Speed: 8.11 m/s
 \begin{figure}[H]
     \centering
-    \includegraphics{fig/plots/uzh-real-flight/hypotheses.pdf}
+    \includegraphics[scale=0.9]{fig/plots/uzh-real-flight/hypotheses.pdf}
     \caption{Real world flight data, UZH track trajectory tracking.}
     \label{fig:real-world}
 \end{figure}

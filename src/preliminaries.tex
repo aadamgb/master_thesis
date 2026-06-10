@@ -1,13 +1,11 @@
 %!TEX root = ../main.tex
 
 \chapter{Preliminaries \label{pre}}
-This chapter covers relevant theory for this thesis.
-% Section \ref{sec:ocp} formulates the \ac{OCP} of drone racing and presents a theoretical solution based on the application of \ac{PMP}.
-% The optimal solution derived from \ac{PMP} serves primarily as an upper theoretical bound, as many of its underlying assumptions do not hold in real-world scenarios.
-% Practical implementations must account for model uncertainties, disturbances, and system constraints that deviate from the idealized formulation.
+This chapter covers relevant theory on which this thesis is built. 
+First, in \autoref{sec:ocp} we explain what is an \ac{OCP} and we formulate the \ac{OCP} for \ac{ADR}.
+Then, in \autoref{sec:classical} and \autoref{sec:learned}, we classical and learning-based approaches to adress the \ac{OCP}.
+Finally, in \autoref{sec:diff-opt} we explain how automatic differentiation can be used to optimize a control policy. 
 
-% In this context, Sections \ref{sec:classical} and \ref{sec:learned} review the state-of-the-art control approaches used to achieve high-performance drone racing, covering both classical control techniques and modern learning-based methods.
-\todo{}
 \section{Optimal Control Problem} \label{sec:ocp} 
 According to \cite{sussmann_300_1997}, optimal control was born in 1687 in the Netherlands when Johan Bernoulli published his solution to the brachystochrone problem.
 Optimal control can be regarded as an extension of calculus of variations, with the aim of finidng a control policy that minimizes a cost function.

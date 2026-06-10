@@ -4,23 +4,23 @@
 
 % \todo{Review}
 
-This chapter presents the methodology used in this thesis to train the neural network policies.
+This chapter presents the methodology used in this thesis to train the neural control policies.
 % Section~\ref{sec:sys_overview}, provides an overview of the control and training pipeline.
-In~\autoref{sec:sim_frame}, we adress the core elements of the simulation architecture, define the quadrotor model, and explain how the \ac{s2r} gap is minimized by using \ac{DR}.
-Furthermore, we introduce the implemented control abstraction levels.
-Section~\ref{sec:tasks}, outlines the training objectives used for \ac{ADR}.
-Lastly, \autoref{sec:diff_opt} details how differentiability is leveraged to optimize the policies in order to minimize the training task's cost function.
+In~\autoref{sec:quad_model}, we define the quadrotor model and in \autoref{sec:ca} presents the four different control abstractions that have been implemented.
+Next, in \autoref{sec:DR} we explain how the \ac{s2r} gap is minimized by using \ac{DR}.
+Section~\ref{sec:tasks}, outlines the training objective used to adress the \ac{ADR} challenge.
+Lastly, we summarize the learning framework in \autoref{sec:summary} and we present the final training algorithm.
 
 
 
 \section{Quadrotor Model}\label{sec:quad_model}
 In the simulated environments, the quadcopter is modeeld as a 6 \ac{dof} rigid body.
-The inertial world frame $\mathcal{W}$ is defined by the fixed orthonormal basis $\{\hat{\mathbf{e}}_1, \hat{\mathbf{e}}_2, \hat{\mathbf{e}}_3\}$ while the non-inertial body-fixed frame $\mathcal{B}$ by the  orthonormal basis $\{\hat{\mathbf{b}}_1, \hat{\mathbf{b}}_2, \hat{\mathbf{b}}_3\}$, which is attached to the vehicle's center of mass.  
+The inertial world frame $\mathcal{W}$ is defined by the fixed orthonormal basis $\{\hat{\mathbf{e}}_1, \hat{\mathbf{e}}_2, \hat{\mathbf{e}}_3\}$ while the non-inertial body frame $\mathcal{B}$ by the  orthonormal basis $\{\hat{\mathbf{b}}_1, \hat{\mathbf{b}}_2, \hat{\mathbf{b}}_3\}$, which is attached to the vehicle's center of mass.  
 The state of the \ac{UAV} is given by $\mathbf{x} = [\mathbf{p}, \mathbf{v}, \mathbf{q}, \boldsymbol{\omega}, \mathbf{\Omega}]^\top$ where the position $\mathbf{p} \in \real^3$, velocity $\mathbf{v} \in \real^3$, and acceleration are represented in the world frame $\mathcal{W} \in \mathbb{R}^3$. 
 Conversely, the body rates $\boldsymbol{\omega} \in \real^3$ are represented in the body frame $\mathcal{B} \in \mathbb{R}^3$ and $\mathbf{\Omega} \in \real^4$ is a vector of scalar values indicating the rotor speeds.
 The relationship between the two frames is given by the rotation mapping $\mathbf{b}_i = \mathbf{R}\mathbf{e}_i$, where $\mathbf{R} \in SO(3)$.
 
-\noindent Thus, the kinematics and dynamics of the quadcopter are:
+Thus, the kinematics and dynamics of the quadcopter are:
 
 \begin{minipage}{0.5\textwidth}
 \begin{equation}
@@ -139,7 +139,7 @@ where $\rho$ denotes the air density, $\mathbf{A} = \mathrm{diag}(A_{b1}, A_{b2}
 The velocity must be expressed in the body frame, obtained as $\mathbf{v}^{\mathcal{B}} = \mathbf{R}(\mathbf{q})^\top \mathbf{v}^{\mathcal{W}}$.
 
 
-\section{Control Abstraction}\label{met:ca}
+\section{Control Abstraction}\label{sec:ca}
 The control abstraction refers to the modality of the policy outputs used to control the quadrotor.
 The choice of control abstraction affects both the performance of the controller for a given task and the sample efficiency during training.
 For this reason, it is worthwhile to investigate and implement multiple control abstractions.
@@ -331,7 +331,7 @@ Thus, when this control mode is selected, the policy outputs are, the same as \a
 %                                  Domain Randomization
 % ====================================================================================
 
-\section{Domain Randomization}\label{subsec:DR}
+\section{Domain Randomization}\label{sec:DR}
 To improve the transferability of the policy and to prevent the it from ovrefitting to a specific environment, \ac{DR} is implemented in our methodology as it is well-stabilshed strategy in the field.
 
 A domain can be defined as a specific subset of all possible \ac{POMDP} environments. 
@@ -576,7 +576,7 @@ Then, the reference velocity and acceleartion are approximated as the discrete d
 % \end{algorithmic}
 % \end{algorithm}
 
-\section{Summary}
+\section{Summary}\label{sec:summary}
 
 To summirize the methodology, the training workflow is the following. First the user selects the training task, refered in the code as environemnt env=[tt,\ pp], which are either; trajectory tracking or path progress.
 The user also selects the control abstraction/mode cm=[srt,\ ctbr,\ lvhr,\ lvhr+g] which defines the control mapping function $g_{\text{cm}}()$ from the policy outputs $\boldsymbol{\pi_\theta}(\mathbf{o})$ to the control inputs $\mathbf{u}$. 
@@ -589,7 +589,7 @@ Finally, the user introduces the number of parallel environments $B$, the number
 
 \begin{figure}[H]
     \centering
-    \resizebox{0.7\textwidth}{!}{\input{fig/tikz/sim_arch_diagram.tex}}
+    \resizebox{1\textwidth}{!}{\input{fig/tikz/sim_arch_diagram.tex}}
     \caption{Schematics of the learning environment. The black arrows show the forward pass from the policy outputs to the loss function and the red arrows indicate the backward pass. Not thatduring the backward pass the motor dynamics are skipped.}
     \label{fig:cool-diagram}
 \end{figure}

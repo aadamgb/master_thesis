@@ -31,133 +31,46 @@
 % --- Plot 1 ---
 
 \begin{axis}[
-            name=plot1,
-            width=7cm,
+            width=10cm,
             height=8cm,
-            view={30}{80},         
+            view={30}{60},         
             grid=both,              
             minor tick num=1,       
             xlabel={x [m]},
             ylabel={y [m]},
             zlabel={z [m]},
-            % colorbar,
-            % colormap/viridis,
-            % % colorbar style={ylabel={$\lVert v \rVert$ [m/s]}},
-            point meta max=8,
-            % title={Real World Flight Experiment}
+            title={Transferability to Gazebo},
+            legend style={draw=none, at={(0.5,-0.18)}, anchor=north},
+            legend columns=-1
         ]
 \addplot3[
     dashed,
-    line width=1pt,
+    line width=1.5pt,
 ] table[
-    x=ref_x, y=ref_y, z=ref_z,
+    x=px_ref, y=py_ref, z=pz_ref,
     col sep=comma,
-] {data/real_traj.csv};
-
-% \addplot3[
-%     scatter,
-%     only marks,                        % removes the connecting line entirely
-%     scatter src=explicit,              % use the meta column directly
-%     point meta=explicit,
-%     mark=*,
-%     % mark size=1pt,
-% ] table[
-%     x=x, y=y, z=z,
-%     meta=velocity,
-%     col sep=comma,
-% ] {data/real_traj.csv};
-
-\end{axis}
-
-
-% --- Plot 2 (duplicate to the right) ---
-
-\begin{axis}[
-            name=plot2,
-            at={(plot1.east)},
-            anchor=west,
-            xshift=3cm,
-            width=7cm,
-            height=8cm,
-            view={30}{80},         
-            grid=both,              
-            minor tick num=1,       
-            xlabel={x [m]},
-            ylabel={y [m]},
-            zlabel={z [m]},
-            % colorbar,
-            % colormap/viridis,
-            % colorbar style={ylabel={$\lVert v \rVert$ [m/s]}},
-            % point meta max=8,
-            % title={Real World Flight Experiment (copy)}
-        ]
-\addplot3[
-    dashed,
-    line width=1pt,
-] table[
-    x=ref_x, y=ref_y, z=ref_z,
-    col sep=comma,
-] {data/real_traj.csv};
-
-% \addplot3[
-%     scatter,
-%     only marks,                        % removes the connecting line entirely
-%     scatter src=explicit,              % use the meta column directly
-%     point meta=explicit,
-%     mark=*,
-%     mark size=1pt,
-% ] table[
-%     x=x, y=y, z=z,
-%     meta=velocity,
-%     col sep=comma,
-% ] {data/real_traj.csv};
-
-\end{axis}
-
-% --- Plot 3 (duplicate to the right) ---
-
-\begin{axis}[
-            name=plot3,
-            at={(plot2.east)},
-            anchor=west,
-            xshift=3cm,
-            width=7cm,
-            height=8cm,
-            view={30}{80},         
-            grid=both,              
-            minor tick num=1,       
-            xlabel={x [m]},
-            ylabel={y [m]},
-            zlabel={z [m]},
-            colorbar,
-            colormap/viridis,
-            colorbar style={ylabel={$\lVert v \rVert$ [m/s]}},
-            point meta max=8,
-            % title={Real World Flight Experiment (copy)}
-        ]
-\addplot3[
-    dashed,
-    line width=1pt,
-] table[
-    x=ref_x, y=ref_y, z=ref_z,
-    col sep=comma,
-] {data/real_traj.csv};
+] {data/stable-TT_pt.csv};
 
 \addplot3[
-    scatter,
-    only marks,                        % removes the connecting line entirely
-    scatter src=explicit,              % use the meta column directly
-    point meta=explicit,
-    mark=*,
-    mark size=1pt,
+    color=tabblue,
+    line width=1pt,
 ] table[
-    x=x, y=y, z=z,
-    meta=velocity,
+    x=px, y=py, z=pz,
     col sep=comma,
-] {data/real_traj.csv};
+] {data/stable-TT_gt.csv};
+
+
+\addplot3[
+    color=taborange,
+    line width=1.5pt,
+] table[
+    x=px, y=py, z=pz,
+    col sep=comma,
+] {data/stable-TT_pt.csv};
+
+\legend{Reference, Ground Truth, Passthrough}
 
 \end{axis}
-
 
 
 \end{tikzpicture}
