@@ -1,0 +1,111 @@
+\documentclass{standalone}
+
+% \begin{filecontents*}{\jobname.bib}
+% @misc{dummy,
+%     author = {Placeholder},
+%     title  = {Placeholder Reference},
+%     year   = {1900}
+% }
+% \end{filecontents*}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% \makeatletter
+% \AtEndDocument{%
+%     \immediate\write\@auxout{\string\citation{dummy}}%
+%     \immediate\write\@auxout{\string\bibstyle{plain}}%
+%     \immediate\write\@auxout{\string\bibdata{\jobname}}%
+% }
+% \makeatother
+
+\definecolor{tabblue}{rgb}{0.0000, 0.4470, 0.7410}
+\definecolor{taborange}{rgb}{0.8500, 0.3250, 0.0980}
+\definecolor{tabgreen}{rgb}{0.4660, 0.6740, 0.1880}
+\definecolor{tabred}{rgb}{0.6350, 0.0780, 0.1840}
+
+\begin{document}
+
+\begin{tikzpicture}
+
+% --- Plot 1 ---
+\begin{axis}[
+            name=plot1,
+            % at={(plot1.south east)},
+            yshift=-1.5cm,
+            anchor=north east,
+            width=16cm,
+            height=6.0cm,
+            grid=both,              % Enable grid for both major/minor ticks
+            minor tick num=1,       % Optional: add minor grid lines
+            xlabel={y [m]},
+            ylabel={x [m]},
+            y dir=reverse,
+            % title={z vs y},
+            legend style={at={(1.0,-0.35)}, anchor=south east, draw=none},
+            legend columns=2,
+        ]
+
+
+\fill[blue!10, opacity=0.6]
+({rel axis cs:0,0} -| {axis cs:-1.,0}) rectangle
+({rel axis cs:0,1} -| {axis cs:1.,1});
+
+% Wind arrow (adjust anchor coords to sit nicely in your plot's y range)
+% \draw[->, thick, blue!60, line width=1.5pt]
+% (axis cs:-1.8, 0.5) -- (axis cs:-1.8, -0.5);
+% \draw[->, thick, blue!60, line width=1.5pt]
+% (axis cs:-1.5, 0.5) -- (axis cs:-1.5, -0.5);
+% \draw[->, thick, blue!60, line width=1.5pt]
+% (axis cs:-1.2, 0.5) -- (axis cs:-1.2, -0.5);
+
+\draw[->, thick, blue!60, line width=1.5pt]
+(axis cs:-0.5, 1.8) -- (axis cs:-0.5, 1.0);
+\draw[->, thick, blue!60, line width=1.5pt]
+(axis cs:0, 1.8) -- (axis cs:0, 1.0)
+node[above=1.75cm, blue!60, font=\small] {wind};
+\draw[->, thick, blue!60, line width=1.5pt]
+(axis cs:0.5, 1.8) -- (axis cs:0.5, 1.0);
+
+
+% \draw[->, thick, blue!60, line width=1.5pt]
+% (axis cs:7.5, -1.0) -- (axis cs:7.5, 2.5)
+
+% \draw[->, thick, blue!60, line width=1.5pt]
+% (axis cs:8.5, -1.0) -- (axis cs:8.5, 2.5);
+
+\addplot[
+    color=tabblue,
+    thick,
+    line width=1.0pt,
+    smooth,
+] table[
+    x expr={\thisrow{state_1}}, y expr={\thisrow{state_0}},
+    col sep=comma,
+] {data/bptt.csv};\addlegendentry{BPTT}
+
+\addplot[
+    color=tabgreen,
+    thick,
+    line width=1.0pt,
+    smooth,
+] table[
+    x expr={\thisrow{state_1}}, y expr={\thisrow{state_0}},
+    col sep=comma,
+] {data/ppo.csv};\addlegendentry{PPO}
+
+
+
+
+
+
+
+\end{axis}
+
+
+
+
+
+\end{tikzpicture}
+
+\end{document}

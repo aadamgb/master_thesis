@@ -32,28 +32,21 @@
 
 \begin{axis}[
             name=plot1,
+            anchor=north east,
             width=16cm,
             height=5cm,
-            view={-80}{60},         % Set a good 3D perspective
+            view={80}{70},         % Set a good 3D perspective
             grid=both,              % Enable grid for both major/minor ticks
             minor tick num=1,       % Optional: add minor grid lines
             % line width=2pt,
             xlabel={x [m]},
-            ylabel={y [m]},
-            zlabel={z [m]},
+            % ylabel={y [m]},
+            % zlabel={z [m]},
             % z buffer=sort,          % Correct rendering depth
             % title={With Axis and Grids}
+            legend style={at={(1.0,-0.25)}, anchor=south east, draw=none},
+            legend columns=2,
         ]
-\addplot3[
-    dashed,
-    % color=tabblue,
-    thick,
-    line width=1.0pt,
-    smooth,
-] table[
-    x=px_ref, y=py_ref, z=pz_ref,
-    col sep=comma,
-] {data/traj-bptt.csv};
 
 \addplot3[
     color=tabblue,
@@ -61,71 +54,64 @@
     line width=1.0pt,
     smooth,
 ] table[
-    x=px, y=py, z=pz,
+    x=state_0, y=state_1, z=state_2,
     col sep=comma,
-] {data/traj-bptt.csv};
+] {data/bptt.csv};
+\addlegendentry{BPTT}
 
-
-\end{axis}
-
-
-
-% --- Plot 2 ---
-\begin{axis}[
-    name=plot2,
-    at={(plot1.south west)},
-    anchor=north west,
-    yshift=-1.0cm,
-    width=7.5cm,
-    height=4cm,      % roughly half of plot1's height
-    grid=both,
-    minor grid style={dashed, gray!30},
-    major grid style={dashed, gray!30},
-    minor tick num=1,
-    xlabel={t [s]},
-    ylabel={\footnotesize Position Error [m]},
-    xmin=0,
-    xmax=5,
-]
-\addplot[
-    color=tabblue,
+\addplot3[
+    color=tabgreen,
+    thick,
     line width=1.0pt,
-]
-table[
-    x=time,
-    y expr={sqrt((\thisrow{px}-\thisrow{px_ref})^2 + (\thisrow{py}-\thisrow{py_ref})^2 + (\thisrow{pz}-\thisrow{pz_ref})^2)},
+    smooth,
+] table[
+    x=state_0, y=state_1, z=state_2,
     col sep=comma,
-] {data/traj-bptt.csv};
+] {data/ppo.csv};
+\addlegendentry{PPO}
+
+
 \end{axis}
 
-% --- Plot 3 ---
+% \begin{axis}[
+%             name=plot2,
+%             at={(plot1.south east)},
+%             yshift=-1.5cm,
+%             anchor=north east,
+%             width=16cm,
+%             height=3.5cm,
+%             grid=both,              % Enable grid for both major/minor ticks
+%             minor tick num=1,       % Optional: add minor grid lines
+%             xlabel={y [m]},
+%             ylabel={z [m]},
+%             % title={z vs y},
+%             legend style={at={(1.0,-0.65)}, anchor=south east, draw=none},
+%             legend columns=2,
+%         ]
 
-\begin{axis}[
-    name=plot3,
-    at={(plot2.south east)},
-    anchor=south west,
-    xshift=2cm,
-    width=7.5cm,
-    height=4cm,      % roughly half of plot1's height
-    grid=both,
-    minor grid style={dashed, gray!30},
-    major grid style={dashed, gray!30},
-    minor tick num=1,
-    xmin=0,
-    xmax=5,
-    xlabel={t [s]},
-    ylabel={\footnotesize Velocity Magnitude [m/s]},
-]
-\addplot[
-    color=tabblue,
-    line width=1.0pt,
-]
-table[
-    x=time,
-    y expr={sqrt((\thisrow{vx})^2 + (\thisrow{vy})^2 + (\thisrow{vz})^2)},
-    col sep=comma,
-] {data/traj-bptt.csv};
-\end{axis}
+% \addplot[
+%     color=tabblue,
+%     thick,
+%     line width=1.0pt,
+%     smooth,
+% ] table[
+%     x expr={\thisrow{state_1}}, y=state_2,
+%     col sep=comma,
+% ] {data/bptt.csv};\addlegendentry{BPTT}
+
+% \addplot[
+%     color=tabgreen,
+%     thick,
+%     line width=1.0pt,
+%     smooth,
+% ] table[
+%     x expr={\thisrow{state_1}}, y=state_2,
+%     col sep=comma,
+% ] {data/ppo.csv};\addlegendentry{PPO}
+
+
+% \end{axis}
+
 
 
 

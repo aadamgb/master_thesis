@@ -2,11 +2,12 @@
 
 \chapter{Results \label{chap:results}}
 
-In this chapter, the results of the proposed differentiable simulator are presented and evaluated.
-First, the assessment metrics used throughout the chapter are defined in \refsec{sec:eval_criteria}.
+In this chapter, the results of our methodologhy are presented and evaluated.
+The defenitions of the assessment metrics used throughout the chapter can be found in \refsec{sec:eval_criteria}.
 % \todo{validation of the simulator}
-Subsequently, the performance of the proposed method is compared against standard model-free \ac{RL} training and a classical fixed-gain geometric controller in \refsec{sec:baseline}.
-Qualitative results, including trajectory visualizations, velocity profiles, and the transferability of the trained policiesare are presented.
+
+% The performance of the proposed method is compared against standard model-free \ac{RL} training and a classical fixed-gain geometric controller in \refsec{sec:baseline}.
+% Qualitative results, including trajectory visualizations, velocity profiles, and the transferability of the trained policiesare are presented.
 % An ablation study is then conducted in \refsec{sec:ablation} to evaluate the effect of key design choices.
 % Finally, preliminary real-world validation results are presented in \refsec{sec:realworld}.
 
@@ -207,7 +208,7 @@ In future work, the remaining control abstractions will also be implemented with
 Nevertheless, the \ac{CTBR} controller provides a suitable baseline for evaluating transferability.
 
 Using this setup, we compare the position and velocity \ac{RMSE} obtained in our simulator against the results in Gazebo.
-In Gazebo, two configurations are considered: one using ground-truth state estimation and using "\textit{passthrough}" state estimaton form the MRS UAV stack which is more representative for real flight conditions.
+In Gazebo, two configurations are considered: one using ground-truth state estimation and another using "\textit{passthrough}" state estimaton form the MRS UAV stack which is more representative for real flight conditions.
 
 % \begin{figure}[H]
 %     \centering
@@ -239,7 +240,7 @@ Velocity [m/s]  & $$ & $$ \\ \hline
 \section{Real World Validation}\label{sec:realworld}
 
 On the 16th of April 2026, during the MRS testing campaign, we conducted a real-world flight experiment.
-At that stage, the simulator was still in an early phase of development; actuator dynamics and aerodynamic drag were not yet modeled, and policy training relied on ground-truth state information.
+At that stage, the simulator was still on an early phase of development; actuator dynamics and aerodynamic drag were not yet modeled, and policy training relied on ground-truth state information.
 
 As a result, there was a significant mismatch between the simulator and real flight conditions.
 This led to poor trajectory tracking performance, with position and velocity \ac{RMSE} values of $6.11~\mathrm{m}$ and $4.25~\mathrm{m/s}$, respectively.
@@ -272,66 +273,99 @@ By analyzing the gradient norm of the full model, larger oscillations can be obs
     \label{fig:gradients}
 \end{figure}
 
-
 \section{Model-Free and Model-Based evaluation}\label{sec:baseline}
 In this section, we compare two policies, one optimized using model-free \ac{RL} with \ac{PPO}, and the other using model-based \ac{RL} with \ac{BPTT}.
-The comparison is performed in terms of sample efficiency, mean reward, performance, transferability, and robustness.
-\subsection{Training Time}
-To evaluate the training time we measure the wall time agians the number of steps.
-It can be observed that the relationship between the steps and time is linear.
-Taking for \ac{BPTT} \textbf{7x} times less clock time to execute the same number of time steps than \ac{PPO}.
-\begin{figure}[H]
-    \centering
-    \includegraphics{fig/plots/sample-eff/hypotheses.pdf}
-    \caption{Wall time versus training steps for \ac{PPO} and \ac{BPTT}. }
-\end{figure}
-It is worth mentioning that the wall time is highly dependant on the frequency at which the network is optimized, as oftelny this procedure is the most time consuming.
-% For the model-free policy, backpropagation is produced every 100 steps, and for the model-based 
-For this comparison, the policies are optimized when losses for 50 stpes for 1024 parallel environments are collected, that is to say, every 51200 stpes. 
+The comparison is performed in terms of sample efficiency, performance, robustness and transferability.
 
-\subsection{Discrete and Continuous Rewards}
-\todo{}
-\begin{figure}[H]
-    \centering
-    \includegraphics{fig/plots/rewards/hypotheses.pdf}
-    \caption{Comparison between BPTT and PPO when the loss is countinuous or discrete.}
-\end{figure}
+To evaluate these mehtods we analyze two scenarios.
+Firstly, we train the policies to pass thorugh one gate located at $\mathbf{p_g}^\mathcal{W} = \begin{pmatrix}
+    0.0 & 5.0 & 1.5
+\end{pmatrix}$. The \ac{UAV}s' state is initialized to zero, unless for $z = 1.5$ and $q_\omega = 1.0$ which correspond to the height of the gate and identity orientation respectively.
+Secondly, we train for a more challenging track, an "\textit{eight}" figure track.
+We mantain the same reward for both methods which consists in rewarding progress toward the gate and penalizing body rates as,
 
-\subsection{Performance}
-
-\begin{equation}
-    \mathbf{p}(\theta) = \left( -\text{scale} \cdot \sin(\theta)\cos(\theta), \ -\text{scale} \cdot \cos(\theta), \ \text{h} \right)
+\begin{equation} \label{reward_fnc}
+   r_k = -\mathcal{L}_k = \left\| \mathbf{p}_{k-1}^\mathcal{W} - \mathbf{p}_{g_k}^\mathcal{W} \right\|_2 - \left\| \mathbf{p}_{k}^\mathcal{W} - \mathbf{p}_{g_k}^\mathcal{W} \right\|_2 - 0.001 \left\| \boldsymbol{\omega} \right\|_2.
 \end{equation}
-where     $\theta = \omega \cdot t \cdot dt$  and $\omega = \text{speed}/\text{scale}$
+
+And we run the simulation in 100 parallel environments.
+Note that in \ac{BPTT} we aim to minimize the loss and in \ac{PPO} to maximize the reward, but these are equivalent objectives.
+
+\subsection{Sample Efficency}
+
+To analyze the sample efficency we plot the mean reward over the parallel environments against the collected simulation steps for both methods.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/sample-eff-opt2/hypotheses.pdf}
+    \caption{Reward against time step for PPO and BPTT}
+    \label{fig:eprew}
+\end{figure}
+
+We can observe that for the simple one gate set-up, both policies converge to a reward of around $4.0$.
+However, the \ac{BPTT} policy converges in around $0.5\times 10^{6}$ steps while the \ac{PPO} policy around $2.5\times 10^{6}$ steps.
+Making the \ac{BPTT} method $\mathbf{5x}$ more sample efficent in this simple scenario.
+Nonthless, analyzing the more challenging "\textit{eight}" figure track, the \ac{PPO} policy significantly outperforms the \ac{BPTT} policy.
+The former achieves a maximum reward of $63.4$ with a smooth policy updates while the former does not surpass $50.2$ and peresnts high variance.
+
+We belive that this difference in the maximum achieved reward is due to the relative simplicity of our \ac{BPTT} implementation compared to the actor-critic architecture and robust optimization scheme of \ac{PPO}.
+
+The \ac{BPTT} policy is optimized by backpropagating gradients directly through the differentiable simulator, using a single feedforward network with no value functio.
+While this direct approach shows higher sample efficency for a simple scenario, when introudicng multiple gates the optimal gate-traversal sequence is less smooth.
+This increases the risk of accumulatiing of bias at the truncation boundaries, causing the policy to converge prematurely to a local optimum.
+
+In contrast, \ac{PPO} levereages a critic network that maps the value of a given state, reduceing the variance of the advantage estimates used to update the actor.
+Furthermore, the clipped surrogate objective constrains each policy update to remain within a trust region.
+Combined with multiple epochs of minibatch stochastic gradient updates per rollout, this yields more conservative and robust policy updates than the single-step gradient descent used in our \ac{BPTT} implementation.
+
+\subsection{Performance}\label{perf}
+In this case, we measure performance in terms of lap time and \ac{SR} over 5 runs for both policies for the "\textit{eight}" figure track.
+To measure the best-case scenario we trained both policies with a simplified quadrotor model, not taking into account drag, motor delay, external diturbances or domain randomization and the control mode used is \ac{SRT}.
+Note that this policies would not transfer to a real world-sencario, but this results present the highest achivable performance under ideal conditions.
+
+\begin{table}[H]
+    \centering
+    \caption{Performance of \ac{BPTT} and \ac{PPO} policies for the "eigth" track (mean and std over 5 laps).}
+\begin{tabular}{c|c|c}
+\hline 
+& \ac{BPTT} & \ac{PPO} \\ \hline
+Lap time [$\mathrm{s}$]&  $2.716 \pm 0.086 \text{ s}$ &  $1.948 \pm 0.011 \text{ s}$ \\
+Sucess Rate [\%] & 100 & 100\\ \hline
+    
+\end{tabular}    \label{tab:perf}
+\end{table}
+
+
+
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/fig-8/hypotheses.pdf}
-    \caption{\todo{}}
+    \caption{Paths traced by the policies for five laps.}
+    \label{fig:8}
 \end{figure}
-\subsection{Transferability and Robustness}
+
+
+In \autoref{tab:perf} we see that both policies perform the 5 laps without a single crash.
+And higher episode mean reward from maximizing gate progress, \autoref{fig:eprew}, directly translates to faster lap times, with the \ac{PPO} policy around $0.8\,\mathrm{s}$ faster on avarage.
+This results of the \ac{PPO} policy closely match the ones from ~\cite{ferede2025}.
+Then, \autoref{fig:8} shows that the \ac{BPTT} policy takes sharper turns than the \ac{PPO} policy, which can indicate a greedier optimization approach.
+
+\subsection{Robustness}
+
+Next, to asses robustness we expose the environment to exturnal distrubance, following a similar set up as in \autoref{subsec:robust}, we simulate a wind gust, which we model as an aceleartion in the $-x$ axis between $y\in[-1, 1]$, see \autoref{fig:wind}.
+We expose the policies to different magnitudes of external acceleration and we find that the \ac{BPTT} can handle up to $4\, \mathrm{m/s^2}$ while the \ac{PPO} policiy can suport up to $10\, \mathrm{m/s^2}$ before droping the perfect \ac{SR}, i.e. before the first crashes.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/fig-8-wind/hypotheses.pdf}
+    \caption{Paths traced by the policies for five laps with external disturbances.}
+    \label{fig:wind}
+\end{figure}
+
+\subsection{Transferability}
+Finally, to measure transferability we perform the same experiment as in \autoref{perf} but we train the policies with domain randomization, a model that takes into account drag and motor delay and we deploy the policies in Gazebo using the MRS stack with \ac{CTBR} control mode.
 
 
 
-% \begin{table}[H]
-%     \centering
-%     \large
-%     \caption{Performance comparison of policies trained with differentiable gradients versus PPO, evaluated in the proposed simulator and Gazebo environment.}
-% \begin{tabular}{lll|ll}
-% \toprule
-% \multicolumn{1}{c}{} & \multicolumn{2}{c|}{BPTT}          & \multicolumn{2}{c}{PPO}           \\ \hline
-%                        & \multicolumn{1}{c}{Ours} & Gazebo & \multicolumn{1}{c}{Ours} & Gazebo \\ \hline
-% $N$                      & \multicolumn{1}{c}{}     &        & \multicolumn{1}{c}{}     &        \\ 
-% $T_t$                 & \multicolumn{1}{c}{}     &        & \multicolumn{1}{c}{}     &        \\ 
-% $SR$                     & \multicolumn{1}{c}{}     &        & \multicolumn{1}{c}{}     &        \\ 
-% $T_f$                   & \multicolumn{1}{c}{}     &        & \multicolumn{1}{c}{}     &        \\ \bottomrule
-% % Transfer               & \multicolumn{2}{c|}{Good}          & \multicolumn{2}{c}{Good}          \\ \hline
-% \end{tabular}
-% \end{table}
-
-
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.8\textwidth]{fig/photos/placehldrs/vel_dist.png}
-%     \caption{\todo{This is a placeholder figure, (I need to get the actual data)}Wind response, gazebo?}
-%     \label{fig:wind}
-% \end{figure}
+\section{Fixed Gains agains Adaptive Gains}
+Lastly, we investigate in further detail if having adaptive gains for the geometric controller leeads to any improvement...

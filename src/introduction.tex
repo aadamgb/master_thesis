@@ -38,14 +38,14 @@ Finally, we provide an overvirew of the structure and objectives of this thesis.
 
 \ac{ADR} has emerged as a compelling platform in robotics to develop and deploy novel control techniques in real-world scenarios.
 The aim of this sport is to navigate through a sequence of gates in minimum time, pushing the platform’s capabilities to their limits~\cite{hanover_autonomous_2024}.
-To maintain agility and low weight, the hardware is kept minimal; a typical \ac{ADR} drone consists of a quadrotor equipped with an RGB camera, an \ac{IMU}, an onboard computer, a flight controller, brushless \ac{DC} motors with propellers, and an \ac{ESC} all powered by a \ac{LiPo} battery~\cite{hert_mrs_2023,foehn_agilicious_2022}.
+To maintain the platform agile and light, the hardware is kept minimal; a typical \ac{ADR} drone consists of a quadrotor equipped with an RGB camera, an \ac{IMU}, an onboard computer, a flight controller, brushless \ac{DC} motors with propellers, and an \ac{ESC} all powered by a \ac{LiPo} battery~\cite{hert_mrs_2023,foehn_agilicious_2022}.
 
 \ac{ADR} presents several challenges, which can be divided into the following subgroups depicted in \autoref{fig:intro}.
 
 \begin{figure}[H]
     \centering
     \resizebox{1.0\textwidth}{!}{\input{fig/tikz/intro-diag.tex}}
-    \caption{The modular navigation stack for ADR and its associated challenges.}
+    \caption{Modular navigation stack for robotics and its associated challenges.}
     \label{fig:intro}
 \end{figure}
 
@@ -58,29 +58,29 @@ Given an estimate of the drone state and the environment, the next step is \text
 The objective in \ac{ADR} is to compute a minimum-time trajectory that passes through the gates while avoiding collisions.
 Trajectory planning can be computationally demanding, making efficient approaches particularly important.
 The final stage of the pipeline is \textbf{control}.
-Given a planned trajectory, the goal is to determine the control inputs that track it with minimal error.
+Given a planned trajectory, the goal is to obtain the control inputs to track it with minimal error.
 This task is challenging due to the highly nonlinear dynamics of the quadrotor.
 Additionally, the system is underactuated, with only four out of the six \ac{DOFs} directly controllable.
 Moreover, yaw control authority is typically limited, and actuator saturation further constrains performance.
 
 Many of these challenges are common in robotics, and a variety of methods have been proposed to address them.
-Learning-based methods, particularly those relying on \ac{NN}, are gaining popularity due to their low-latency inference and robustness to noise.
+Learning-based methods, particularly those relying on using a \ac{NN}, are gaining popularity due to their low-latency inference and robustness to noise.
 Individual components of the navigation stack can be learned using \ac{NN}s.
 For instance, \ac{CNNs} can process \ac{VIO} data to detect gates, while \ac{MLPs}  can be used for planning or control.
 Combinations of multiple stages, such as perception and planning or planning and control, can also be learned jointly.
 In some cases, the entire pipeline is learned end-to-end \cite{hanover_autonomous_2024}.
 Learning-based approaches offer several advantages; however, training these models typically requires large amounts of data, and current optimization methods can be sample inefficient.
 Since collecting such data in real-world settings is often impractical, simulated environments that approximate real-world distributions are commonly used, enabling thousands of parallel training instances.
-Recent research has also explored the use of \ac{ADE} in \ac{ML} frameworks \cite{paszke_pytorch_2019,jax2018github,abadi_tensorflow_2016} to propagate gradients from a cost function to policy parameters.
+Recent research hasexplored the use of \ac{ADEs} supported by \ac{ML} frameworks such as \cite{paszke_pytorch_2019,jax2018github,abadi_tensorflow_2016} to propagate gradients from a cost function to \ac{NN} parameters.
 This approach significantly improves sample efficiency~\cite{zhang_back_2025} and avoids treating the quadrotor dynamics as a black box.
 
-In this thesis, we investigate this direction by focusing on the use of differentiability to learn the control component of the navigation stack.
-We aim to demonstrate that this approach is a promising avenue for research in robotics and particulalry in \ac{ADR}.
+In this thesis, we investigate this direction by focusing on the use of differentiability to learn the control component.
+We aim to demonstrate that this approach is a promising avenue for research in robotics and particulalry for \ac{ADR}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth, height=0.4\textwidth]{fig/photos/a2rl.png}
-    \caption{Long eexposure photography in the a2rl drone racing championship.}
+    \caption{Long exposure photography in the A2RL 2024 drone racing championship.}
 \end{figure}
 
 % \todo{Add citations}
@@ -119,7 +119,7 @@ We aim to demonstrate that this approach is a promising avenue for research in r
 
 \section{Related Work}
 
-The evolution of \ac{ADR} has progressed from early academic benchmarks in the IROS competitions between 2016 and 2018 \cite{iros2016, iros2017, iros2018}, where drones reached speeds of only a few meters per second, to highly professionalized racing events since 2019, where autonomous drones can exceed 150~km/h and outperform professional human pilots.
+The evolution of \ac{ADR} has progressed from early academic benchmarks in the IROS competitions between 2016 and 2018 \cite{iros2016, iros2017, iros2018}, where drones reached speeds of only a few meters per second, to highly professionalized racing, where autonomous drones exceeded 150~km/h and outperformed professional human pilots.
 % A major breakthrough occurred during the \textit{AlphaPilot} competition in 2019,  surpassed human champions.
 % These milestones were enabled by advances in perception, planning, control, and learning-based methods.
 
@@ -130,7 +130,7 @@ The evolution of \ac{ADR} has progressed from early academic benchmarks in the I
     \label{fig:introo}
 \end{figure}
 
-Since the AlphaPilot competition \cite{lockheedmartinAlphaPilotDrone}, there has been a clear trend toward incorporating learning-based components into the navigation stack.
+Since the AlphaPilot competition \cite{lockheedmartinAlphaPilotDrone} in 2019, there has been a clear trend toward incorporating learning-based components into the navigation stack.
 In \cite{foehnalphapilot2021}, the pipeline combined \ac{VIO} and gate detections within an \ac{EKF} for state estimation, followed by trajectory planning using sampling-based receding horizon methods.
 Control was implemented through a cascade of position and attitude controllers, while \ac{NN}s were used exclusively for visual gate detection.
 Subsequent work in \cite{kaufmannchampion-level2023} retained a similar perception pipeline but replaced planning and control with a feedforward \ac{MLP}, optimized using \ac{PPO} \cite{ppo}.
@@ -138,32 +138,32 @@ Subsequent work in \cite{kaufmannchampion-level2023} retained a similar percepti
 In a related setup, \cite{songreaching2023} demonstrated that model-free \ac{RL} could outperform traditional optimal control approaches.
 The authors attribute the increase in performance of \ac{RL} due to two main factors. 
 First, the ability of model-free \ac{RL} to directly formulate the task goal as part of the optimization function without the need of decomposing the the problem into planning and control.
-This allows their policy to explore a broader range of behaviours thath provide robustness to unmodeled dynamics effects.
+This allows their policy to explore a broader range of behaviours that provide robustness to unmodeled dynamics effects.
 Furthermore, since \ac{RL} is usually modeled as a Markov Decision Process, the tranisition model is probabilisitc, which allows for \ac{DR}.
 "By training in randomized environments, the agent becomes more robust and adaptable, making it more effective at handling disturbances and model uncertainty"~\cite{songreaching2023}.
 
 On a similar note, recent approaches have explored model-based \ac{RL}, where a learned world model enables training through imagined rollouts.
-In \cite{romero_dream_2025, verraest_skydreamer_2025}, the authors adopt an actor-critic architecture inspired by \cite{hafner_mastering_2024}.
-This approach achieved champion-level performance and has the advantage of directly mapping from visual data, raw pixel information, to direct motor commands skipping the need of implementing an intermediate controller.
+In \cite{romero_dream_2025, verraest_skydreamer_2025}, the authors adopt an actor-critic architecture based on Dreamer~\cite{hafner_mastering_2024}.
+This approach achieved champion-level performance and has the advantage of directly mapping visual data, raw pixel information, to direct motor commands skipping the need of implementing an intermediate controller.
 While these methods achieve strong performance, they suffer from high training times and limited sample efficiency; for instance, training in \cite{verraest_skydreamer_2025} can take up to 50 hours, significantly slowing down the research cycle.
 
 To address these limitations, recent work has shifted toward differentiable approaches that enable backpropagation of gradients from an objective function through the entire navigation stack, this is known as \ac{BPTT}.
 This paradigm avoids treating the quadrotor dynamics as a black box and substantially improves sample efficiency by leveraging the first-order gradient instead of relying on zeroth-order optimization.
 
-The work of \cite{zhang_back_2025} pioneered this direction, achieving agile vision-based flight in cluttered environments using a \ac{CRNN} and a simplified double-integrator model.
+The work of \cite{zhang_back_2025} pioneered this research direction, achieving agile vision-based flight in cluttered environments using a \ac{CRNN} and a simplified double-integrator model.
 Their policy achieves zero-shot generalization to the real-world environment, that is to say, no fine-tuining or retraining is required at policy deployement.
 In their set up, they run the policy on a budget-friendly microprocessor and a depth camera, allowing for robust obstacle avoidance without needing an \ac{IMU} or GPS coordinates.
 Additionally, they deploy the policy simulataneously to different drones and observe emerging behaviours such as, waiting the other agents to cross a gate without explicitly adding collaborative terms on the loss function.
 
 Another differentiable simulation framework is introduced in \cite{zhang_diffaero_2025}, which has inspired the simulator design used in this work.
 The simulator supports different training tasks such as hovering, position control, obstacle avoidance and racing scenarios, all differentiable and support parallel environemt execution for policy training.
-Similarly, \cite{heeg_learning_2025} presents an efficient differentiable quadrotor framework implemented in JAX for learning stabilization from visual features, and compares it against standard \ac{PPO}.
+Similarly, \cite{heeg_learning_2025} presents an efficient differentiable quadrotor framework implemented in JAX~\cite{jax2018github} for learning stabilization from visual features, and compares it against standard \ac{PPO}.
 Building on this line of work, \cite{pan_learning_2026, ren_learning_2026} demonstrate real-time policy adaptation using real-world data, leveraging the improved sample efficiency of differentiable methods.
 % Aditionally, the authors of \cite{lee_quadrotor_2026} use a differentiable simulator to train a policy capable of avoiding large obstacles, in simulation the 
 \begin{figure}[H]
     \centering
     \resizebox{1.0\textwidth}{!}{\input{fig/tikz/rl_taxonomies.tex}}
-    \caption{The modular navigation stack for ADR and its associated challenges.}
+    \caption{Classification of reinforcement learing approaches.}
     \label{fig:rl_tax}
 \end{figure}
 
@@ -185,7 +185,7 @@ Their approach showed an increase on trajectory tracking succes comparted to ano
 
 The primary objective of this thesis is to create a differentiable quadrotor simulator to backpropagate the gradients from a given cost function to the \ac{NN} parameters to command autonomusly a drone.
 A low-level geometric controller will take the velocity and heading rate commands from the newtork and map them to wrench commands.
-Aditionally, the policy will be agumented to output the gains of the low-level geometric $SO(3)$ controller.
+Aditionally, the policy will be agumented to output the gains of the geometric $SO(3)$ controller.
 
 As secondary objectives, we perfrom an evaluation of the policy network on Gazebo uttilizing the MRS UAV stack ~\cite{baca_mrs_2021}, and we test the controller on a real platform. 
 Furthermore, we perform a comparative study between different control modalities, and, model-free against model-based optimization methods.
@@ -209,7 +209,9 @@ Furthermore, we perform a comparative study between different control modalities
  \multicolumn{2}{|l}{} & \textbf{Secondary Objectives} 
 \\ \hline
 \multicolumn{1}{|l}{} & Obj-2.1 & Evaluate how other control modalities compare to geometric control.                  \\ 
-\multicolumn{1}{|l}{} & Obj-2.2 & Compare model-based optimization against model-free.
+\multicolumn{1}{|l}{} & Obj-2.2 & Compare model-based optimization against model-free. \\
+\multicolumn{1}{|l}{} & Obj-2.3 & Evaluate the fixed-gain controller agaisnt the adaptive gain controller. \\
+\multicolumn{1}{|l}{} & Obj-2.4 & Asses the transferability of the policies to other environments. 
 % \\ 
 %\multicolumn{1}{l}{} & G2.3 & Locations of tidal heat dissipation. 
 %\\ 
@@ -227,7 +229,7 @@ In Chapter 3, we present the methodology of our method, we explain the learning 
 In Chapter 4, we show the results of our method.
 We analyze the effect of the different control abstarctions on the sample efficency and performance. Additionally we show the effect of other implementation decisitons and we analyze real world flight data.
 In Chapter 5, we discuss the results of our method.
-Finally, in Chapter 6 we give future research directions. 
+Finally, in Chapter 6 we state our future research directions. 
 % \begin{table*}[!h]
 %   \scriptsize
 %   \centering

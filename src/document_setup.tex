@@ -391,3 +391,19 @@
     }
 }
 
+
+%% | --------------------- custom commands -------------------- |
+
+\definecolor{cvutblue}{cmyk}{1, 0.43, 0, 0}
+
+% Capitalize \autoref names (handles Babel overriding)
+\addto\extrasenglish{%
+  \renewcommand{\sectionautorefname}{Section}%
+  \renewcommand{\chapterautorefname}{Chapter}%
+  \renewcommand{\subsectionautorefname}{Section}%
+  \renewcommand{\subsubsectionautorefname}{Section}%
+  \renewcommand{\appendixautorefname}{Appendix}%
+  \renewcommand{\figureautorefname}{Figure}%
+  \renewcommand{\tableautorefname}{Table}%
+  \renewcommand{\equationautorefname}{Equation}%
+}

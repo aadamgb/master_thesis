@@ -1,66 +1,73 @@
-\resizebox{0.4\textwidth}{!}{%
+\resizebox{0.8\textwidth}{!}{%
 \begin{tikzpicture}[
     x={(1.5cm, 0.4cm)},
     y={(0cm, 1cm)},
     z={(0.6cm, -0.2cm)},
     line cap=round, line join=round
 ]
-    % --- Both planes share z=0, standing vertically ---
 
-    % Outer Plane
+% --- Drone Drawing Command ---
+    % Usage: \drawdrone{x}{y}{z}{opacity}
+    \newcommand{\drawdrone}[4]{
+        \begin{scope}[shift={(#1,#2,#3)}, scale=0.4, opacity=#4]
+            % Rotors (ellipses)
+            \fill[gray] (1,1) circle (0.5);
+            \fill[gray] (1,-1) circle (0.5);
+            \fill[gray] (-1,1) circle (0.5);
+            \fill[gray] (-1,-1) circle (0.5);
+            % Body arms
+            \draw[gray] (-1,-1) -- (1,1);
+            \draw[gray] (-1,1) -- (1,-1);
+            % Body Frame
+            \draw[-{Stealth[length=4pt]}, thick, myred] (0,0,0) -- (1.5, 0.8, 0) node[above] {$\hat{\mathbf{b}}_1$};
+            \draw[-{Stealth[length=4pt]}, thick, mygreen] (0,0,0) -- (-0.8, 1.5, 0) node[above] {$\hat{\mathbf{b}}_2$};
+            \draw[-{Stealth[length=4pt]}, thick, myblue] (0,0,0) -- (-0.3, 2.0, 0) node[above] {$\hat{\mathbf{b}}_3$};
+        \end{scope}
+    }
+
+    % --- Your Original Geometry ---
     \coordinate (A) at (-2,  3, 0);
     \coordinate (B) at ( 2,  3, 0);
     \coordinate (C) at ( 2, -3, 0);
     \coordinate (D) at (-2, -3, 0);
 
-    % Inner Plane (centered, smaller, same plane)
     \coordinate (A_in) at (-1,  1.5, 0);
     \coordinate (B_in) at ( 1,  1.5, 0);
     \coordinate (C_in) at ( 1, -1.5, 0);
     \coordinate (D_in) at (-1, -1.5, 0);
 
-    % Points
-    \coordinate (P2) at (-1.5,  1, 0);
-    \coordinate (P1) at ( 0.75, 0.5, 0);
-
-    % Gate center (origin of gate frame)
     \coordinate (O) at (0, 0, 0);
 
-    % --- DRAWING ---
-    % Outer Plane (blue tint)
-    \draw[thick, fill=skyBlue, fill opacity=0.7, dashed]
-        (A) -- (B) -- (C) -- (D) -- cycle;
-    \node[left, font=\small] at (-2, 0, 0) {$\Pi_{\mathrm{outer}}$};
+    % Draw Planes
+    \draw[thick, fill=skyBlue, fill opacity=0.7, dashed] (A) -- (B) -- (C) -- (D) -- cycle;
+    \draw[thick, fill=green!25, fill opacity=0.9] (A_in) -- (B_in) -- (C_in) -- (D_in) -- cycle;
+    
+    % --- Dimension Lines ---
+    % Width w (below)
+    \draw[decorate, decoration={brace, mirror, amplitude=10pt}] (-1, -2.0, 0) -- (1, -2.0, 0) node[midway, below=0.5cm, font=\large] {$w$};
+    % Height h (left)
+    \draw[decorate, decoration={brace, amplitude=10pt}] (-1.25, -1.5, 0) -- (-1.25, 1.5, 0) node[midway, left=0.5cm, font=\large] {$h$};
+    
+    % Axes
+    \draw[-{Stealth[length=6pt]}, thick, mygreen] (O) -- ++(0, 0, -2.4)
+        node[pos=1, anchor=south west, xshift=2pt, yshift=1pt, font=\small, mygreen] {$\hat{\mathbf{g}}_2$};
+    \draw[-{Stealth[length=6pt]}, thick, myred] (O) -- ++(1.15, 0, 0) node[right, font=\small, myred] {$\hat{\mathbf{g}}_1$};
+    \draw[-{Stealth[length=6pt]}, thick, myblue] (O) -- ++(0, 2.2, 0) node[right, font=\small, myblue] {$\hat{\mathbf{g}}_3$};
 
-    % Inner Plane (orange tint)
-    \draw[thick, fill=green!25, fill opacity=0.9]
-        (A_in) -- (B_in) -- (C_in) -- (D_in) -- cycle;
-    \node[below right, font=\small] at (C_in) {$\Pi_{\mathrm{inner}}$};
+    % --- Place the Drones ---
+    % Drone 1 (100% opacity)
+    \drawdrone{5.5}{-2.0}{0}{1.0};
+    \draw[dashed, black] (0,0,0) -- (5.5,-2.0,0) node[midway, above, black] {$\mathbf{p}_k$};
+    
+    % Drone 2 (80% opacity)
+    \drawdrone{7.5}{-5.0}{0}{0.5};
+    \draw[dashed, black] (0,0,0) -- (7.5,-5.0,0) node[midway, above, black] {$\mathbf{p}_{k-1}$};
 
-    % --- Gate frame axes ---
-    % Forward axis (f_g): pointing out of the plane, along z-axis in tikz coords
-    \draw[-{Stealth[length=6pt]}, thick, myred]
-        (O) -- ++(0, 0, 2.4)
-        node[right, font=\small, myred] {$\hat{\mathbf{g}}_1$};
-
-    % Right/lateral axis (r_g): pointing right, along x-axis in tikz coords
-    \draw[-{Stealth[length=6pt]}, thick, mygreen]
-        (O) -- ++(1.5, 0, 0)
-        node[right, font=\small, mygreen] {$\hat{\mathbf{g}}_2$};
-
-    % Up axis (g_3): pointing up, along y-axis in tikz coords
-    \draw[-{Stealth[length=6pt]}, thick, myblue]
-        (O) -- ++(0, 2.2, 0)
-        node[right, font=\small, myblue] {$\hat{\mathbf{g}}_3$};
-
-    % Gate center dot
-    \filldraw[black] (O) circle (1.5pt);
-
-    % Points
-    \filldraw[black] (P1) circle (1.5pt)
-        node[above, yshift=3pt] {$P_1$};
-    \filldraw[red]   (P2) circle (1.5pt)
-        node[above, yshift=3pt] {$P_2$};
-
+    \begin{scope}[shift={(-4,-4,0)}]
+        % \node at (0, 2.5, 0) {$\{\mathcal{W}\}$};
+        \draw[-{Stealth[length=5pt]}, thick, myred] (0,0,0) -- (0.5, 0, 0) node[right] {$\hat{\mathbf{e}}_1$};
+        \draw[-{Stealth[length=5pt]}, thick, myblue] (0,0,0) -- (0, 0.75, 0) node[above] {$\hat{\mathbf{e}}_3$};
+        \draw[-{Stealth[length=5pt]}, thick, mygreen] (0,0,0) -- (0, 0, -1) node[below left] {$\hat{\mathbf{e}}_2$};
+    \end{scope}
 \end{tikzpicture}
 }

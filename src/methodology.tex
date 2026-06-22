@@ -9,18 +9,18 @@ This chapter presents the methodology used in this thesis to train the neural co
 In~\autoref{sec:quad_model}, we define the quadrotor model and in \autoref{sec:ca} presents the four different control abstractions that have been implemented.
 Next, in \autoref{sec:DR} we explain how the \ac{s2r} gap is minimized by using \ac{DR}.
 Section~\ref{sec:tasks}, outlines the training objective used to adress the \ac{ADR} challenge.
-Lastly, we summarize the learning framework in \autoref{sec:summary} and we present the final training algorithm.
+Lastly in \autoref{sec:summary}, we summarize the learning framework  and we present the final training algorithm.
 
 
 
 \section{Quadrotor Model}\label{sec:quad_model}
 In the simulated environments, the quadcopter is modeeld as a 6 \ac{dof} rigid body.
 The inertial world frame $\mathcal{W}$ is defined by the fixed orthonormal basis $\{\hat{\mathbf{e}}_1, \hat{\mathbf{e}}_2, \hat{\mathbf{e}}_3\}$ while the non-inertial body frame $\mathcal{B}$ by the  orthonormal basis $\{\hat{\mathbf{b}}_1, \hat{\mathbf{b}}_2, \hat{\mathbf{b}}_3\}$, which is attached to the vehicle's center of mass.  
-The state of the \ac{UAV} is given by $\mathbf{x} = [\mathbf{p}, \mathbf{v}, \mathbf{q}, \boldsymbol{\omega}, \mathbf{\Omega}]^\top$ where the position $\mathbf{p} \in \real^3$, velocity $\mathbf{v} \in \real^3$, and acceleration are represented in the world frame $\mathcal{W} \in \mathbb{R}^3$. 
+The state of the \ac{UAV} is given by $\mathbf{x} = [\mathbf{p}, \mathbf{v}, \mathbf{q}, \boldsymbol{\omega}, \mathbf{\Omega}]^\top$ where the position $\mathbf{p} \in \real^3$ and velocity $\mathbf{v} \in \real^3$ are represented in the world frame $\mathcal{W} \in \mathbb{R}^3$. 
 Conversely, the body rates $\boldsymbol{\omega} \in \real^3$ are represented in the body frame $\mathcal{B} \in \mathbb{R}^3$ and $\mathbf{\Omega} \in \real^4$ is a vector of scalar values indicating the rotor speeds.
 The relationship between the two frames is given by the rotation mapping $\mathbf{b}_i = \mathbf{R}\mathbf{e}_i$, where $\mathbf{R} \in SO(3)$.
 
-Thus, the kinematics and dynamics of the quadcopter are:
+The kinematics and dynamics of the quadcopter can be described by the following set of equations:
 
 \begin{minipage}{0.5\textwidth}
 \begin{equation}
@@ -38,13 +38,13 @@ Thus, the kinematics and dynamics of the quadcopter are:
     \dot{\boldsymbol{\omega}}^{\mathcal{B}} = \mathbf{J}^{-1} \left( \boldsymbol{\tau}^{\mathcal{B}} - \boldsymbol{\omega}^{\mathcal{B}} \times \mathbf{J} \boldsymbol{\omega}^{\mathcal{B}} \right)
 \end{equation}
 \begin{equation}
-  \dot{\mathbf{\Omega}} = \frac{1}{k_{\mathrm{m}}} \left(\mathbf{\Omega}_{\text{cmd}} - \mathbf{\Omega}\right)
+  \dot{\mathbf{\Omega}} = \frac{1}{\tau_{\mathrm{m}}} \left(\mathbf{\Omega}_{\text{cmd}} - \mathbf{\Omega}\right)
 \end{equation}
 \end{minipage}
 
 \noindent In these expressions, $\odot$ denotes the quaternion multiplication operator, $\mathbf{R}(\mathbf{q})$ represents the rotation matrix mapping the body frame $\mathcal{B}$ to the world frame $\mathcal{W}$.
 The vectors $\mathbf{F}_T^{\mathcal{B}}$ and $\mathbf{F}_D^{\mathcal{B}}$ correspond to the collective thrust and drag forces, respectively.
-Finally, $\mathbf{J}$ is the diagonal inertia matrix, $k_m$ is the motor time constant, and $\mathbf{g}$ is the gravity vector.
+Finally, $\mathbf{J}$ is the diagonal inertia matrix, $\tau_m$ is the motor time constant, and $\mathbf{g}^{\mathcal{W}}$ is the gravity vector.
 
 
 \begin{figure}[H]
@@ -69,7 +69,7 @@ Finally, $\mathbf{J}$ is the diagonal inertia matrix, $k_m$ is the motor time co
 In the body frame $\mathcal{B}$, the individual motor thrusts $T_i, \ i=1,..,4$, are assumed to be perpendicular to the $\{\hat{\mathbf{b}}_1,\hat{\mathbf{b}}_2\}$ plane.
 The magnitudes of collective thrust $F_T$, and body torques $\boldsymbol{\tau}^\mathcal{B}$, can be obtained from \autoref{eq:simp_alloc}.
 To be strictly rigourous, the torques produced by the rotor's angular acceleration and gyroscopic effects should be accounted for.
-Where $\boldsymbol{\Gamma}$ is the allocation matrix. Nonetheless, these effects produced by the rotor speeds, can be neglected the mapping simplifies to,
+Where $\boldsymbol{\Gamma}$ is the allocation matrix. Nonetheless, these effects produced by the rotor speeds, can be neglected ~\cite{sun_comparative_2024} and the mapping simplifies to,
 
 
 
@@ -126,10 +126,10 @@ The individual motror thrusts $T_i$, can be obtained from the rotor speeds $\Ome
   \end{bmatrix}
   \label{eq:thrust_map}
 \end{equation}
-For convinence, \autoref{eq:thrust_map} is simplified to $ T_i =  a_0 \Omega_i^2$. 
+The terms $a_1$ and $a_2$ can be neglected, hence \autoref{eq:thrust_map} is simplified to $ T_i =  a_0 \Omega_i^2$. 
 
 
-To complete the quadrotor model, the aerodynamic drag force $\mathbf{F}_D$ is incorporated using a simplified quadratic formulation.
+To complete the quadrotor model, the aerodynamic drag force $\mathbf{F}^{\mathcal{B}}_D$ is incorporated using a simplified quadratic formulation.
 Other aerodynamic effects, such as rotational drag and ground interaction, are neglected.
 The drag force is expressed as:
 \begin{equation}
@@ -140,20 +140,24 @@ The velocity must be expressed in the body frame, obtained as $\mathbf{v}^{\math
 
 
 \section{Control Abstraction}\label{sec:ca}
-The control abstraction refers to the modality of the policy outputs used to control the quadrotor.
+In this thesis, we refer to the control abstraction or control mode as the modality of the policy outputs used to control the quadrotor.
 The choice of control abstraction affects both the performance of the controller for a given task and the sample efficiency during training.
 For this reason, it is worthwhile to investigate and implement multiple control abstractions.
 
 In this thesis, three control modalities are considered.
-The policy output layer employs a sigmoid activation function for all control modalities, ensuring that the action space is bounded, which facilitates stable learning.
+For all control modalities, the policy output layer pass through a sigmoid activation function, \autoref{sigmoid}, ensuring that the action space is bounded, which facilitates stable learning.
+\begin{equation}\label{sigmoid}
+    \sigma(x) = \frac{1}{1 + e^{-x}}
+\end{equation}
+
 The lowest level of abstraction consists of directly outputting \ac{SRT} for each motor.
-An intermediate level of abstraction outputs the collective thrust and the desired body rates, which are subsequently mapped to individual rotor thrusts through a control allocation matrix.
-The highest level of abstraction outputs desired linear velocities and yaw rate, which are converted into a wrench using an $\mathrm{SO}(3)$ geometric controller~\cite{lee_geometric_2010}, and subsequently mapped to rotor thrusts in a manner analogous to the collective thrust and body rate formulation.
+Then, we implement an intermediate level of abstraction that outputs collective thrust and the desired body rates, which are subsequently mapped to individual rotor thrusts through the control allocation matrix \autoref{eq:simp_alloc}.
+The highest level of abstraction outputs desired linear velocities and heading rate, which are converted into wrench using an $\mathrm{SO}(3)$ geometric controller, inspired by~\cite{lee_geometric_2010}, and subsequently mapped to rotor thrusts in a manner analogous to the collective thrust and body rate formulation.
 The mathematical formulation of these transformations is presented next.
 
 \subsection{Single Rotor Thrust} \label{sec:srt}
 When the \ac{SRT} control mode is choosen, the only transformation to be applied is scaling the policy output $\boldsymbol{u} \in [0, 1]\in \real^4$ to the actuator limits, $\mathbf{T_{\text{cmd}}} \in [T_{\text{min}}, T_{\text{max}} ]$.
-Therefore, the transformation is as simple as; 
+Therefore, the transformation is as simple as: 
 
 \begin{equation}
     \boldsymbol{T}_{\text{cmd}} = \boldsymbol{u} \left( T_{\text{max}}- T_{\text{min}} \right) + T_{\text{min}}
@@ -161,28 +165,27 @@ Therefore, the transformation is as simple as;
 
 
 Once the scaling is applied, to better emulate the behaviour of a real motor, a first order model with rotor speed saturation is implemented.
-First, the commanded motor thrust $\boldsymbol{T}_{\text{cmd}}$ are converted to commaned rotor speed.
-This mapping can be obtained experimentally by fitting a quadratic curve to the experimental data.
-In most cases the following mapping apprixmation is good enough.
+First, the commanded motor thrusts $\boldsymbol{T}_{\text{cmd}}$ are converted to rotor speeds with,
 
 \begin{equation} \label{eq:motspd}
-    \boldsymbol{T}_{\text{cmd}} \approx k \boldsymbol{\Omega}_{\text{cmd}}^2
+    \boldsymbol{T}_{\text{cmd}} \approx k \boldsymbol{\Omega}_{\text{cmd}}^2.
 \end{equation}
 
-Then the commanded rotor speeds $\boldsymbol{\Omega}_{\text{cmd}}$, are passed through the following first order motor model \autoref{eq:motmod}, and saturated according to the maximum rotor speed rate, $\dot{\Omega}_{\text{cmd}}$ given by the manufacturer.
+Then the commanded rotor speeds $\boldsymbol{\Omega}_{\text{cmd}}$, are passed through the following first order transfer function \autoref{eq:motmod}, and saturated according to the maximum rotor speed rate, $\dot{\Omega}_{\text{cmd}}$ given by the manufacturer.
 
 \begin{equation}\label{eq:motmod}
-    H(s) = \frac{1}{k_m + s}
+    H(s) = \frac{1}{\tau_m s + 1}
 \end{equation}
 
-Finally, the rotor speeds obtained after the described process are mapped again to single rotor thurst values using \autoref{eq:motspd} and then converted to collective force and torques with \autoref{eq:simp_alloc}, to calculate the next state through the quadrotor dynamics model.
-Modeling the motor dynamics presents more realistic data which the policy will encounter at deployement.
-However, for training purposes it has been decided to skip the motor dynamics during the backporopagation pass as including them, significantly destabilizes the gradients computation.
+Where $\tau_m$ is the motor time constant.
+Finally, the rotor speeds obtained after the described process are mapped again to single rotor thurst values using \autoref{eq:motspd} and then converted to collective force and torques with \autoref{eq:simp_alloc}, to calculate the next.
+
+Modeling the motor dynamics provides to the policy with more realistic.
+However, for training purposes it has been decided to skip the motor dynamics during the backwards pass as including them, significantly destabilizes gradients and diffcults the optimization process.
 Particularly, the mapping of \autoref{eq:motspd} produces high variations on the gradient, degrading the training performance and sample efficiency.  
 
 \subsection{Collective Thrust and Body Rates}
-When \ac{CTBR} control mode is selected, the normalized outputs of the policy $\boldsymbol{u} \in [0, 1]\in \real^4$, are mapped to collective thrust and body rates. 
-The scaling is as follows,
+When the \ac{CTBR} control mode is selected, the normalized outputs of the policy $\boldsymbol{u} \in [0, 1]\in \real^4$, the scaling is as follows,
 
 \begin{equation}
     T_{c, \text{cmd}} = u_1  (T_{\text{max}} - T_{\text{min}}) + T_{\text{min}} 
@@ -198,10 +201,10 @@ Once the rates are calculated, they can be converted to torque values,
     \boldsymbol{\tau}_\text{cmd} = k_p \frac{(\boldsymbol{\omega_{\text{cmd}}} - \boldsymbol{\omega})}{dt}J    
 \end{equation}
 aditionally, a proportinal gain $k_p$ can be introduced to adjust the stiffness of the conversion.
-Given the commanded collective thrust and torques, the motor thursts can be obtained from \autoref{eq:alloc} and then the same procudeure of \autoref{sec:srt} is applied during the forward and backward passes.
+Given the commanded collective thrust and torques, the motor thursts can be obtained from \autoref{eq:simp_alloc} and then the same procudeure of \autoref{sec:srt} is applied during the forward and backward passes.
 \subsection{Linear Velocities and Heading Rate}\label{subsec:lvhr}
 
-The highest level of abstraction that is implement consists on commanding \ac{LVHR}. With this control mode, the policy outputs are scaled as,
+The highest level of abstraction that has been implemented consists on commanding \ac{LVHR}. With this control mode, the policy outputs are scaled as,
 
 \begin{equation}\label{eq:geo_vel}
     v_{i, \text{cmd}} = (2u_{i} - 1)  v_{i, \text{max}}, \quad i \in \{1, 2, 3\}
@@ -210,19 +213,19 @@ The highest level of abstraction that is implement consists on commanding \ac{LV
     \omega_{3, \text{cmd}} = \dot{\eta}_{\text{cmd}} = (2u_{4} - 1)  \dot{\eta}_{ \text{max}}
 \end{equation}
 
-\noindent where $\psi$ denotes the yaw angle and $v_{i,\text{cmd}}$ represents the commanded linear velocity along each body axis. 
-Mapping these control commands to thrust commands is less straightforward than in the previous two methods. 
+\noindent where $\eta$ denotes the heading angle and $v_{i,\text{cmd}}$ represents the commanded linear velocity along each body axis. 
+Mapping these control commands to thrust commands is less direct than in the previous methods. 
 Instead, the collective thrust and torques are obtained by applying a transformation in the Special Orthogonal group $\mathrm{SO}(3)$.
 The transfomations proceed in the following manner.
 
-First, the acceleration vector is computed as
+First, the acceleration vector is computed as,
 \begin{equation}
-    \mathbf{a}_{\text{cmd}} = k_v (\mathbf{v}_{\text{cmd}} - \mathbf{v}) + g \mathbf{\hat{b}}_3
+    \mathbf{a}_{\text{cmd}} = k_v (\mathbf{v}_{\text{cmd}} - \mathbf{v}) + g \mathbf{\hat{e}}_3
 \end{equation}
 
 \noindent where $k_v$ is a proportional gain on the velocity. 
-Note that the acceleration along the third body axis is compensated for gravity; $\mathbf{\hat{b}}_3$ denotes the unit vector along this axis.
-Then, force vector is the \ac{UAV}'s mass times the commanded acceleration vector, and the commanded collective thrust vector is the projection of the force vector onto the $\mathbf{\hat{b}}_3$ axis.
+Note that the acceleration along the third body axis is compensated for gravity; $\mathbf{\hat{e}}_3$ denotes the unit vector along this axis.
+Then, the force vector is the \ac{UAV}'s mass times the commanded acceleration vector, and the commanded collective thrust vector is the projection of the force vector onto the $\mathbf{\hat{b}}_3$ axis.
 
 \begin{equation}
     \mathbf{F} = m \mathbf{a}_{\text{cmd}} 
@@ -234,7 +237,7 @@ Then, force vector is the \ac{UAV}'s mass times the commanded acceleration vecto
 
 
 
-To obtain the commanded bodytorques, the heading vector is obtained by projecting the yaw angle into the world plane defined by span$\{\hat{e}_1, \hat{e}_2\}$.
+To obtain the commanded body torques, the heading vector is obtained by projecting the heading angle into the world plane defined by span$\{\hat{e}_1, \hat{e}_2\}$.
 The heading vector, serves an auxiliary vector to compute $\mathbf{\hat{b}}_2$ and $\mathbf{\hat{b}}_1$. 
 
 \begin{equation} \mathbf{h} = \begin{bmatrix} \cos{\eta} & \sin{\eta} & 0 \end{bmatrix} ^\top \end{equation} 
@@ -274,10 +277,10 @@ The heading vector, serves an auxiliary vector to compute $\mathbf{\hat{b}}_2$ a
     \caption{Geometric interpretation of Equations 3.12--3.15}
 \end{figure}
 
-\noindent The complete derivation of \autoref{eq:atterr} can be found in the original paper, \cite{lee_geometric_2010}. 
+\noindent The complete derivation of \autoref{eq:atterr} can be found in~\cite{lee_geometric_2010}. 
 To provide intuition, note that if $\mathbf{R}_{\text{cmd}} = \mathbf{R}$, then $\mathbf{R}_{\text{cmd}}^\top \mathbf{R} = \mathbf{I}$ and the error is zero. 
 Otherwise, the matrix $\mathbf{R}_{\text{cmd}}^\top \mathbf{R}$ represents the relative rotation between the current and desired orientations. 
-The skew-symmetric part of this matrix, given by $\frac{1}{2}(\mathbf{R}_{\text{cmd}}^\top \mathbf{R} - \mathbf{R}^\top \mathbf{R}_{\text{cmd}})$, encodes the axis and magnitude of the rotation error. 
+The skew-symmetric part of the matrix  $\frac{1}{2}(\mathbf{R}_{\text{cmd}}^\top \mathbf{R} - \mathbf{R}^\top \mathbf{R}_{\text{cmd}})$, encodes the axis and magnitude of the rotation error. 
 The vee map $(\cdot)^\vee$ then converts this skew-symmetric matrix into a vector in $\mathbb{R}^3$, corresponding to the rotation error expressed in the Lie algebra $\mathfrak{so}(3)$, that is to say, $^\vee \colon \mathfrak{so}(3) \to \mathbb{R}^3$.
 Then, the factor $\frac{1}{2}$ ensures consistency with the standard definition of the vee operator and avoids double counting of the off-diagonal terms.
 
@@ -293,6 +296,7 @@ where $\boldsymbol{\omega}_{\text{cmd}} = \begin{bmatrix}
 Note that the error between the desired rotational velocity and the current rotational velocity line on different tangent planes to the unit sphere, 
 $\dot{\mathbf{R}} \in \mathrm{T}_{\mathbf{R}} SO(3)$ and $\dot{\mathbf{R}}_{\text{cmd}} \in \mathrm{T}_{\mathbf{R}_{\text{cmd}}} SO(3)$.
 For this reason, as explained in \cite{lee_geometric_2010}, $\dot{\mathbf{R}}_{\text{cmd}}$ is transformed into a vector in the $\mathrm{T}_{\mathbf{R}} SO(3)$ space to be able to compare it to $\dot{\mathbf{R}}$ and obtain the error; \autoref{eq:geo_ang}.
+
 Finally, the torque is set by,
 
 \begin{equation}\label{eq:geo_tau}
@@ -300,19 +304,20 @@ Finally, the torque is set by,
 \end{equation}
 where a gyroscopic and feed forward terms are added to the rotation and rotational speed errors.
 The \textit{hat map} $\hat{\cdot} \colon \mathbb{R}^3 \to \mathfrak{so}(3)$ is defined by the condition that $\hat{x} y = x \times y$ for all $x, y \in \mathbb{R}^3$.
-In this manner, the commanded collective thrust \autoref{eq:geo_thrust}, and commanded torques \autoref{eq:geo_tau}, can be mapped to single rotor thrust commands to apply the same procedure of the last control modes during the forward and backward passes.
+In this manner, the commanded collective thrust, \autoref{eq:geo_thrust}, and commanded torques, \autoref{eq:geo_tau}, can be mapped to single rotor thrust commands.
 
 
-\subsection{Linear Velocity Heading Rate and Gains}
+% \subsection{Linear Velocity Heading Rate and Gains}
 
-Finally, the last control mode implemented is an augmentation of the \ac{LVHR} controller.
-In this formulation, the policy outputs high-level commands in the form of desired linear velocities and yaw rate, rather than directly commanding individual rotor thrusts.
+Finally, the last control mode implemented is an augmentation of the last \ac{LVHR} controller.
+With the last formulation, the policy outputs high-level commands in the form of desired linear velocities and heading rate.
 This higher level of abstraction simplifies the learning process, as the policy does not need to implicitly learn how differential rotor thrusts generate torques, since this mapping is handled by the geometric controller.
 % As shown in \autoref{label} \todo{cite the section}, this abstraction enables faster learning.
-However, this approach does not necessarily minimize the loss function, as the policy performance can be significantly constrained by the tuning of the controller gains.
-For this reason, it is of interest to investigate how performance is affected when the policy is allowed to output the controller gains in addition to the velocity and yaw rate commands.
+However, this approach does not necessarily guarantee a better performance, as the policy can be significantly constrained by the tuning of the controller gains.
+For this reason, it is of interest to investigate how performance is affected when the policy is allowed to output the controller gains in addition to the velocity and heading rate commands.
 
-Thus, when this control mode is selected, the policy outputs are, the same as \autoref{eq:geo_vel}, \autoref{eq:geo_ang}, and the gains $\{k_v, k_R, k_\omega\}$ are included by simply scaling the policy outputs to the maximum allowed gains.
+Thus, when this control mode is selected, the policy outputs are, the same as \autoref{eq:geo_vel} and \autoref{eq:geo_ang}, but the policy also outputs the gains controller gains $\{k_v, k_R, k_\omega\}$ 
+Remeber that the policy outputs are constrained from zero to one so the policy outputs are scaled to a maximum allowed gains,
 
 \begin{equation}
     k_{v, cmd} = u_5 k_{v,\text{max}}
@@ -321,167 +326,38 @@ Thus, when this control mode is selected, the policy outputs are, the same as \a
     k_{R, cmd} = u_6 k_{R,\text{max}}
 \end{equation}
 \begin{equation}
-    k_{\omega, cmd} = u_7 k_{\omega,\text{max}}
+    k_{\omega, cmd} = u_7 k_{\omega,\text{max}}.
 \end{equation}
-
-
-
-
-% ====================================================================================
-%                                  Domain Randomization
-% ====================================================================================
-
-\section{Domain Randomization}\label{sec:DR}
-To improve the transferability of the policy and to prevent the it from ovrefitting to a specific environment, \ac{DR} is implemented in our methodology as it is well-stabilshed strategy in the field.
-
-A domain can be defined as a specific subset of all possible \ac{POMDP} environments. 
-While a complete \ac{POMDP} is formally characterized by an 8-tuple~\cite{ASTROM1965174}, 
-we focus on a reduced 6-tuple representation that captures the essential elements 
-for our domain definition. A standard domain is then characterized by 
-$\mathcal{D} = (\mathcal{S}, \mathcal{A}, \mathcal{O}, P, O, R)$ where:
-
-\begin{itemize}
-    \item $\mathbf{\mathcal{S}:}$ denotes a set of states called the state space.
-    \item $\mathbf{\mathcal{A}:}$ is the set of actions called the action space.
-    \item $\mathbf{\mathcal{O}:}$ is the set of observations called the observation space.
-    \item $\mathbf{P(s'|s, a):}$ is the probability that a given action $a \in A$, at state $s \in S$ will lead to a new state $s' \subset S$. 
-    \item $\mathbf{O(o|s', a):}$ is the observation probability, representing the probability of observing $o \in \mathcal{O}$ after taking action $a$ and transitioning to state $s'$.
-    \item $\mathbf{R(s',s,a):}$ is the immediate reward, or expected inmediate reward, received for transitioning from $s$ to $s'$ after performing action $a$. 
-\end{itemize}
-From the source domain, $\mathcal{D}_{\xi_s}$, (i.e. simulation), we can control a set of N parameters that define a configuration vector, $\boldsymbol{\xi} = [\xi_i, \xi_{i+1}, ..., \xi_N]$.
-These parameters will affect the transition probability $\mathbf{P(s'|s,a)}$ of the domain.
-Examples of $\xi_i$ can include:
-
-\begin{tabular}{c|c}
-
-    Physical properties & $\xi_{\text{mass}}, \ \xi_{\text{inertia}}, \ \xi_{\text{drag}}, \ \xi_{\text{gravity}}$ \\
-    Perception properties & $\xi_{\text{sensor\_noise}}, \ \xi_{\text{sensor\_latency}}$ \\
-    Viual properties & $\xi_{\text{lighting}}, \ \xi_{\text{texture}}, \ \xi_{\text{fov}}$ \\
-    Scene properties & $\xi_{\text{gate\_pos}}, \ \xi_{\text{gate\_size}}, , \ \xi_{\text{gate\_num}}$ \\
-    
-\end{tabular}
-
-When \ac{DR} is applied, each configuration $\boldsymbol{\xi}$ is sampled from a bounded randomization space $\Xi$ with a probability distribution. 
-That is to say, $\boldsymbol{\xi} \in \Xi \subset \mathbb{R}^N$,  $\boldsymbol{\xi} \sim p(\boldsymbol{\xi})$ where $\xi_i \in [\xi_i^{\text{low}}, \xi_i^{\text{high}}]$. 
-At the start of every training episode, a new environment insance is created by sampling a new configuration vector $\boldsymbol{\xi}$ from the distribution $p(\boldsymbol{\xi})$. 
-Therefore, the policy will interact with a new \ac{POMDP} environment, a new domain $\mathcal{D}_{\boldsymbol{\xi}}$. 
-This way, data from a vareity of environments that otherwise would reamain unexplored can be collected. 
-\begin{figure}[H]
-  \centering
-
-  \begin{adjustbox}{max totalsize={0.5\textwidth}{0.4\textheight}, center}
-    \input{fig/tikz/DR.tex}
-  \end{adjustbox}
-
-  \caption{In red, the source domain. In light blue, ranodimized instances of the source configuration. In green, the target domain configuration. }
-  \label{domains}
-\end{figure}
-Hereby, during training, the neural network weights and biases $\theta$ are optimized to minimize the expected loss across a distribution of randomized domains~\cite{weng2019DR}.
-With the aim of finding the optimal, $\theta^*$ that will lead to the optimal policy $\pi_{\theta}^*$.
-% \begin{equation}\label{opt_theta}
-%     \theta ^* = \arg \max_{\theta} \mathbb{E}_{\boldsymbol{\xi}\sim\Xi} \left[\mathbb{E}_{\pi_\theta,\tau\sim D_\xi}[R(\tau)] \right]
-% \end{equation}
-% Where $R(\tau) = \sum_{t=0}^{n} \gamma^t r_{t}$ is the cummulative discounted reward over a trajectory (or sequence) of states and actions $\tau = (s_0,a_0,s_1,a_1,...)$, for the episode length $n$.
-% $R(\tau)  = \sum_{t=0}^{n} \gamma^t r_{t}$
-
-% \[ R(\tau)  = \sum_{t=0}^{n} \gamma^t r_{t}\]
-As illustrated in \autoref{domains}, the policy is exposed to a variety of domains to promote generalization and improve robustness, increasing the likelihood of successful transfer to the real environment. 
-However, this strategy further reduces the sample efficiency of \ac{RL} and increases training time. 
-Therefore, it is essential to properly bound the randomization space $\Xi$, so that it encompasses only the minimum necessary range to include the target domain.
-
-In order to efficently bound this randomization space while still allowing for enough randomness a two stage randomization is implement.
-Inspired by \cite{zhang_learning-based_2025}, first a design informed randomization is applied.
-This ensures that sensible variations of the nominal platform are predominant in the randomization space.
-Thus avoiding that unfeasible designs such as a quadrotor with unsensible \ac{TWR} (i.e. \ac{TWR}$<1$). 
-The authors of \cite{zhang_learning-based_2025} notice that quadrotor designs, in general, follow a similar pattern where the quadrotors armlength $l$ is strongly correlated to its mass $m$, inertia $\mathbf{J}$, drag coefficents $\mathbf{C_D}$ and other physical parameters.
-
-Hence, they propose to sample a size factor $c \sim \mathcal{U}(0,1)$ and scale the quadrotor's physcial parameters as listed below;
-\begin{equation}
-    l = c(l_{\max} - l_{\min}) + l_{\min}
-\end{equation}
-
-
-\begin{equation}
-    m = \frac{l^3 - l_{\min}^3}{l_{\max}^3 - l_{\min}^3}(m_{\max} - m_{\min}) + m_{\min}
-\end{equation}
-
-
-\begin{equation}
-    \mathbf{J} = \frac{l^5 - l_{\min}^5}{l_{\max}^5 - l_{\min}^5} (\mathbf{J}_{\max} - \mathbf{J}_{\min}) + \mathbf{J}_{\min}
-\end{equation}
-
-\begin{equation}
-    \mathbf{C}_D = \frac{l^2 - l_{\min}^2}{l_{\max}^2 - l_{\min}^2} (\mathbf{C}_{D_{\max}} - \mathbf{C}_{D_{\min}}) + \mathbf{C}_{D_{\min}}
-\end{equation}
-
-\todo{:Add the rest of the params}
-
-Following the scaling process, these parameters which comprisise the following configuration vector
-\begin{equation}
-    \boldsymbol{\xi} = \begin{bmatrix} l & m & \mathbf{J} & \mathbf{C}_D \end{bmatrix}
-\end{equation}
-are subjected to additional noise. 
-Each parameter is multiplied by a scaling factor $\eta \sim \mathcal{U}(1-p, 1+p)$, where $p=0.2$. 
-This specific uncertainty range was selected based on experimental results from a previous project, as it demonstrated good transferability, nonetheless it can be considered a hyperparameter of the training process and be tunned according to the situation.
 
 
 \section{Training Task} \label{sec:tasks}
 
-The training objectives considered for this thesis aim to provide an approximate solution to the \ac{OCPs}, formulated in \autoref{sec:simpmin-OCP}.
-To adress these problems, we use the proposed learning framework detailed in \autoref{sec:sim_frame}.
-Unlike traditional solvers that rely on \ac{QP-ing} or model-free \ac{RL} which treats the system's dynamics as a black-box, we leverage the simulator's automatic differentiation enginge to compute the analytical gradient from the cost function to the policy parameters.
+The training objective considered for this thesis aims to provide an approximate solution to the \ac{OCPs}, formulated in \autoref{sec:simpmin-OCP}.
+% To adress these problems, we use the proposed learning framework detailed in \autoref{sec:sim_frame}.
+Unlike traditional solvers that rely on \ac{QP} or model-free \ac{RL} which treats the system's dynamics as a black-box, we leverage the simulator's automatic differentiation enginge to compute the analytical gradient from the cost function to the policy parameters.
 
-Following this method, to achieve near optimum results, the training environment and policy architecture has to be carfuly desigend. 
-In our simulation, we formulate them for the trajectory tracking tasks is the next manner.
-% \subsection{Trajectory Tracking}
-% For the trajectory tracking task, the objective is to minimize a cumulative loss function over a finite time window of length $T$ between a reference state $\boldsymbol{x_k^\text{ref}}$, and the quadrotor's state $\boldsymbol{x_k}$. 
-% The loss at each timestep $\mathcal{L}_k(\boldsymbol{x_k^\text{ref}}, \boldsymbol{x_k})$,  is formulated as a weighted sum of the positon, velocity and attitude alignment Eculidean norm errors, plus an aditional penalization to the body rates to help stabilize the quadrotor during early stages the training process.
-% The attitude loss is calculated as a cosine similarity between the current body $\mathbf{\hat{b}}_3$ axis, and the normilized gravity compensated reference acceleration.  
-
-% \begin{equation}
-%     \mathcal{L}_k = \lambda_p ||\mathbf{p}_k^\text{ref}-\mathbf{p}_k|| +\lambda_v ||\mathbf{v}_k^\text{ref}-\mathbf{v}_k|| + \lambda_a (1- \mathbf{\hat{b}}_3 \cdot \mathbf{z}_k) + \lambda_\omega \boldsymbol{\omega}_k
-% \end{equation}
-
-% \begin{equation}
-%     \mathbf{z}_k = \frac{\mathbf{a}_k^\text{ref} + \mathbf{g}}{||\mathbf{a}_k^\text{ref} + \mathbf{g} ||}
-% \end{equation}
-
-% This way, the loss is accumulated over a time window $\sum_{k=t}^{t +T-1}\mathcal{L}_k$, where $t$ indicates the time at ehich the accumulation begings
+Following this method, to achieve near optimum results, the training environment and policy architecture have to be carfuly desigend. 
+In our simulation, we formulate them for the trajectory tracking and gate progress tasks is the next manner.
 
 \subsection{Trajectory Tracking}\label{subsec::TT}
-% For the trajectory tracking task, the objective is to minimize a cumulative loss function over a finite time window of length $T$ between a reference state $\mathbf{x}_k^\text{ref}$ and the quadrotor's state $\mathbf{x}_k$. The loss at each timestep $k$, denoted as $\mathcal{L}_k(\mathbf{x}_k^\text{ref}, \mathbf{x}_k)$, is formulated as a weighted sum of the position, velocity, and attitude alignment Euclidean norm errors, plus an additional penalization of the body rates to help stabilize the quadrotor during the early stages of the training process. 
-% The attitude loss is calculated as the cosine similarity between the current body-z axis $\mathbf{\hat{b}}_3$ and the normalized, gravity-compensated reference acceleration $\mathbf{z}_k$,
 
-% \begin{equation}
-%     \mathcal{L}_k = \lambda_p \|\mathbf{p}_k^\text{ref}-\mathbf{p}_k\| + \lambda_v \|\mathbf{v}_k^\text{ref}-\mathbf{v}_k\| + \lambda_a (1 - \mathbf{\hat{b}}_3 \cdot \mathbf{z}_k) + \lambda_\omega \|\boldsymbol{\omega}_k\|^2
-% \end{equation}
-% where the target thrust direction $\mathbf{z}_k$ is defined as:
-
-% \begin{equation}
-%     \mathbf{z}_k = \frac{\mathbf{a}_k^\text{ref} + \mathbf{g}}{\|\mathbf{a}_k^\text{ref} + \mathbf{g}\|}
-% \end{equation}
-% The total loss minimized during training is accumulated over the time window,
-
-% \begin{equation}
-%     J = \sum_{k=t}^{t+T-1} \mathcal{L}_k
-% \end{equation}where $t$ indicates the start of the current optimization horizon.
 For the trajectory tracking task, the objective is to minimize a cumulative loss function over a finite horizon of length $H$, defined with respect to a reference state $\mathbf{x}_k^\text{ref}$ and the quadrotor state $\mathbf{x}_k$.
 The stage loss at each timestep $k$, denoted as $\mathcal{L}(\mathbf{x}_k^\text{ref}, \mathbf{x}_k)$, is formulated as a weighted sum of position, velocity, and attitude alignment errors, together with a penalization of the body rates to improve stability during early training.
 
-\begin{equation}
+\begin{equation}\label{acc_loss}
 \mathcal{L}(\mathbf{x}_k^\text{ref}, \mathbf{x}_k) =
 \lambda_p \|\mathbf{p}_k^\text{ref} - \mathbf{p}_k\|_2 +
 \lambda_v \|\mathbf{v}_k^\text{ref} - \mathbf{v}_k\|_2 +
 \lambda_a \left(1 - \mathbf{\hat{b}}_{3,k} \cdot \mathbf{z}_k \right) +
 \lambda_\omega \|\boldsymbol{\omega}_k\|_2^2
 \end{equation}
-The desired thrust direction $\mathbf{z}_k$ is defined as:
+The desired thrust direction $\mathbf{z}_k$ is defined as,
 
 \begin{equation}
 \mathbf{z}_k =
-\frac{\mathbf{a}_k^\text{ref} + \mathbf{g}}{\|\mathbf{a}_k^\text{ref} + \mathbf{g}\|_2}
+\frac{\mathbf{a}_k^\text{ref} + \mathbf{g}}{\|\mathbf{a}_k^\text{ref} + \mathbf{g}\|_2}.
 \end{equation}
-Since the simulator is batched, i.e., multiple environments run in parallel, the total cumulative cost over the horizon is defined as:
+Since the simulator is batched, i.e., multiple environments run in parallel, the total cumulative cost over the horizon is defined as,
 
 \begin{equation}\label{cum-cost}
 J_k = \frac{1}{B}\frac{1}{H} \sum_{i=1}^{B} \sum_{h=k}^{k+H-1} \mathcal{L}\big(\mathbf{x}_{h,i}^\text{ref}, \mathbf{x}_{h,i}\big)
@@ -492,9 +368,9 @@ At the end of each horizon, the gradient of the cumulative cost in \autoref{cum-
 To improve numerical stability and avoid exploding gradients, training episodes are terminated when predefined conditions are met.
 This prevents the accumulation of large errors, which can otherwise lead unstable learning dynamics.
 For this task, episode termination is based solely on the position tracking error.
-Specifically, an episode is terminated when the Euclidean distance between the quadrotor position and the reference trajectory exceeds a predefined threshold $d_{\max}$.
+Specifically, an episode is terminated when the euclidean distance between the quadrotor position and the reference trajectory exceeds a predefined threshold $d_{\max}$,
 \begin{equation}
-d_{\max} <\|\mathbf{p}_k^\text{ref} - \mathbf{p}_k\|_2 
+d_{\max} <\|\mathbf{p}_k^\text{ref} - \mathbf{p}_k\|_2. 
 \end{equation}
 This criterion prevents the system from exploring states that are excessively far from the desired trajectory, which are unlikely to provide useful learning signals and may lead to unstable gradient updates.
 If the termination condition is triggered during an episode, the quadrotor state is reset to the reference trajectory state and the loss over that horizon is not taken into account.
@@ -527,7 +403,7 @@ The observation vector is defined as:
 
 % \todo{Explain harmonics generation for pretraining}
 
-The policies are first trained to track an arbitrary trajectory created by summing random harmonics as described in \autoref{harmonics}, where $n=3$, $\phi=2.0$ and $\omega$ is initially set to one, but a curriculum is added in such a manner that the speed of the trajecotry is incremented by a certain $\delta$ when the \ac{RMSE} from the current and reference position is lower than a given threshold.
+The policies are first trained to track an arbitrary trajectory created by summing random harmonics as described in \autoref{harmonics}, where $n=3$, $\phi=2.0$ and $\omega$ is initially set to one, but a curriculum is added in such a manner that the speed of the trajecotry is incremented by a certain $\delta$ when the \ac{RMSE} is lower than a given threshold.
 
 \begin{equation}\label{harmonics}
     \mathbf{p}_k^{\text{ref}} = \sum_{i=1}^{n}A_i\sin{\left(\omega_i k + \phi_i\right)}
@@ -536,10 +412,10 @@ The policies are first trained to track an arbitrary trajectory created by summi
 Then, the reference velocity and acceleartion are approximated as the discrete derivatives of the position, where $T_s=0.01$.
 
 \begin{equation}
-        \mathbf{v}_k^\text{ref} \approx \frac{\mathbf{p}_{k+1}^\text{ref} - \mathbf{p}_k^\text{ref}}{T_s}
+        \mathbf{v}_k^\text{ref} \approx \frac{\mathbf{p}_{k}^\text{ref} - \mathbf{p}_{k-1}^\text{ref}}{T_s}
 \end{equation}
 \begin{equation}
-        \mathbf{a}_k^\text{ref} \approx \frac{\mathbf{v}_{k+1}^\text{ref} - \mathbf{v}_k^\text{ref}}{T_s}
+        \mathbf{a}_k^\text{ref} \approx \frac{\mathbf{v}_{k}^\text{ref} - \mathbf{v}_{k-1}^\text{ref}}{T_s}
 \end{equation}
 
 \begin{figure}[H]
@@ -550,37 +426,148 @@ Then, the reference velocity and acceleartion are approximated as the discrete d
 \end{figure}
 
 
-% \subsection{Path Progress}
+\subsection{Gate Progress}
+
+Similarly, the gate progess loss function,\autoref{loss_gp} , is also accumulated over a horizon of length $H$ and over $B$ parllel environemts as in \autoref{acc_loss}.
+In this case, the loss, is function of the current tagret gate, the current dron's position and the last dron's position.
+Adittionally, we penalize high body rates to encourage stability during early training.
+
+\begin{equation}\label{loss_gp}
+\mathcal{L} =  \left\| \mathbf{p}_{k}^{\mathcal{G}}  \right\|_2 - \left\| \mathbf{p}_{k-1}^{\mathcal{G}} \right\|_2 + \lambda_\omega \left\| \boldsymbol{\omega} \right\|_2.
+\end{equation}
+
+Note that the gate progress is expressed in the gate frame. 
+We define the gate plane in such a maner that the $\hat{\mathbf{g}}_2$ axis is the normal and the drones are always "behind" the gate, that is to say, in the negative $\hat{\mathbf{g}}_2$ axis.
+Given the gate positon and orientation in the world frame, the uav's relative position with respect to the gate is computed as,
+
+\begin{equation}
+    \mathbf{p}^{\mathcal{G}}_k = \mathbf{R}_{\mathcal{G}}^\top \left( \mathbf{p}^\mathcal{W}_k - \mathbf{p}^\mathcal{W}_{k,\ \text{gate}} \right). 
+    % \begin{bmatrix} p^_1 & p^\mathcal{G}_2 & p^\mathcal{G}_3 \end{bmatrix}^\top.
+\end{equation}
+When the $\hat{\mathbf{g}}_2$ component of $\mathbf{p}_{k-1}^\mathcal{G}$ is negative and the $\hat{\mathbf{g}}_2$ component of $\mathbf{p}_{k}^\mathcal{G}$ is nonnegative, the gate plane is considered to be crossed.
 
 
-% \begin{algorithm}
-% \caption{Adam, algorithm proposed in \cite{}.}\label{alg:adam}
-% \begin{algorithmic}
-% \Require $\alpha$: Stepsize
-% \Require $\beta_1, \beta_2 \in [0, 1)$: Exponential decay rates for the moment estimates
-% \Require $\mathcal{L}_k(\theta)$: Stochastic objective function with parameters $\theta$
-% \Require $\theta_0$: Initial parameter vector
-% \State $m_0 \gets 0$ \Comment{Initialize 1st moment vector}
-% \State $v_0 \gets 0$ \Comment{Initialize 2nd moment vector}
-% \State $k \gets 0$ \Comment{Initialize timestep}
-% \While{$\theta_k$ not converged}
-%     \State $k \gets k + 1$
-%     \State $J_k \gets \nabla_\theta \mathcal{L}_k(\theta_{k-1})$ \Comment{Get gradients w.r.t. stochastic objective at timestep $k$}
-%     \State $m_k \gets \beta_1 \cdot m_{k-1} + (1 - \beta_1) \cdot J_k$ \Comment{Update biased first moment estimate}
-%     \State $v_k \gets \beta_2 \cdot v_{k-1} + (1 - \beta_2) \cdot J_k^2$ \Comment{Update biased second raw moment estimate}
-%     \State $\widehat{m}_k \gets m_k / (1 - \beta_1^k)$ \Comment{Compute bias-corrected first moment estimate}
-%     \State $\widehat{v}_k \gets v_k / (1 - \beta_2^k)$ \Comment{Compute bias-corrected second raw moment estimate}
-%     \State $\theta_k \gets \theta_{k-1} - \alpha \cdot \widehat{m}_k / (\sqrt{\widehat{v}_k} + \epsilon)$ \Comment{Update parameters}
-% \EndWhile
-% \State \Return $\theta_k$ \Comment{Resulting parameters}
-% \end{algorithmic}
-% \end{algorithm}
+\begin{figure}[H]
+    \centering
+    \include{fig/tikz/planes}
+    \caption{Gate traversal geometry. }
+    \label{fig:gate_geometryy}
+\end{figure}
+Druing the crossing if the condition, \autoref{eq:condition} is met, the gate is considered successful corssed and the gate frame is changed to the next gate of the track.
+Otherwise, a gate crash is considered, the environment is terminated and the drone is initialized either at the staring position or behind a random gate of the track.
+Moreover, we set some boundaries in the world frame, if the drone corosses those boundaries we also terminate the environemt to save training time and avoid exploiding gradients.
+When the environments are terminated, their loss is not accumlated.
+
+
+\begin{equation}
+    \label{eq:condition}
+    \quad \quad
+    \left| p^\mathcal{G}_{\hat{g}_1} \right| < \frac{w}{2}
+    \quad \wedge \quad
+    \left| p^\mathcal{G}_{\hat{g}_3} \right| \leq \frac{h}{2},
+\end{equation}
+% ====================================================================================
+%                                  Domain Randomization
+% ====================================================================================
+
+\section{Domain Randomization}\label{sec:DR}
+To improve the transferability of the policy and to prevent the it from ovrefitting to a specific environment, \ac{DR} is implemented in our methodology as it is well-stabilshed strategy in the field.
+A domain can be defined as a specific subset of all possible \ac{POMDP} environments. 
+While a complete \ac{POMDP} is formally characterized by an 8-tuple~\cite{ASTROM1965174}, 
+we focus on a reduced 6-tuple representation that captures the essential elements 
+for our domain definition. A standard domain is then characterized by 
+$\mathcal{D} = (\mathcal{S}, \mathcal{A}, \mathcal{O}, P, O, R)$ where:
+
+\begin{itemize}
+    \item $\mathbf{\mathcal{S}:}$ denotes a set of states called the state space.
+    \item $\mathbf{\mathcal{A}:}$ is the set of actions called the action space.
+    \item $\mathbf{\mathcal{O}:}$ is the set of observations called the observation space.
+    \item $\mathbf{P(s'|s, a):}$ is the probability that a given action $a \in A$, at state $s \in S$ will lead to a new state $s' \subset S$. 
+    \item $\mathbf{O(o|s', a):}$ is the observation probability, representing the probability of observing $o \in \mathcal{O}$ after taking action $a$ and transitioning to state $s'$.
+    \item $\mathbf{R(s',s,a):}$ is the immediate reward, or expected inmediate reward, received for transitioning from $s$ to $s'$ after performing action $a$. 
+\end{itemize}
+From the source domain, $\mathcal{D}_{\xi_s}$, (i.e. simulation), we can control a set of N parameters that define a configuration vector, $\boldsymbol{\xi} = [\xi_i, \xi_{i+1}, ..., \xi_N]$.
+These parameters will affect the transition probability $\mathbf{P(s'|s,a)}$ of the domain.
+Examples of $\xi_i$ can include:
+
+\begin{tabular}{c|c}
+
+    Physical properties & $\xi_{\text{mass}}, \ \xi_{\text{inertia}}, \ \xi_{\text{drag}}, \ \xi_{\text{gravity}}$ \\
+    Perception properties & $\xi_{\text{sensor\_noise}}, \ \xi_{\text{sensor\_latency}}$ \\
+    Viual properties & $\xi_{\text{lighting}}, \ \xi_{\text{texture}}, \ \xi_{\text{fov}}$ \\
+    Scene properties & $\xi_{\text{gate\_pos}}, \ \xi_{\text{gate\_size}}, , \ \xi_{\text{gate\_num}}$ \\
+    
+\end{tabular}
+
+When \ac{DR} is applied, each configuration $\boldsymbol{\xi}$ is sampled from a bounded randomization space $\Xi$ with a probability distribution. 
+That is to say, $\boldsymbol{\xi} \in \Xi \subset \mathbb{R}^N$,  $\boldsymbol{\xi} \sim p(\boldsymbol{\xi})$ where $\xi_i \in [\xi_i^{\text{low}}, \xi_i^{\text{high}}]$. 
+At the start of every training episode, a new environment insance is created by sampling a new configuration vector $\boldsymbol{\xi}$ from the distribution $p(\boldsymbol{\xi})$. 
+Therefore, the policy will interact with a new \ac{POMDP} environment, i.e. a new domain $\mathcal{D}_{\boldsymbol{\xi}}$. 
+This way, data from a vareity of environments that otherwise would reamain unexplored can be collected. 
+\begin{figure}[H]
+  \centering
+
+  \begin{adjustbox}{max totalsize={0.5\textwidth}{0.4\textheight}, center}
+    \input{fig/tikz/DR.tex}
+  \end{adjustbox}
+
+  \caption{In red, the source domain. In light blue, ranodimized instances of the source configuration. In green, the target domain configuration. }
+  \label{domains}
+\end{figure}
+During training, the neural network weights and biases $\theta$ are optimized to minimize the expected loss across a distribution of randomized domains~\cite{weng2019DR}.
+With the aim of finding the optimal, $\theta^*$ that will lead to the optimal policy $\pi_{\theta}^*$.
+As illustrated in \autoref{domains}, the policy is exposed to a variety of domains to promote generalization and improve robustness, increasing the likelihood of successful transfer to the real environment. 
+However, this strategy further reduces the sample efficiency of \ac{RL} and increases training time. 
+Therefore, it is essential to properly bound the randomization space $\Xi$, so that it encompasses only the minimum necessary range to include the target domain.
+
+In order to efficently bound this randomization space while still allowing for enough randomness a two stage randomization is implement.
+Inspired by \cite{zhang_learning-based_2025}, first a design informed randomization is applied.
+This ensures that sensible variations of the nominal platform are predominant in the randomization space.
+Thus avoiding that unfeasible designs such as a quadrotor with unfeasible \ac{TWR} (e.g. \ac{TWR}$<1$). 
+The authors of \cite{zhang_learning-based_2025} notice that quadrotor designs, in general, follow a similar pattern where the quadrotors armlength $l$ is strongly correlated to its mass $m$, inertia $\mathbf{J}$, drag coefficents $\mathbf{C_D}$ and other physical parameters.
+
+Hence, they propose to sample a size factor $c \sim \mathcal{U}(0,1)$ and scale the quadrotor's physcial parameters as listed below;
+\begin{equation}
+    l = c(l_{\max} - l_{\min}) + l_{\min}
+\end{equation}
+
+
+\begin{equation}
+    m = \frac{l^3 - l_{\min}^3}{l_{\max}^3 - l_{\min}^3}(m_{\max} - m_{\min}) + m_{\min}
+\end{equation}
+
+
+\begin{equation}
+    \mathbf{J} = \frac{l^5 - l_{\min}^5}{l_{\max}^5 - l_{\min}^5} (\mathbf{J}_{\max} - \mathbf{J}_{\min}) + \mathbf{J}_{\min}
+\end{equation}
+
+\begin{equation}
+    \mathbf{C}_D = \frac{l^2 - l_{\min}^2}{l_{\max}^2 - l_{\min}^2} (\mathbf{C}_{D_{\max}} - \mathbf{C}_{D_{\min}}) + \mathbf{C}_{D_{\min}}
+\end{equation}
+
+\todo{:Add the rest of the params}
+
+Following the scaling process, these parameters which comprisise the following configuration vector
+\begin{equation}
+    \boldsymbol{\xi} = \begin{bmatrix} l & m & \mathbf{J} & \mathbf{C}_D \end{bmatrix}
+\end{equation}
+are subjected to additional noise. 
+Each parameter is multiplied by a scaling factor $k \sim \mathcal{U}(1-p, 1+p)$, where $p=0.2$. 
+This specific uncertainty range was selected based on experimental results from a previous project, as it demonstrated good transferability.
+Nonetheless it can be considered a hyperparameter of the training process and be tunned according to the situation.
+
+
+
 
 \section{Summary}\label{sec:summary}
 
-To summirize the methodology, the training workflow is the following. First the user selects the training task, refered in the code as environemnt env=[tt,\ pp], which are either; trajectory tracking or path progress.
-The user also selects the control abstraction/mode cm=[srt,\ ctbr,\ lvhr,\ lvhr+g] which defines the control mapping function $g_{\text{cm}}()$ from the policy outputs $\boldsymbol{\pi_\theta}(\mathbf{o})$ to the control inputs $\mathbf{u}$. 
-Finally, the user introduces the number of parallel environments $B$, the number of episodes $N$, the number of steps $K$, the optimization horizon $H$ and other hyperparameters such as the learning rate $\alpha$, randomization percentage $p$, termination distance threshold $d_\text{max}$, etc. 
+To summarize the methodology, we present \autoref{fig:cool-diagram}.
+At each time step, the policy takes an observation and outputs control commands.
+Depending on the control abstraction selected by the user, the policy will output linear velocities and heading rate, collective thrust and body rates or single rotor thurst.
+Then, the control commands are transformed to rotor speeds and passed through a fisrt order transfer function to simulate the motor delay.
+Next, rotor speed are mapped back to thrust and then to wrench values which are used to integrate the transaltional and rotational dynamics.
+Given the next state, the loss function is evaluated and the gradient from this function to the policy parameters is backpropagated to optimize the network.
+Note that, during the backpropagation a surrogate model is used where the motor dynamics are skipped.
 
 % \section{Learning Environment}\label{sec:sim_frame}
 % {\color{blue}Make cool diagram}
@@ -590,45 +577,18 @@ Finally, the user introduces the number of parallel environments $B$, the number
 \begin{figure}[H]
     \centering
     \resizebox{1\textwidth}{!}{\input{fig/tikz/sim_arch_diagram.tex}}
-    \caption{Schematics of the learning environment. The black arrows show the forward pass from the policy outputs to the loss function and the red arrows indicate the backward pass. Not thatduring the backward pass the motor dynamics are skipped.}
+    \caption{Schematics of the learning environment.}
     \label{fig:cool-diagram}
 \end{figure}
-\todo{: Correct the diagram!!}
+% \todo{: Correct the diagram!!}
 
+
+Hence, the training workflow is the following. 
+First the user selects the training task, refered in the code as environemnt env=[tt,\ pp], for now only the task of trajectory tracking (tt) is implemented, but other tasks such as path progress (pp) can be added.
+The user also selects the control abstraction/mode cm=[srt,\ ctbr,\ lvhr,\ lvhr+g] which defines the control mapping function $g_{\text{cm}}()$ from the policy outputs $\boldsymbol{\pi_\theta}(\mathbf{o})$ to the control inputs $\mathbf{u}$. 
+Finally, the user introduces the number of parallel environments $B$, the number of episodes $N$, the number of steps $K$, the optimization horizon $H$ and other hyperparameters such as the learning rate $\alpha$, randomization percentage $p$, termination distance threshold $d_\text{max}$, etc. 
 
 Once all these parameters are set, training proceeds as follows:
-% \begin{algorithm}
-% \caption{Pesudocode for the training process.}\label{alg:cap}
-% \begin{algorithmic}
-% \Require env=[tt,\ pp], cm=[srt,\ ctbr,\ lvhr,\ lvhr+g], batch size $B$, episodes $N$, steps $K$, horizon $H$ hyperparameters\footnote{Simulation step size is set to $dt=0.01$}.
-% % \Ensure $y = x^n$
-% \State \textbf{Initialize:} Policy network $\pi_\theta$, controller $g_{\text{cm}}(cm)$, reference generator $\mathbf{x}^\text{ref}$, dynamics transition function $\mathbf{\dot{f}(\mathbf{x}, u)}$
-% \For {$n=0, \dots, N $}
-%     \State Randomize $\boldsymbol{\xi}(B)$,  $\mathbf{X}(K)^\text{ref}$ % X^ref caps is the entire reference state over K 
-%     \State $\mathbf{x_0} \gets \mathbf{x_0}^\text{ref}$
-%     \For {$k=0, \dots, K $}
-%         \State $\mathbf{o}_k^{\text{env}} \gets getObservation(env)$
-%         \State $\mathbf{x}_k^{\text{env}} \gets getReference(env)$
-%         % \State $\mathbf{x}_{k+1} = \mathbf{x}_k + \int_{t_k}^{t_{k+1}} \mathbf{f}\left(\mathbf{x}(t), g_{\text{cm}}(\mathbf{\pi}_\theta(\mathbf{o}_k))\right) dt$ \Comment{Numerical integration step}
-%         \State $\mathbf{x}_{k+1} \gets \mathbf{x}_k + \Delta t \cdot \mathbf{f}(\mathbf{x}_k, g_{\text{cm}}(\mathbf{\pi}_\theta(\mathbf{o}_k^{\text{env}})), \boldsymbol{\xi}(B))$
-%         \If{$\mathbf{x}_{k+1}$ \textit{not terminated}}
-%             \State $J_k += \mathcal{L}_k(\mathbf{x}_k^{\text{env}}, \mathbf{x}_k )$
-%         \EndIf
-%         \If{$(k+1) \bmod H = 0$}
-%             \State $loss \gets \frac{J_k}{H}$
-%             \State $\nabla_{\theta} J_k \gets loss.backward()$ \Comment{Bckw pass thorugh the graph to obtain the gradients}
-%             \State $\theta \gets optimizer.step()$  \Comment{Update of the policy parameters}
-%             \State $ \mathbf{x_k}.detach()$ \Comment{Breaks the comutational graph for the next optimization step}
-%             \State $ J_k \gets 0$
-
-%         \EndIf
-%     \EndFor
-% \EndFor
-% \end{algorithmic}
-% \end{algorithm}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 \begin{algorithm}[H]
 \caption{Training procedure for differentiable policy optimization.}
