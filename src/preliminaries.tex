@@ -281,7 +281,7 @@ Hence, the final PPO loss is,
 \begin{equation}
 L_t^{CLIP+VF+S}(\theta) = \hat{\mathbb{E}}_t \left[ L_t^{CLIP}(\theta) - c_1 L_t^{VF}(\theta) + c_2 S[\pi_\theta](s_t) \right]   
 \end{equation}
-wher $c_1$ and $c_2$ are weighting factors.
+where $c_1$ and $c_2$ are weighting factors.
 
 \subsection{Model-Based Reinforcement Learning}
 Model-based \ac{RL} uses infromation of a model to optimize the policy parameters.

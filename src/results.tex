@@ -326,7 +326,7 @@ Note that this policies would not transfer to a real world-sencario, but this re
 \begin{table}[H]
     \centering
     \caption{Performance of \ac{BPTT} and \ac{PPO} policies for the "eigth" track (mean and std over 5 laps).}
-\begin{tabular}{c|c|c}
+\begin{tabular}{ccc}
 \hline 
 & \ac{BPTT} & \ac{PPO} \\ \hline
 Lap time [$\mathrm{s}$]&  $2.716 \pm 0.086 \text{ s}$ &  $1.948 \pm 0.011 \text{ s}$ \\
@@ -368,4 +368,82 @@ Finally, to measure transferability we perform the same experiment as in \autore
 
 
 \section{Fixed Gains agains Adaptive Gains}
-Lastly, we investigate in further detail if having adaptive gains for the geometric controller leeads to any improvement...
+Lastly, we investigate in further detail wether having adaptive gains for the geometric controller leeads to an increase in performance.
+The policies were optimized with \ac{PPO} since it showed superior performance than our approach with \ac{BPTT} and we train for the same "\textit{eight}" figure track as before.
+Both controllers can output linear velocities in a range of $\mathbf{v} \in [-\mathbf{v}_{\text{max}}, \mathbf{v}_{\text{max}}]$, where $\mathbf{v}_{\text{max}} = (10, 10, 3)\,\mathrm{m/s}$.
+The fixed gain policy has a proportinal gain in velocity of $k_v = (3, 3, 4)$, and a gain in attitude of $k_R = (8, 8, 1)$.
+While the adaptive policy selects these gains dynamically at each time step in the range of
+\begin{align*}
+    k_v^{\min} &= (0.5, 0.5, 0.5), & k_v^{\max} &= (6.0, 6.0, 8.0), \\
+    k_R^{\min} &= (1, 1, 0.2), & k_R^{\max} &= (16, 16, 2).
+\end{align*}
+
+Note that, contrary to \autoref{subsec:lvhr}, we do not include a derivative term since the policy since it expermientally showed to destabilize the policiy.
+
+
+\subsection{Sample Efficency}
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/sample-eff-geo/hypotheses.pdf}
+    \caption{Reward against time step for the fixed and adaptive gains controllers.}
+    \label{fig:samp-eff-geo}
+\end{figure}
+
+
+\subsection{Performance}
+
+\begin{table}[H]
+    \centering
+    \caption{Performance of the fixed and adaptive geometric policies for the "eigth" track.}
+\begin{tabular}{cccc}
+\hline 
+& Lap time [$\mathrm{s}$] & Gates \ac{SR} [\%] & Track \ac{SR} [\%] \\ \hline
+Fixed & $ $2.852$  \pm 0.044 $ & 100 & 100\\ 
+Adaptive & $2.492 \pm 0.064 $ & 100 & 100\\ \hline
+
+    
+\end{tabular}    \label{tab:geo-adapt-fixed-perf}
+\end{table}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/commands-lvhr-ppo/hypotheses.pdf}
+    \caption{Commanded linear velocities, heading rate and gains for the eight figure track.}
+    \label{fig:lvhr-action-ppo}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/commands-lvhr+g-ppo/hypotheses.pdf}
+    \caption{Commanded linear velocities, heading rate and gains for the eight figure track.}
+    \label{fig:lvhr-g-action-ppo}
+\end{figure}
+
+\subsection{Robustness}
+
+
+\subsection{Transferability}
+
+
+\begin{table}[H]
+    \centering
+    \caption{Performance of the fixed and adaptive geometric policies for the "eigth" track.}
+\begin{tabular}{cccc}
+\hline 
+& Lap time [$\mathrm{s}$] & Gates \ac{SR} [\%] & Track \ac{SR} [\%] \\ \hline
+Fixed & $3.09 \pm 0.12 $ & 97.5 & 83.33\\ 
+Adaptive & $3.19 \pm 0.37 $ & 88.9 & 55.55\\ \hline
+
+    
+\end{tabular}    \label{tab:geo-adapt-fixed}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/lap-times-geo/hypotheses.pdf}
+    \caption{Lap times against lap number for the fixed and adaptive geometric controllers.}
+    \label{fig:lap_times_geo}
+\end{figure}
+
+
