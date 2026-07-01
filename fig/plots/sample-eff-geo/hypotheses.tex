@@ -20,14 +20,14 @@
     name=plot1,
     anchor=left of south west,
     % xshift=0.5cm,
-    width=10.5cm,
+    width=10cm,
     height=6cm,
     grid=both,
     minor grid style={dashed, gray!30},
     major grid style={dashed, gray!30},
     minor tick num=1,
     xmin=0,
-    xmax={1.0*10^8},
+    xmax={0.7*10^8},
     xlabel={Step},
     ylabel={Reward},
     legend pos=south east,
@@ -37,7 +37,7 @@
 ]
 
 % PPO
-\addplot[tabblue, line width=1.0pt]
+\addplot[orange, line width=1.0pt]
 table[
     y=Value,
     x=Step,

@@ -3,13 +3,13 @@
 \chapter{Results \label{chap:results}}
 
 In this chapter, the results of our methodologhy are presented and evaluated.
-The defenitions of the assessment metrics used throughout the chapter can be found in \refsec{sec:eval_criteria}.
-% \todo{validation of the simulator}
+The defenitions of the assessment metrics used throughout the chapter can be found in Appendix~\ref{sec:eval_criteria}.
+\todo{validation of the simulator}
 
-% The performance of the proposed method is compared against standard model-free \ac{RL} training and a classical fixed-gain geometric controller in \refsec{sec:baseline}.
-% Qualitative results, including trajectory visualizations, velocity profiles, and the transferability of the trained policiesare are presented.
-% An ablation study is then conducted in \refsec{sec:ablation} to evaluate the effect of key design choices.
-% Finally, preliminary real-world validation results are presented in \refsec{sec:realworld}.
+The performance of the proposed method is compared against standard model-free \ac{RL} training and a classical fixed-gain geometric controller in \autoref{sec:baseline}.
+Qualitative results, including trajectory visualizations, velocity profiles, and the transferability of the trained policiesare are presented.
+An ablation study is then conducted in \autoref{sec:ablation} to evaluate the effect of key design choices.
+Finally, preliminary real-world validation results are presented in \autoref{sec:realworld}.
 
 \
 
@@ -32,7 +32,22 @@ The defenitions of the assessment metrics used throughout the chapter can be fou
 
 
 
+\section{Surrogate Gradient Analysis}\label{sec:sur_grad}
+In this section, we analyze the effect of using surrogate gradients during the policy optimization process.
+The gradient is backpropagated from the loss function to the policy parameters through the chain rule.
+As discussed in \autoref{sec:diff-opt}, the gradients are computed numerically from the computational graph.
+Certain operations, such as \autoref{eq:motspd}, can be highly sensitive to small perturbations, leading to unstable gradients and making the optimization process more difficult.
 
+This behaviour can be observed in \autoref{fig:gradients}, where the loss and gradient norm are plotted against the training steps for two different approaches: a simplified backpropagated model that omits motor dynamics, and the full model including the motor dynamics.
+At the beginning of training, both approaches exhibit similar behavior.
+However, the full model eventually converges to a suboptimal solution and fails to track the trajectory successfully.
+By analyzing the gradient norm of the full model, larger oscillations can be observed, which we believe are responsible for the unstable optimization and suboptimal convergence.
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/gradients/hypotheses.pdf}
+    \caption{Gradients.}
+    \label{fig:gradients}
+\end{figure}
 
 
 
@@ -142,7 +157,6 @@ For the evaluated trajectory, the maximum commanded thrust is around $14~\mathrm
 
 The velocity and heading-rate commands shown in \autoref{fig:lvhr-action} exhibit a similar structure throughout the trajectory.
 The commanded velocities along the body $x$ and body $y$ axes have the largest magnitudes, while the heading rate and vertical velocity $v_z$ remain close to zero for most of the flight.
-
 The main advantage of this control abstraction is the smoothness of the generated commands.
 Additionally, as shown in \autoref{samp-eff-ca}, this policy achieves the fastest convergence during training.
 \begin{figure}[H]
@@ -158,10 +172,9 @@ However, in this case, the policy outputs scaling factors between $0$ and $1$ th
 
 As shown in \autoref{fig:lvhr-g-action}, the gains remain relatively constant throughout the trajectory, raising the question of whether the feature justified in the current setup.
 Nevertheless, it is difficult to draw definitive conclusions from this experiment, since the evaluated trajectory remains far from optimal and the actuators operate well below saturation for most of the flight.
-
-Further investigation will be conducted in future work, as we believe this approach could be beneficial in more aggressive flight regimes or under varying operating conditions, potentially providing advantages over fixed-gain geometric controllers.
-As discussed in~\cite{boufrioua_gain_2022}, ``it is widely known that this controller design approach provides better stability and performance results for slowly varying parameters''~\cite{rugh_analytical_1991}.
-
+Further investigation is conducted in \autoref{adapt_gains}, as we believe this approach could be beneficial in more aggressive flight regimes or under varying operating conditions, potentially providing advantages over fixed-gain geometric controllers.
+% As discussed in~\cite{boufrioua_gain_2022}, ``it is widely known that this controller design approach provides better stability and performance results for slowly varying parameters''~\cite{rugh_analytical_1991}.
+% \todo{}
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/commands-lvhr+g/hypotheses.pdf}
@@ -232,8 +245,8 @@ Analyzing the tracking errors
     \begin{tabular}{ccc}
     \hline
 RMSE  & Ground Truth  & Passthrough \\ \hline
-Position [m]  & $$ & $$ \\
-Velocity [m/s]  & $$ & $$ \\ \hline
+Position [m]  & $1.015 \pm 0.18$ & $1.24 \pm 0.012$ \\
+Velocity [m/s]  & $0.982 \pm 0.08$ & $1.03 \pm 0.076$ \\ \hline
 \end{tabular}
 \end{table}
 
@@ -255,40 +268,28 @@ Additionally, the experiment provided valuable insights and data that were later
     \label{fig:real-world}
 \end{figure}
 
+Since with the trajectory tracking task we have achieved suboptimal performance, we shift focus to the gate progress task, \autoref{gate-prog} , in the following sections. 
+This task is commonly used in drone racing and has demonstrated champion-level performance by enabling the policy to explore and adapt better than a fixed, time-parameterized trajectory, see~\cite{songreaching2023}.
 
-\section{Surrogate Gradient Analysis}\label{sec:sur_grad}
-In this section, we analyze the effect of using surrogate gradients during the policy optimization process.
-The gradient is backpropagated from the loss function to the policy parameters through the chain rule.
-As discussed in \autoref{sec:diff-opt}, the gradients are computed numerically from the computational graph.
-Certain operations, such as \autoref{eq:motspd}, can be highly sensitive to small perturbations, leading to unstable gradients and making the optimization process more difficult.
-
-This behaviour can be observed in \autoref{fig:gradients}, where the loss and gradient norm are plotted against the training steps for two different approaches: a simplified backpropagated model that omits motor dynamics, and the full model including the motor dynamics.
-At the beginning of training, both approaches exhibit similar behavior.
-However, the full model eventually converges to a suboptimal solution and fails to track the trajectory successfully.
-By analyzing the gradient norm of the full model, larger oscillations can be observed, which we believe are responsible for the unstable optimization and suboptimal convergence.
-\begin{figure}[H]
-    \centering
-    \includegraphics{fig/plots/gradients/hypotheses.pdf}
-    \caption{Gradients.}
-    \label{fig:gradients}
-\end{figure}
 
 \section{Model-Free and Model-Based evaluation}\label{sec:baseline}
 In this section, we compare two policies, one optimized using model-free \ac{RL} with \ac{PPO}, and the other using model-based \ac{RL} with \ac{BPTT}.
 The comparison is performed in terms of sample efficiency, performance, robustness and transferability.
+
+
 
 To evaluate these mehtods we analyze two scenarios.
 Firstly, we train the policies to pass thorugh one gate located at $\mathbf{p_g}^\mathcal{W} = \begin{pmatrix}
     0.0 & 5.0 & 1.5
 \end{pmatrix}$. The \ac{UAV}s' state is initialized to zero, unless for $z = 1.5$ and $q_\omega = 1.0$ which correspond to the height of the gate and identity orientation respectively.
 Secondly, we train for a more challenging track, an "\textit{eight}" figure track.
-We mantain the same reward for both methods which consists in rewarding progress toward the gate and penalizing body rates as,
+We mantain the same reward for both optimization methods which consists in rewarding progress toward the gate and penalizing body rates as,
 
 \begin{equation} \label{reward_fnc}
    r_k = -\mathcal{L}_k = \left\| \mathbf{p}_{k-1}^\mathcal{W} - \mathbf{p}_{g_k}^\mathcal{W} \right\|_2 - \left\| \mathbf{p}_{k}^\mathcal{W} - \mathbf{p}_{g_k}^\mathcal{W} \right\|_2 - 0.001 \left\| \boldsymbol{\omega} \right\|_2.
 \end{equation}
 
-And we run the simulation in 100 parallel environments.
+We run the simulation in 100 parallel environments.
 Note that in \ac{BPTT} we aim to minimize the loss and in \ac{PPO} to maximize the reward, but these are equivalent objectives.
 
 \subsection{Sample Efficency}
@@ -325,12 +326,12 @@ Note that this policies would not transfer to a real world-sencario, but this re
 
 \begin{table}[H]
     \centering
-    \caption{Performance of \ac{BPTT} and \ac{PPO} policies for the "eigth" track (mean and std over 5 laps).}
+    \caption{Performance of \ac{BPTT} and \ac{PPO} policies for the "eigth" track (mean and std over 5 laps). \todo{test with CTBR too}}
 \begin{tabular}{ccc}
 \hline 
-& \ac{BPTT} & \ac{PPO} \\ \hline
-Lap time [$\mathrm{s}$]&  $2.716 \pm 0.086 \text{ s}$ &  $1.948 \pm 0.011 \text{ s}$ \\
-Sucess Rate [\%] & 100 & 100\\ \hline
+& Lap time [$\mathrm{s}$] & Sucess Rate [\%] \\ \hline
+\ac{BPTT} & $2.716 \pm 0.086 $ & 100 \\
+\ac{PPO} & $1.948 \pm 0.011 $ & 100 \\ \hline
     
 \end{tabular}    \label{tab:perf}
 \end{table}
@@ -350,10 +351,15 @@ And higher episode mean reward from maximizing gate progress, \autoref{fig:eprew
 This results of the \ac{PPO} policy closely match the ones from ~\cite{ferede2025}.
 Then, \autoref{fig:8} shows that the \ac{BPTT} policy takes sharper turns than the \ac{PPO} policy, which can indicate a greedier optimization approach.
 
-\subsection{Robustness}
+
+
+
+\subsection{Robustness}\label{robust}
 
 Next, to asses robustness we expose the environment to exturnal distrubance, following a similar set up as in \autoref{subsec:robust}, we simulate a wind gust, which we model as an aceleartion in the $-x$ axis between $y\in[-1, 1]$, see \autoref{fig:wind}.
 We expose the policies to different magnitudes of external acceleration and we find that the \ac{BPTT} can handle up to $4\, \mathrm{m/s^2}$ while the \ac{PPO} policiy can suport up to $10\, \mathrm{m/s^2}$ before droping the perfect \ac{SR}, i.e. before the first crashes.
+Showning that the \ac{PPO} policy is more robust in this scenario.
+
 
 \begin{figure}[H]
     \centering
@@ -366,22 +372,49 @@ We expose the policies to different magnitudes of external acceleration and we f
 Finally, to measure transferability we perform the same experiment as in \autoref{perf} but we train the policies with domain randomization, a model that takes into account drag and motor delay and we deploy the policies in Gazebo using the MRS stack with \ac{CTBR} control mode.
 
 
+\begin{table}[H]
+    \centering
+    \caption{Performance of the BPTT and PPO policies for the "eigth" track.}
+\begin{tabular}{ccccc}
+\hline 
+& Lap time [$\mathrm{s}$] & Gates \ac{SR} [\%] & Track \ac{SR} [\%] & S2S [\%]\\ \hline
+BPTT & $ \pm  $ &  & & \\ 
+PPO & $3.23 \pm 0.18 $ & 94.5 & 70.9 & \\ \hline
 
-\section{Fixed Gains agains Adaptive Gains}
+    
+\end{tabular}    \label{tab:px4-adapt-fixed}
+\end{table}
+
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/lap-times-ctbr/hypotheses.pdf}
+    \caption{ \todo{Get real data for BPTT}}
+    \label{fig:lap_times_ctbr}
+\end{figure}
+
+
+
+
+\section{Fixed Gains agains Adaptive Gains} \label{adapt_gains}
 Lastly, we investigate in further detail wether having adaptive gains for the geometric controller leeads to an increase in performance.
 The policies were optimized with \ac{PPO} since it showed superior performance than our approach with \ac{BPTT} and we train for the same "\textit{eight}" figure track as before.
 Both controllers can output linear velocities in a range of $\mathbf{v} \in [-\mathbf{v}_{\text{max}}, \mathbf{v}_{\text{max}}]$, where $\mathbf{v}_{\text{max}} = (10, 10, 3)\,\mathrm{m/s}$.
-The fixed gain policy has a proportinal gain in velocity of $k_v = (3, 3, 4)$, and a gain in attitude of $k_R = (8, 8, 1)$.
+The fixed gain policy has a proportional gain in velocity of $\mathbf{k}_v = (3, 3, 4)$, and a gain in attitude of $\mathbf{k}_R = (8, 8, 1)$.
 While the adaptive policy selects these gains dynamically at each time step in the range of
 \begin{align*}
-    k_v^{\min} &= (0.5, 0.5, 0.5), & k_v^{\max} &= (6.0, 6.0, 8.0), \\
-    k_R^{\min} &= (1, 1, 0.2), & k_R^{\max} &= (16, 16, 2).
+    \mathbf{k}_v^{\min} &= (0.5, 0.5, 0.5), & \mathbf{k}_v^{\max} &= (6.0, 6.0, 8.0), \\
+    \mathbf{k}_R^{\min} &= (1, 1, 0.2), & \mathbf{k}_R^{\max} &= (16, 16, 2).
 \end{align*}
 
 Note that, contrary to \autoref{subsec:lvhr}, we do not include a derivative term since the policy since it expermientally showed to destabilize the policiy.
 
 
 \subsection{Sample Efficency}
+Investigating the sample efficency of the fixed gains and adaptive gains geometric controllers, we can se in \autoref{fig:samp-eff-geo} that the former converges at atound 30 million steps while the latter at around 70 million.
+The fixed gain controller achieves a maximum reward of 53.29 while the adaptive achieves a maximum reward of 60.12.
+
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/sample-eff-geo/hypotheses.pdf}
@@ -389,8 +422,11 @@ Note that, contrary to \autoref{subsec:lvhr}, we do not include a derivative ter
     \label{fig:samp-eff-geo}
 \end{figure}
 
-
+Because the adaptive policy has six additional outputs, it is expected to take longer to train.
+However, both policies converge to similar reward values.
+To further assess whether the increase in training time is worthehile, we analyze their performance, robustness, and transferability in the following sections.
 \subsection{Performance}
+In terms of performance, in our simlated environment, the adaptive controller performs a lap $0.36\ \mathrm{s}$ faster than the fixed gain controller, both, with a perfect sucess rate, see \autoref{tab:geo-adapt-fixed-perf}.
 
 \begin{table}[H]
     \centering
@@ -398,20 +434,23 @@ Note that, contrary to \autoref{subsec:lvhr}, we do not include a derivative ter
 \begin{tabular}{cccc}
 \hline 
 & Lap time [$\mathrm{s}$] & Gates \ac{SR} [\%] & Track \ac{SR} [\%] \\ \hline
-Fixed & $ $2.852$  \pm 0.044 $ & 100 & 100\\ 
-Adaptive & $2.492 \pm 0.064 $ & 100 & 100\\ \hline
+Fixed & $ $2.85$  \pm 0.04 $ & 100 & 100\\ 
+Adaptive & $2.49 \pm 0.06 $ & 100 & 100\\ \hline
 
     
 \end{tabular}    \label{tab:geo-adapt-fixed-perf}
 \end{table}
 
+To understand how allowing the policy to output the gains affect the performance, we plot the commands for both policies in \autoref{fig:lvhr-action-ppo} and \autoref{fig:lvhr-g-action-ppo}.
 
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/commands-lvhr-ppo/hypotheses.pdf}
-    \caption{Commanded linear velocities, heading rate and gains for the eight figure track.}
+    \caption{Commanded linear velocities and heading rate by the fixed gain controller.}
     \label{fig:lvhr-action-ppo}
 \end{figure}
+
+It can be observed that both policies saturate the velocity commands, particularly on the pitch and roll axis, which indicates near optimal performance.
 
 \begin{figure}[H]
     \centering
@@ -420,24 +459,49 @@ Adaptive & $2.492 \pm 0.064 $ & 100 & 100\\ \hline
     \label{fig:lvhr-g-action-ppo}
 \end{figure}
 
+
+Since the adpative gain policy can have the gains of the controller raining from almos zero to the double of the fixed gain controller, the policy can virtually command higher speeds and have more agrssive command changes.
+Looking around step 80 \autoref{fig:lvhr-g-action-ppo} it can be seen that the policy goes from $10\ \mathrm{m/s}$ to $-10\ \mathrm{m/s}$ in the x direction, some time steps before this change the policy starts decreasing the gain on $k_{v_x}$ and when $-10\ \mathrm{m/s}$ is reached, the gain is incrased again.
+A similar behaviour can be observed with the $\mathbf{k_R}$ gains, wehre the pitch and roll attitude gains seem to be more synchronized.
+
 \subsection{Robustness}
+To evaluate the robustness of the controllers, we perfrom the same experiment as in \autoref{robust}.
+The expermient shows that the fixed gain policy can withstand up to $8 \ \mathrm{m/s^2}$ wind with perfect sucess rate while the adaptive gain policy, handels $7 \ \mathrm{m/s^2}$, showing that both policies achieve approximately the same robustness.
 
 
 \subsection{Transferability}
+Contrary to \autoref{tab:geo-adapt-fixed-perf}, where the adpative policy outperformed the fixed policy.
+When deploying to gazebo, \autoref{tab:geo-adapt-fixed} and \autoref{fig:lap_times_geo}, show that the fixed gain policy transfer better than the adaptive policy.
+The fixed policy has faster lap times and an $83.33\%$ of the laps were sucessfull while for the adaptive policy crashed with the ground at lap 18 and only 9 of those laps were successfull.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{fig/photos/so3-god.png}
+        \caption{Drone racing in the "eight" figure track with the fixed gains geometric policy.}
+    \label{fig:gazebo}
+\end{figure}
 
 
+We believe that this performance mismatch between our simulator and Gazebo is due to several unmodeled factors that we could not capture faithfully.
+In our simulator, we attempt to replicate the PX4 firmware.
+To mimic how the flight computer handles policy commands, we integrate the dynamics at $1000\ \mathrm{Hz}$, while the inner rate control loop in the PX4 software runs at $250\ \mathrm{Hz}$, and the policy commands at either $83\ \mathrm{Hz}$ or $125\ \mathrm{Hz}$.
+Following this approach, the policies transferred better; however, since we use a simplified rate controller for the simulator rather than the complete PX4 firmware, there is a model mismatch, and the adaptive geometric seems to be more aggressive yet sensitive to unmodeld effects.
 \begin{table}[H]
     \centering
     \caption{Performance of the fixed and adaptive geometric policies for the "eigth" track.}
-\begin{tabular}{cccc}
+\begin{tabular}{ccccc}
 \hline 
-& Lap time [$\mathrm{s}$] & Gates \ac{SR} [\%] & Track \ac{SR} [\%] \\ \hline
-Fixed & $3.09 \pm 0.12 $ & 97.5 & 83.33\\ 
-Adaptive & $3.19 \pm 0.37 $ & 88.9 & 55.55\\ \hline
+& Lap time [$\mathrm{s}$] & Gates \ac{SR} [\%] & Track \ac{SR} [\%]  & S2S [\%]\\ \hline
+Fixed & $3.09 \pm 0.12 $ & 97.5 & 83.33 & 8.34\\ 
+Adaptive & $3.41 \pm 0.87 $ & 88.6 & 43.47 & 36.94 \\ \hline
 
     
 \end{tabular}    \label{tab:geo-adapt-fixed}
 \end{table}
+
+
+
+
 
 \begin{figure}[H]
     \centering
@@ -445,5 +509,4 @@ Adaptive & $3.19 \pm 0.37 $ & 88.9 & 55.55\\ \hline
     \caption{Lap times against lap number for the fixed and adaptive geometric controllers.}
     \label{fig:lap_times_geo}
 \end{figure}
-
 

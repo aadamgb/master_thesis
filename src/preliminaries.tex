@@ -331,7 +331,6 @@ the stage loss with respect to the state, $\frac{\partial \mathbf{x}_h}{\partial
 $\frac{\partial \mathbf{u}_{h-1}}{\partial \theta}$ is the gradient of the control output
 with respect to the policy parameters.
 Since the gradient is accumulated through time due to the recursive dependence of the state on previous states and control inputs, this procedure is known as \ac{BPTT}.
-
 To compute this gradient analytically, an automatic differentiation engine is used. 
 Many \ac{ML} frameworks, such as PyTorch~\cite{paszke_pytorch_2019}, TensorFlow~\cite{abadi_tensorflow_2016}, and JAX~\cite{jax2018github}, among others, provide autodiff capabilities. 
 At present, JAX is regarded as a high-performance framework for numerical \ac{ML} computing. 
@@ -340,7 +339,7 @@ However, for this simulator, PyTorch has been selected due to its intuitive inte
 \begin{figure}[H]
     \centering
     \include{fig/tikz/comp_graph-2}
-    \caption{Computational graph of the numerical operations of the forward and backward passes.}
+    \caption{Computational graph of the numerical operations for the forward and backward passes.}
     \label{fig:com-graph}
 \end{figure}
 

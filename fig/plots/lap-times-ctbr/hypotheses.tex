@@ -1,0 +1,93 @@
+\documentclass{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\definecolor{tabblue}{rgb}{0.0000, 0.4470, 0.7410}
+\definecolor{taborange}{rgb}{0.8500, 0.3250, 0.0980}
+\definecolor{tabgreen}{rgb}{0.4660, 0.6740, 0.1880}
+\definecolor{tabyellow}{rgb}{0.9290, 0.6940, 0.1250}
+\definecolor{tabpurple}{rgb}{0.4940, 0.1840, 0.5560}
+
+\begin{document}
+\begin{tikzpicture}
+
+\begin{axis}[
+    name=plot1,
+    anchor=left of south west,
+    xshift=0.5cm,
+    width=14cm,
+    height=5cm,
+    grid=both,
+    minor grid style={dashed, gray!30},
+    major grid style={dashed, gray!30},
+    minor tick num=1,
+    xmin=1,
+    xmax=60,
+    % ymin=2.8,
+    % ymax=3.5,
+    xlabel={Lap Number [\#]},
+    ylabel={Lap Time [s]},
+    legend pos=north east,
+    legend style={xshift=0cm, yshift=0.0cm, draw=none},
+    legend columns=-1,
+    title=Lap Time vs Lap Number $SO(3)$ ,
+]
+
+% ---- All lap times -----
+% BPTT
+% \addplot[
+%     tabblue,
+%     mark=*,
+% ]
+% table[
+%     x=lap,
+%     y=lap_time,
+%     col sep=comma,
+% ]{data/laps_so3.csv};\addlegendentry{BPTT}
+
+% PPO
+\addplot[
+    tabgreen,
+    mark=*,
+]
+table[
+    x=lap,
+    y=lap_time,
+    col sep=comma,
+]{data/laps_px4.csv};\addlegendentry{PPO \ }
+
+% =========================
+% ----- Missed gates ----
+% ========================
+% BPTT
+% \addplot[
+%     % red,
+%     only marks,
+%     mark=x,
+%     mark size=3pt,
+%     line width=1.5pt,
+% ]
+% table[
+%     x=lap,
+%     y=lap_time,
+%     col sep=comma,
+% ]{data/missed_so3.csv}; \addlegendentry{Gate crash}
+
+% PPO
+\addplot[
+    % red,
+    only marks,
+    mark=x,
+    mark size=3pt,
+    line width=1.5pt,
+]
+table[
+    x=lap,
+    y=lap_time,
+    col sep=comma,
+]{data/missed_px4.csv}; 
+
+\end{axis}
+
+\end{tikzpicture}
+\end{document}
