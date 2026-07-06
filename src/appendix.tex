@@ -36,7 +36,7 @@ The UAV characteristics are described in the following table.
 \section{PX4 Mixing Logic}
 In this section we explain in further detail the how does the PX4 firmware handle the mixing of collective thurst and body rate setpoint to the motor commands.
 
-\section{Simulator Validation}\label{sec:qualitative}
+\section{Simulator Validation}\label{sim-val}
 As detailed in \autoref{sec:sim_frame}, our simulator utilizes a simplified model of quadrotor dynamics and aerodynamics. 
 To maintain a computationally efficient and generalizable framework, we omit secondary effects such as battery depletion on thrust, complex aerodynamic effects, and the propellers rotational inertia. 
 While these unmodeled dynamics can cumulatively lead to a significant sim-to-real gap, we aim to address this mismatch through \ac{DR}.

@@ -77,9 +77,9 @@ $\mathcal{X}_k$ as
 \end{itemize}
 
 \subsection{Simplified Minimum-Time Optimal Control Problem}~\label{sec:simpmin-OCP}
-The original problem formulation (\autoref{subsec:minOCP}) is inherently complex, as it requires simultaneously solving for an optimal trajectory that clears all gates and avoids obstacles while determining the optimal control sequence achievable within the vehicle's dynamics and actuator constraints.
-To make the problem more tractable, this thesis assumes that a reference trajectory or path is provided a priori.
-Consequently, the \acp{OCP} addressed hereafter focus on trajectory tracking, formulated as follows:
+The problem formulation (\autoref{subsec:minOCP}) is inherently complex, as it requires simultaneously solving for an optimal trajectory that clears all gates and avoids obstacles while determining the optimal control sequence achievable within the vehicle's dynamics and actuator constraints.
+To make the problem more tractable, this thesis either assumes that an optimal reference trajectory or path is provided a priori, or relaxes the condition to maximize gate progress instead.
+Consequently, the \acp{OCP} addressed hereafter focus on trajectory tracking or gate progress optimization, formulated as follows:
 
 \subsubsection{Trajectory Tracking}
 In the trajectory tracking \ac{OCP}, the objective is to find the optimal control sequence $\mathbf{U}$ that minimizes the error between a given reference state $\boldsymbol{x}_k^{\text{ref}}$ and the current system state $\boldsymbol{x}_k$, subject to dynamics, actuator, and state constraints.
@@ -113,11 +113,11 @@ This allows the controller to dynamically adjust to the current vehicle's state 
 
 
 \section{Classical Control approaches}\label{sec:classical}
-Given the \ac{OCP} formulated in last sections, by solving the quadratic program, a trajectory of control inputs that minimizes the cost function can be obtained.
+Given the \ac{OCP} formulated in last sections, by solving a quadratic program, a trajectory of control inputs that minimizes the cost function can be obtained.
 However, in this direct approach, the control is open-loop.
 Henece it is not robust to external disturbances and model mistmaches. 
-In the classical literature, a well stablished approach that adresses this issue is an \ac{MPC}.
-Another common control approach is \ac{DFBC}, "The states and the inputs can be written as algebraic functions of four carefully selected flat outputs and their derivatives"~\cite{mellinger_minimum_2011}.
+In the classical literature, a well stablished approach that adresses this issue is to use \ac{MPC}.
+Another common control approach introduced in~\cite{mellinger_minimum_2011} is \ac{DFBC}, "The states and the inputs can be written as algebraic functions of four carefully selected flat outputs and their derivatives"~\cite{mellinger_minimum_2011}.
 Leveraging this property, motors command can be directly obtained from a given trajectory to be tracked.
 
 Many other quadrotor control methods are well stablished on the lituerature, ranging from Proportional Derivative Integral (PID) cotnrollers, Linear Quadratic Regulators (LQR), $\mathcal{L}_2$ adaptive control, $H_\infty$ norm minimization, $\mu$-sythesis and many others, each with their own advatages and disatvantages. 
@@ -189,10 +189,10 @@ This property is exploited in \autoref{subsec:lvhr} to determine the attitude of
 \section{Learning-Based approaches}\label{sec:learned}
 Learning-based approaches can be understood as optimization methods in which the optimization process is done by intereacting with the environment~\cite{huang_model-based_2020}.
 There are two main types of \ac{RL}, model-based and model-free, each have with their own advantages and drawbacks.
-Next, we give an overview model-free and model-based \ac{RL} and the most relevant algorithms in the literature of each.
+Next, we give an overview model-free and model-based \ac{RL} and the most relevant algorithms in the literature for each.
 % \subsection{Neural Networks?}
 \subsection{Model-Free Reinforcement Learning}
-In model-free \ac{RL}, the transition dynamics of the environment are not explicitly modeled or known a priori. Instead, the policy is optimized directly by gathering experience through interaction with the environment, typically utilizing first-order policy gradient methods. 
+In model-free \ac{RL}, the transition dynamics of the environment are not explicitly used by the optimization algorithms. Instead, the policy is optimized by gathering experience through interaction with the environment, typically utilizing first-order policy gradient methods. 
 Next, we review three model-free \ac{RL} approaches; Q-Learning, and two Policy Optimization methods; Policy Gradient and \ac{PPO}.
 % \subsubsection{Q-Learning}
 % In Q-Learning the idea is to map the values of the possible actions given the current state and store those values into a table.
@@ -254,7 +254,7 @@ Note that KL-divergence measures the difference between two data distributions $
 \end{aligned}
 \end{equation}
 
-However, this method involves the calculation of the Hessian, a second-order derivative matrix which is computationally costly.
+However, this method involves the calculation of the Hessian, a second-order derivative matrix that is computationally costly to obtain.
 Instead of imposing a hard constrain the authors of \cite{ppo} propose two relaxation methods.
 \begin{enumerate}
     \item \textbf{Adaptive KL Penalty Coefficient}
@@ -273,8 +273,7 @@ Instead of imposing a hard constrain the authors of \cite{ppo} propose two relax
     \end{equation}
     where epsilon is a hyperparameter.
 \end{enumerate}
-The authors claim that the clipped surrogate objective approach performs better.
-Since \ac{PPO} is usually implemented as an actor-critic algorithm a loss term for the critic, $L_t^{VF}(\theta)$, is incorporated, and to encourage exploration, an entropy bonus, $S[\pi_\theta](s_t)$ , is added. 
+The authors claim that the clipped surrogate objective approach performs better. \ac{PPO} is usually implemented as an actor-critic algorithm a loss term for the critic, $L_t^{VF}(\theta)$, is incorporated, and to encourage exploration, an entropy bonus, $S[\pi_\theta](s_t)$ , is added. 
 
 Hence, the final PPO loss is,
 
@@ -285,7 +284,7 @@ where $c_1$ and $c_2$ are weighting factors.
 
 \subsection{Model-Based Reinforcement Learning}
 Model-based \ac{RL} uses infromation of a model to optimize the policy parameters.
-The model can be predifined, or it can be learned by a neural newrok. 
+The model can be predifined, or it can be learned by a \ac{NN} from an experience buffer. 
 
 \subsubsection{Given The Model}
 When the model is know, that is to say, the state equation $\mathbf{x}_{k+1} = f(\mathbf{x}_{k}, \mathbf{u}_{k})$.
@@ -294,7 +293,7 @@ And the policy is optimized backproagating through time the accumulated gradient
 In section \autoref{sec:diff-opt}, we explain in more detail how the optimization porcess works as this is the method we use in our methodology to learn the drone racing policies.
 
 Having knowledge of the model increseas the sample efficeny. 
-However, if the model is not suitable error can accumulate leading to suboptimal performance. 
+However, if the model is not suitable, errors can accumulate leading to suboptimal performance. 
 A perfect model is not necessary, but it has to capture the important behaviours of the system.
 Additionally, \ac{NN}s tend to overfit to the training data distribution. 
 To prevent ovrefitting, it is recommended to radnomize model parameters, as we explain in \autoref{sec:DR}.
@@ -305,15 +304,15 @@ Rather than modeling the world in the raw observation space, Dreamer utilizes an
 The system’s dynamics are then captured by a recurrent state-space model: $\mathbf{h}_{k+1} = f(\mathbf{h}_k, \mathbf{z}_k, \mathbf{u}_k)$. 
 This approach offers two primary advantages: the recurrent state provides essential temporal memory, while the mapping to a stochastic latent space facilitates the processing of high-dimensional inputs, such as raw images.
 
-Once the world model is learned, an actor-critic agent can be trained entirely within this learned environment. 
-This paradigm shares conceptual similarities with Model Predictive Control (MPC), as it allows the agent to account for the impact of current actions on future states.
-In \cite{verraest_skydreamer_2025}, the authors employ a similar architecture to train an Autonomous Drone Racing (ADR) policy that maps pixels directly to motor commands.
-Their method demonstrated champion-levlel performance; however, a drawback of this method is its sample inefficiency, as the authors report that training can require up to 50 hours.
+Once the world model is learned, an actor-critic agent can be trained in the learned environment. 
+This paradigm shares conceptual similarities with \ac{MPC}, as it allows the agent to account for the impact of current actions on future states.
+% In \cite{verraest_skydreamer_2025}, the authors employ a similar architecture to train an \ac{ADR} policy that maps pixels directly to motor commands.
+% Their method demonstrated champion-levlel performance; however, a drawback of this method is its sample inefficiency, as the authors report that training can require up to 50 hours.
 
 \section{Differentiable Optimization} \label{sec:diff-opt}
 
 Under the paradigm of differentiable optimization, we no longer treat the quadrotor model as a "black-box".
-The main idea of this thesis is to leverage an automatic differentiation engine to compute the exact analytical gradient of the cumulative loss $J_k$ with respect to the control policy network.
+The main idea of this thesis is to leverage an automatic differentiation engine to compute the exact analytical gradient of the cumulative loss $J$ with respect to the control policy network parameters $\theta$.
 In this section, we provide an overview on how the optimization process works.
 
 \subsection{Computational Graph and Backpropagation}
@@ -363,7 +362,7 @@ In practice, the calculation of the gradient would be done simply by calling \te
 \begin{algorithm}
 \caption{Example Backpropagation for the function $u(x,y) = y(xy)^2$}
 
-\small
+% \small
 \begin{algorithmic}
 \Require $x \in \real, \ y \in \real$
 \Ensure $\frac{\partial u}{\partial x},\ \frac{\partial u}{\partial y}$
@@ -400,15 +399,15 @@ This is known as gradient shaping or surrogate gradient, and we use this feature
 
 \subsection{Optimization Process}
 Given the gradient $\nabla_\theta J$ computed via \ac{BPTT} the policy parameters are updated using the Adaptive Moment Estimation (Adam) optimizer~\cite{kingma_adam_2017}.
-Adam is a variant of \ac{SGD}.
-In standard \ac{SGD} the model parameters are updated proportionnally to the gradient in its opposite direction,
+Adam is a variant of \ac{GD}.
+In standard \ac{GD} the model parameters are updated proportionnally to the gradient in its opposite direction,
 
 \begin{equation}
     \theta_{k+1} = \theta_k - \alpha\nabla_\theta J_k
 \end{equation}
 where $\alpha$ inidcates the learning rate. 
-The main disatvantages of standard \ac{SGD} is that near the optimum, the gradient decreases requiring more steps to converge and, that each parameter is updated equally.
-Adam solves this issues by combining two other variations of \ac{SGD}: Momentum and \ac{RMSP}.
+The main disatvantages of standard \ac{GD} is that near the optimum, the gradient decreases requiring more steps to converge and, that each parameter is updated equally.
+Adam solves this issues by combining two other variations of \ac{GD}: Momentum and \ac{RMSP}.
 
 \begin{itemize}
     \item Momentum accumulates an avarage of past gradients sustaining progress along the directions of consistent descent and dampening oscillations in high curvature directions.

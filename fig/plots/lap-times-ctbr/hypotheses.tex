@@ -35,15 +35,15 @@
 
 % ---- All lap times -----
 % BPTT
-% \addplot[
-%     tabblue,
-%     mark=*,
-% ]
-% table[
-%     x=lap,
-%     y=lap_time,
-%     col sep=comma,
-% ]{data/laps_so3.csv};\addlegendentry{BPTT}
+\addplot[
+    tabblue,
+    mark=*,
+]
+table[
+    x=lap,
+    y=lap_time,
+    col sep=comma,
+]{data/laps_bptt.csv};\addlegendentry{BPTT}
 
 % PPO
 \addplot[
@@ -54,24 +54,24 @@ table[
     x=lap,
     y=lap_time,
     col sep=comma,
-]{data/laps_px4.csv};\addlegendentry{PPO \ }
+]{data/laps_ppo.csv};\addlegendentry{PPO \ }
 
 % =========================
 % ----- Missed gates ----
 % ========================
 % BPTT
-% \addplot[
-%     % red,
-%     only marks,
-%     mark=x,
-%     mark size=3pt,
-%     line width=1.5pt,
-% ]
-% table[
-%     x=lap,
-%     y=lap_time,
-%     col sep=comma,
-% ]{data/missed_so3.csv}; \addlegendentry{Gate crash}
+\addplot[
+    % red,
+    only marks,
+    mark=x,
+    mark size=3pt,
+    line width=1.5pt,
+]
+table[
+    x=lap,
+    y=lap_time,
+    col sep=comma,
+]{data/missed_bptt.csv}; \addlegendentry{Gate crash}
 
 % PPO
 \addplot[
@@ -85,7 +85,7 @@ table[
     x=lap,
     y=lap_time,
     col sep=comma,
-]{data/missed_px4.csv}; 
+]{data/missed_ppo.csv}; 
 
 \end{axis}
 

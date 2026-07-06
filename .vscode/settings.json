@@ -25,5 +25,7 @@
       "args": ["%DOCFILE%"]
     }
   ],
-  "latex-workshop.view.pdf.invert": 1
+  "latex-workshop.view.pdf.invert": 1,
+  "python-envs.defaultEnvManager": "ms-python.python:conda",
+  "python-envs.defaultPackageManager": "ms-python.python:conda"
 }

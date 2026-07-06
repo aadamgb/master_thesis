@@ -1,0 +1,8 @@
+# This file is used internally by FFMPEG.
+file 'file:/home/adame/master_thesis/thesis_video/media/videos/hello_world/720p30/partial_movie_files/DroneRacing/4081857458_2012638633_1146944703.mp4'
+file 'file:/home/adame/master_thesis/thesis_video/media/videos/hello_world/720p30/partial_movie_files/DroneRacing/1477333082_2296093263_1322888329.mp4'
+file 'file:/home/adame/master_thesis/thesis_video/media/videos/hello_world/720p30/partial_movie_files/DroneRacing/1477333082_2840115676_2633556650.mp4'
+file 'file:/home/adame/master_thesis/thesis_video/media/videos/hello_world/720p30/partial_movie_files/DroneRacing/1477333082_2840115676_2192543059.mp4'
+file 'file:/home/adame/master_thesis/thesis_video/media/videos/hello_world/720p30/partial_movie_files/DroneRacing/1477333082_2840115676_3022168978.mp4'
+file 'file:/home/adame/master_thesis/thesis_video/media/videos/hello_world/720p30/partial_movie_files/DroneRacing/1477333082_2913948976_3965017389.mp4'
+file 'file:/home/adame/master_thesis/thesis_video/media/videos/hello_world/720p30/partial_movie_files/DroneRacing/1477333082_2840115676_425458277.mp4'

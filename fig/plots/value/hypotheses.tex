@@ -1,0 +1,102 @@
+\documentclass{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{colormaps}
+
+\definecolor{tabblue}{rgb}{0.0000, 0.4470, 0.7410}
+\definecolor{taborange}{rgb}{0.8500, 0.3250, 0.0980}
+\definecolor{tabgreen}{rgb}{0.4660, 0.6740, 0.1880}
+\definecolor{tabyellow}{rgb}{0.9290, 0.6940, 0.1250}
+\definecolor{tabpurple}{rgb}{0.4940, 0.1840, 0.5560}
+
+% --------------------------------------------------------------------------
+% mesh/rows must equal the number of x-samples per row printed by
+% export_value_landscape.py (it prints this number when you run it, e.g.
+% GRID_RES = 140 unless you changed it).
+% --------------------------------------------------------------------------
+\newcommand{\meshrows}{60}
+
+\begin{document}
+\begin{tikzpicture}
+
+\begin{axis}[
+    name=plot1,
+    anchor=left of south west,
+    xshift=0.5cm,
+    width=8cm,
+    height=7cm,
+    colormap/viridis,
+    colorbar,
+    colorbar style={ylabel={Value}},
+    point meta min=0,      % set to your actual min/max value range, or
+    point meta max=1,      % delete both lines to let pgfplots auto-scale
+    axis equal image,
+    xlabel={x (m)},
+    ylabel={y (m)},
+    title={Target: Gate 1},
+]
+
+\addplot[
+    matrix plot*,
+    point meta=explicit,
+    mesh/rows=\meshrows,
+    mesh/cols=\meshrows,
+    shader=flat corner,
+]
+table[
+    x=x,
+    y=y,
+    meta=value,
+    col sep=comma,
+] {data/value_grid_ST_Policy_gate1.csv};
+
+\addplot[black, line width=5pt, forget plot] coordinates {(-1.000,-1.500) (-2.000,-1.500)};
+\node[white, fill=black, fill opacity=0.7, text opacity=1, font=\bfseries\small, rounded corners] at (axis cs:-1.500,-1.500) {Gate1};
+\addplot[black, line width=5pt, opacity=0.4, forget plot] coordinates {(0.000,-0.500) (-0.000,0.500)};
+
+% --- gate markers: paste the snippet export_value_landscape.py prints for
+% this target gate here, e.g.:
+% \addplot[black, line width=5pt, forget plot] coordinates {(-1.5,-2.0) (-1.5,-1.0)};
+% \node[white, fill=black, fill opacity=0.7, text opacity=1, font=\bfseries\small,
+%       rounded corners] at (axis cs:-1.5,-1.5) {Gate1};
+
+\end{axis}
+
+% \begin{axis}[
+%     name=plot2,
+%     at={(plot1.right of south east)},
+%     anchor=left of south west,
+%     xshift=1.5cm,
+%     width=8cm,
+%     height=7cm,
+%     colormap/viridis,
+%     colorbar,
+%     colorbar style={ylabel={Value}},
+%     point meta min=0,
+%     point meta max=1,
+%     axis equal image,
+%     xlabel={x (m)},
+%     ylabel={y (m)},
+%     title={Target: Gate 2},
+% ]
+
+% \addplot[
+%     matrix plot*,
+%     point meta=explicit,
+%     mesh/rows=\meshrows,
+%     mesh/cols=\meshrows,
+%     shader=flat corner,
+% ]
+% table[
+%     x=x,
+%     y=y,
+%     meta=value,
+%     col sep=comma,
+% ] {data/value_grid_ST_Policy_gate2.csv};
+
+% --- gate markers for gate 2 target go here ---
+
+% \end{axis}
+
+\end{tikzpicture}
+\end{document}
