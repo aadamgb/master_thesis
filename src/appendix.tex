@@ -33,8 +33,7 @@ The UAV characteristics are described in the following table.
   \caption{Picture of the a300 drone flying.}
 \end{figure}
 
-\section{PX4 Mixing Logic}
-In this section we explain in further detail the how does the PX4 firmware handle the mixing of collective thurst and body rate setpoint to the motor commands.
+
 
 \section{Simulator Validation}\label{sim-val}
 As detailed in \autoref{sec:sim_frame}, our simulator utilizes a simplified model of quadrotor dynamics and aerodynamics. 
@@ -106,3 +105,142 @@ To mitigate this, \ac{DR} is employed during training as described in \autoref{s
 To assess transferability, the policies trained in the proposed differentiable simulator are evaluated in a high-fidelity simulation environment using the MRS UAV stack in Gazebo~\cite{baca_mrs_2021}.
 Since the differentiable physics and model-free \ac{RL} policies are optimized under different paradigms, the sim-to-sim performance gap is analyzed for each method, measuring the degradation in success rate $\mathit{SR}$ and lap time $T_f$ relative to the results obtained in the training simulator.
 Additionally, robustness to external disturbances is evaluated by exposing the trained policies to wind perturbations during deployment, without any retraining or fine-tuning.
+
+
+
+
+
+
+% =======================================================
+\section{PX4 Mixing Logic}
+In this appendix, section we explain in further detail the how does the PX4 firmware map from collective thurst and body rate setpoints to the motor commands, and how does the mixer handle desaturation.
+
+Unlike we initially modeled in \autoref{ctbr-bad}, the PX4 rate conterller consists of a \ac{PID}, where the torque is computed as,
+
+\begin{equation}\label{px4-tau}
+  \boldsymbol{\tau}_{\text{cmd}} = \mathbf{k_p} (\boldsymbol{\omega}_{\text{cmd}} - \boldsymbol{\omega}) + \mathbf{rate\_int} + \mathbf{k_d} \boldsymbol{\alpha} + \mathbf{k_{ff}} \boldsymbol{\omega}_{\text{cmd}}
+\end{equation}
+where $\boldsymbol{\omega}_\text{cmd}$ is computed as in \autoref{omega-cmd},   $\boldsymbol{\alpha}$ is the dron's angular accelaration obtained from the \ac{IMU}, since we do not model any sensors, we approximate the anglar acceleration as $(\boldsymbol{\omega}_k - \boldsymbol{\omega}_{k-1}) / \Delta t$.
+The gains of the rate controller are:
+
+\begin{table}[H]
+  \centering
+  \caption{PX4 rate controller gains.}
+  \begin{tabular}{l|c}
+    \hline
+    Gain & Value \\ \hline
+    $\mathbf{k_p}$ & $(0.042,\ 0.042,\ 0.2)$ \\
+    $\mathbf{k_i}$ & $(0.08,\ 0.08,\ 0.1)$ \\
+    $\mathbf{k_d}$ & $(0.0015,\ 0.0015,\ 0.0)$ \\
+    $\mathbf{k_{ff}}$ & $(0.0,\ 0.0,\ 0.0)$ \\
+    $\mathbf{lim\_int}$ & $(0.30,\ 0.30,\ 0.30)$ \\
+    \hline
+  \end{tabular}
+\end{table}
+
+The integral term of \autoref{px4-tau}, is computed as,
+
+\begin{equation}
+  \mathbf{rate\_int} += \text{max}(1 - (\frac{\boldsymbol{\omega}_{\text{cmd}} - \boldsymbol{\omega}}{400})^2,\ 0) \mathbf{k_i} (\boldsymbol{\omega}_{\text{cmd}} - \boldsymbol{\omega})\Delta t
+\end{equation}
+Furthermore, the integral term is then clamped element-wise to remain within the configured integral limits:
+
+\begin{equation}
+  \mathbf{rate\_int} = \text{clip}(\mathbf{rate\_int},\ \mathbf{-lim\_int},\ \mathbf{lim\_int})
+\end{equation}
+
+And the collective throttle is directly given by the policy as,
+\begin{equation}
+  throttle = u_0. 
+\end{equation}
+When mapping from wrench (collective force and torques) to motor commands, using \autoref{eq:simp_alloc}, the solution of the equation can include saturated the actuator setpoints or even negative thrust commands, since the motors are not reversible, hence the solution has to be desaturated.
+The PX4 firmware allows for three desaturation modes varyng on the value of the parameter MC\_AIRMODE, by deafult it is set to 0 which means that the airmode is disabled, if set to 1, airmode is enabled for pitch and roll and if set to 2, airmode is enabled for pitch roll and yaw.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1.0\textwidth]{fig/photos/airmode.png}
+  \caption{\todo{}}
+\end{figure}
+
+% with the commanded throttle and torques, the mixing to obtain the motor commands proceeds as follows.
+First, only the signs of the allocation matrix, \autoref{eq:simp_alloc} are used to obtain the motor setpoints, which for our quadrotor configuration Figure~\autoref{fig:mot_layout}, corresponds to:
+
+\begin{equation}
+  \begin{aligned}
+    motor\_1 &= u_0 - \tau_{b_1} - \tau_{b_2} - \tau_{b_3} \\
+    motor\_2 &= u_0 - \tau_{b_1} + \tau_{b_2} + \tau_{b_3} \\
+    motor\_3 &= u_0 + \tau_{b_1} + \tau_{b_2} - \tau_{b_3} \\
+    motor\_4 &= u_0 + \tau_{b_1} - \tau_{b_2} + \tau_{b_3}
+    \label{mixing}
+  \end{aligned}
+\end{equation}
+
+% \begin{equation}
+%   \begin{aligned}
+%     motor\_1 &= u_0 - \tau_{b_1} - \tau_{b_2} \\
+%     motor\_2 &= u_0 - \tau_{b_1} + \tau_{b_2} \\
+%     motor\_3 &= u_0 + \tau_{b_1} + \tau_{b_2} \\
+%     motor\_4 &= u_0 + \tau_{b_1} - \tau_{b_2}
+%   \end{aligned}
+% \end{equation}
+
+Note that if MC\_AIRMODE is 0 or 1,  the yaw torques are not yey included to the mixing. 
+The mixing of pitch and roll is prioritized and then the yaw is mixed.
+The desaturation cascade starts with the collective thrust.
+And the desaturation algorithm consists of two steps.
+The algorithm takes the motors setpoints and the desaturation vector which is the sign of the corresponding row of the allocation matrix, (i.e first row for collecitve thrust, second for pitch...), then the desaturation gain is computed as follows. 
+For each actuator $i$ with desaturation vector component $d_i \neq 0$, a candidate gain $k_i$ is computed only if that actuator's setpoint $m_i$ violates its bounds $[motor_i^{min}, motor_i^{max}]$
+
+\begin{equation}
+  k_i =
+  \begin{cases}
+    \dfrac{motor_i^{min} - motor_i}{d_i}, & \text{if } motor_i < motor_i^{min} \\[8pt]
+    \dfrac{motor_i^{max} - motor_i}{d_i}, & \text{if } motor_i > motor_i^{max}
+  \end{cases}
+  \label{eq:desat_candidate}
+\end{equation}
+
+Actuators within the bounds are not candidates, since no correction is needed.
+Each $k_i$ is exactly the scalar gain that, if applied to, would place actuator $i$ inside its operating boundary. 
+The most extreme candidates in each direction are then retained,
+
+\begin{equation}
+  k_{min} = \min\left(0,\ \min_i k_i\right), \qquad
+  k_{max} = \max\left(0,\ \max_i k_i\right)
+  \label{eq:desat_extremes}
+\end{equation}
+and the final desaturation gain is their sum,
+
+\begin{equation}
+  k = k_{min} + k_{max}.
+  \label{eq:desat_gain}
+\end{equation}
+
+Once the gain $k$ from \autoref{eq:desat_gain} is computed, if $k_1 > 0$ and only decreases are permitted along $\mathbf{d}$, $k_1$ is discarded (set to zero) and no correction is applied for this vector $\mathbf{d}$.
+
+% it is applied to the motor setpoints in two successive steps rather than a single correction.
+% In the first step, the full gain $k_1 = k$ is applied,
+
+\begin{equation}
+  motor_i^\prime = motor_i + k_1 d_i, \qquad \forall i
+  \label{eq:desat_step1}
+\end{equation}
+
+Otherwise, the motor setpoints are corrected. 
+Since $k$ is a single scalar gain, conflicts in saturation can still exist, applying $k_1$ once does not, in general, bring every actuator inside the bounds and some actuators may remain saturated, or previously unsaturated actuators may now become sturated after the correction. 
+For this reason, the desaturation gain is recomputed on the updated setpoints $motor_i^\prime$, and a second, half-magnitude correction is applied,
+
+\begin{equation}
+  k_2 = \dfrac{1}{2}\,k(\text{motor}_i^{\prime}), \qquad
+  motor_i^{\prime\prime} = motor_i^\prime + k_2 d_i, \qquad \forall i
+  \label{eq:desat_step2}
+\end{equation}
+
+% where $\text{motor}_i^\prime$ denotes the setpoints after \autoref{eq:desat_step1}. 
+The factor $\tfrac{1}{2}$ damps the correction to avoid overshooting the boundary that the first step may caused.
+
+In our simulation and at deployement in Gazebo, we selected MC\_AIRMODE=0, that is to say, airmode disabled, so first, the collective thrust is desaturated with only gains $k<0$.
+Then roll is desaturated followed by pitch, this time, allowing positive desaturation gains.
+Finally, the yaw is introduced to \autoref{mixing}, and yaw is desaturated followed by a last desaturation of the collecitve thrust, in case it gets saturated again after introducing yaw into the mixing.
+
+% When  restriction discarded $k_1$ in the first step (i.e. $k_1 = 0$ because only an increase was available and increases are not allowed), the second step is skipped entirely as well: no partial correction is applied along $\mathbf{d}$, and the saturation on that axis is left for the subsequent stages of the cascade (roll, pitch, and finally yaw) to resolve.

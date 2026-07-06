@@ -229,7 +229,7 @@ This way, \ac{CTBR} controller provides a suitable baseline for evaluating trans
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/transfer/hypotheses.pdf}
-    \caption{Real world flight data, UZH track trajectory tracking.}
+    \caption{Paths trace by the policies when deploy in Gazebo, UZH racing track.}
     \label{fig:transfer}
 \end{figure}
 Using this setup, we compare the position and velocity \ac{RMSE} obtained in our simulator against the results in Gazebo.
@@ -273,15 +273,15 @@ This suggests that \ac{DR} contributed positively to policy transferability in r
 Additionally, the experiment provided valuable insights and data that were later used to improve the simulator.
 % RMSE: 6.11020 m | RMSE: 4.25100 m  | Max Speed: 8.11 m/s
 
-
-Since with the trajectory tracking task we have achieved suboptimal performance, we shift focus to the gate progress task, \autoref{gate-prog} , in the following sections. 
-This task is commonly used in drone racing and has demonstrated champion-level performance by enabling the policy to explore and adapt better than a fixed, time-parameterized trajectory, see~\cite{songreaching2023}.
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.9]{fig/plots/uzh-real-flight/hypotheses.pdf}
     \caption{Real world flight data, UZH track trajectory tracking.}
     \label{fig:real-world}
 \end{figure}
+
+Since with the trajectory tracking task we have achieved suboptimal performance, we shift focus to the gate progress task, \autoref{gate-prog} , in the following sections. 
+This task is commonly used in drone racing and has demonstrated champion-level performance by enabling the policy to explore and adapt better than a fixed, time-parameterized trajectory, see~\cite{songreaching2023}.
 
 \section{Model-Free and Model-Based evaluation}\label{sec:mb-vs-mf}
 In this section, we compare two policies, one optimized using model-free \ac{RL} with \ac{PPO}, and the other using model-based \ac{RL} with \ac{BPTT}.
@@ -351,7 +351,7 @@ Note that this policies would not transfer to a real world-sencario, but this re
 
 \begin{figure}[H]
     \centering
-    \includegraphics{fig/plots/fig-8/hypotheses.pdf}
+    \includegraphics[scale=0.8]{fig/plots/fig-8/hypotheses.pdf}
     \caption{Paths traced by the policies for five laps.}
     \label{fig:8}
 \end{figure}
@@ -393,7 +393,7 @@ Showning that the \ac{PPO} policy is more robust in this scenario.
 
 \begin{figure}[H]
     \centering
-    \includegraphics{fig/plots/fig-8-wind/hypotheses.pdf}
+    \includegraphics[scale=0.8]{fig/plots/fig-8-wind/hypotheses.pdf}
     \caption{Paths traced by the policies for five laps with external disturbances.}
     \label{fig:wind}
 \end{figure}
@@ -423,21 +423,21 @@ PPO & $3.23 \pm 0.18 $ & 94.5 & 70.9 & 24.71 \\ \hline
 \end{figure}
 
 
-Observing \autoref{tab:geo-adapt-fixed} and \autoref{fig:lap_times_ctbr}, we find that \ac{BPTT} policy transfer poorly, it completes only seven laps, of which only two are successful, with a mean lap time of $7.21\ \mathrm{s}$ (an increase of $162.2\ \%$ relative to the simulator mean). In contrast, the \ac{PPO} policy degrades by only $24.71\ \%$ and maintains a higher track \ac{SR} of $70.9\ \%$, indicating superior transfer performance for \ac{PPO} compared to direct \ac{BPTT}.
+Observing \autoref{tab:geo-adapt-fixed} and \autoref{fig:lap_times_ctbr}, we find that \ac{BPTT} policy transfers poorly, it completes only seven laps, of which only two are successful, with a mean lap time of $7.21\ \mathrm{s}$ (an increase of $162.2\ \%$ relative to the simulator mean). In contrast, the \ac{PPO} policy degrades by only $24.71\ \%$ and maintains a higher track \ac{SR} of $70.9\ \%$, indicating superior transfer performance for \ac{PPO} compared to direct \ac{BPTT}.
 As noted above, although both policies were trained with $30\ \%$ \ac{DR}, direct \ac{BPTT} appears to be more prone to overfitting to the training quadrotor model, achieving worse performance when model mimatch can be present.
-
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{fig/photos/value_landscape_comparison.png}
+    \caption{Value gradients computed by the critic network for the first two gates.}
+    \label{values}
+\end{figure}
 In contrast, since \ac{PPO} treats the quadrotor model as a black box and does not rely on it for the optimization process, it instead relies on a critic network that quantifies the value of a given state, see~\autoref{values}. 
 This appears to generalize better to unseen environments. 
 Since Gazebo is a higher-fidelity simulator than ours, based on these results we would expect only the \ac{PPO} policy to transfer to the real world.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{fig/photos/value_landscape_comparison.png}
-    \caption{Value gradients computed by the critic network for the first two gates.}
-    \label{values}
-\end{figure}
 
-\section{Fixed Gains against Adaptive Gains} \label{adapt_gains}
+
+\section{Fixed Gains Versus Adaptive Gains} \label{adapt_gains}
 
 Lastly, we investigate in further detail wether having adaptive gains for the geometric controller leeads to an increase in performance.
 The policies were optimized with \ac{PPO} since it showed superior performance than our approach with \ac{BPTT} and we train for the same Eight figure track as before.

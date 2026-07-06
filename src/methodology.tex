@@ -144,22 +144,22 @@ The choice of control abstraction affects both the performance of the controller
 For this reason, it is worthwhile to investigate and implement multiple control abstractions.
 
 In this thesis, three control modalities are considered.
-For all control modalities, the policy output layer pass through a sigmoid activation function, \autoref{sigmoid}, ensuring that the action space is bounded in $[0,\ 1]$, which facilitates stable learning.
+For all control modalities, the policy output layer passes through a sigmoid activation function, \autoref{sigmoid}, ensuring that the action space is bounded in $[0,\ 1]$.
 \begin{equation}\label{sigmoid}
     \sigma(x) = \frac{1}{1 + e^{-x}}
 \end{equation}
 
 The lowest level of abstraction consists of directly outputting \ac{SRT} for each motor.
 Then, we implement an intermediate level of abstraction that outputs collective thrust and the desired body rates, which are subsequently mapped to individual rotor thrusts through the control allocation matrix \autoref{eq:simp_alloc}.
-The highest level of abstraction outputs desired linear velocities and heading rate, which are converted into wrench using an $\mathrm{SO}(3)$ geometric controller, inspired by~\cite{lee_geometric_2010}, and subsequently mapped to rotor thrusts in a manner analogous to the collective thrust and body rate formulation.
-The mathematical formulation of these transformations is presented next.
+The highest level of abstraction outputs linear velocities and heading rate, which are converted into wrench using an $\mathrm{SO}(3)$ geometric controller, inspired by~\cite{lee_geometric_2010}, and subsequently mapped to rotor thrusts in a manner analogous to the collective thrust and body rate formulation.
+Next, we explain in more detail our implementation of these controllers.
 
 \subsection{Single Rotor Thrust} \label{sec:srt}
 When the \ac{SRT} control mode is choosen, the only transformation to be applied is scaling the policy output $\boldsymbol{u} \in [0, 1]\in \real^4$ to the actuator limits, $\mathbf{T_{\text{cmd}}} \in [T_{\text{min}}, T_{\text{max}} ] \in \real^4$.
-Therefore, the transformation is as simple as: 
+Therefore, the transformation is as simple as,
 
 \begin{equation}
-    T_{\text{cmd},i} = u_i \left( T_{\text{max}}- T_{\text{min}} \right) + T_{\text{min}}, \quad i = 1, 2, 3, 4
+    T_{\text{cmd},i} = u_i \left( T_{\text{max}}- T_{\text{min}} \right) + T_{\text{min}}, \quad i = 1, 2, 3, 4.
 \end{equation}
 
 
@@ -184,13 +184,13 @@ However, for training purposes it has been decided to skip the motor dynamics du
 Particularly, the mapping of \autoref{eq:motspd} produces high variations on the gradient, degrading the training performance and sample efficiency.  
 
 % CTBR
-\subsection{Collective Thrust and Body Rates}
+\subsection{Collective Thrust and Body Rates}\label{ctbr-bad}
 When the \ac{CTBR} control mode is selected, the normalized outputs of the policy $\boldsymbol{u} \in [0, 1]\in \real^4$, the scaling is as follows,
 
 \begin{equation}
     T_{c, \text{cmd}} = u_1  (T_{\text{max}} - T_{\text{min}}) + T_{\text{min}} 
 \end{equation}
-\begin{equation}
+\begin{equation}\label{omega-cmd}
     \omega_{i, \text{cmd}} = (2u_{i+1} - 1)  \omega_{i, \text{max}}, \quad i \in \{1, 2, 3\}
 \end{equation}
 
@@ -274,7 +274,7 @@ The heading vector, serves an auxiliary vector to compute $\mathbf{\hat{b}}_2$ a
             }
         \end{minipage}
     }
-    \caption{Geometric interpretation of Equations 3.12--3.15}
+    \caption{Geometric interpretation of Equation \eqref{eq:atterr}.}
 \end{figure}
 
 \noindent The complete derivation of \autoref{eq:atterr} can be found in~\cite{lee_geometric_2010}. 
@@ -404,6 +404,7 @@ The observation vector is defined as:
 % \todo{Explain harmonics generation for pretraining}
 
 The policies are first trained to track an arbitrary trajectory created by summing random harmonics as described in \autoref{harmonics}, where $n=3$, $\phi=2.0$ and $\omega$ is initially set to one, but a curriculum is added in such a manner that the speed of the trajecotry is incremented by a certain $\delta$ when the \ac{RMSE} is lower than a given threshold.
+Note that the reference is descibed in the world frame $\mathcal{W}$.
 
 \begin{equation}\label{harmonics}
     \mathbf{p}_k^{\text{ref}} = \sum_{i=1}^{n}A_i\sin{\left(\omega_i k + \phi_i\right)}
@@ -473,7 +474,7 @@ The observation vector for this task is,
 \begin{bmatrix}
 \mathbf{p}_{k}^{\mathcal{G}} & 
 \mathbf{v}_{k}^{\mathcal{G}} & 
-\mathbf{q}_k &
+\mathbf{q}_k ^{\mathcal{W}} &
 \boldsymbol{\omega}_k &
 \mathbf{p}^\mathcal{W}_{\text{gate}} &
 \mathbf{\hat{g}_2}^{\mathcal{W}} &
@@ -574,7 +575,7 @@ Note that the arm lenght $\mathbf{l} \in \real^4$, torque constant $\mathbf{c_{t
 Each parameter is multiplied by a scaling factor $k \sim \mathcal{U}(1-p, 1+p)$, unless the arm lengths and arm angle,  which are randomized aditively instead of multiplicatively and with a randomization percentage one order of magnitude lower.
 We decide to randomize these two parameters differently since they are more sensitive.
 
-We select $p=0.2$ based on experimental results from a previous project, as it demonstrated good transferability.
+We select $p\in[0.2, 0.3]$ based on experimental results from a previous project, as it demonstrated good transferability.
 Nonetheless it can be considered a hyperparameter of the training process and be tunned according to the situation.
 The nominal parameters of the drone we use for training and deployement can be found in Appendix~\ref{apex-a300}.
 
@@ -604,7 +605,7 @@ Note that, during the backpropagation a surrogate model is used where the motor 
 
 
 Hence, the training workflow is the following. 
-First the user selects the training task, refered in the code as environemnt env=[tt,\ pp], for now only the task of trajectory tracking (tt) is implemented, but other tasks such as path progress (pp) can be added.
+First the user selects the training task, refered in the code as environemnt env=[tt,\ gp],  (tt) stands for trajectory tracking and (gp) for gate progress.
 The user also selects the control abstraction/mode cm=[srt,\ ctbr,\ lvhr,\ lvhr+g] which defines the control mapping function $g_{\text{cm}}()$ from the policy outputs $\boldsymbol{\pi_\theta}(\mathbf{o})$ to the control inputs $\mathbf{u}$. 
 Finally, the user introduces the number of parallel environments $B$, the number of episodes $N$, the number of steps $K$, the optimization horizon $H$ and other hyperparameters such as the learning rate $\alpha$, randomization percentage $p$, termination distance threshold $d_\text{max}$, etc. 
 
@@ -616,7 +617,7 @@ Once all these parameters are set, training proceeds as follows:
 \label{alg:training}
 \begin{algorithmic}[1]
 
-\Require Training task $\mathrm{env} \in \{\mathrm{tt},\ \mathrm{pp}\}$,
+\Require Training task $\mathrm{env} \in \{\mathrm{tt},\ \mathrm{gp}\}$,
          control mode $\mathrm{cm} \in \{\mathrm{srt},\ \mathrm{ctbr},\ \mathrm{lvhr},\ \mathrm{lvhr{+}g}\}$,
          batch size $B$, episodes $N$, steps $K$, horizon $H$,
          learning rate $\alpha$, simulation step $\Delta t = 0.01\,\mathrm{s}$, other hyperparams
