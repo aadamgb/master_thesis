@@ -2,3 +2,22 @@
 
 \chapter{Future Directions\label{chap:fut_dir}}
 
+
+This work introduced the authors to the exciting world of controls, reinforcement learning, and aerial robotics.
+Although our proposed approach presented several limitations, it establishes a foundation upon which more advanced drone racing systems can be developed.
+We demonstrated successful deployment of several neural controllers in Gazebo, achieving lap times comparable to the current state of the art on the evaluated racing track.
+However, the present work considers only the planning and control components of the racing pipeline, excluding the perception problem, which remains one key challenges in autonomous drone racing.
+A natural extension of this work is to incorporate perception into the learning pipeline.
+
+Recent world-model-based reinforcement learning architectures, such as Dreamer~\cite{...}, learn control policies directly from visual observations while simultaneously learning a latent dynamics model of the environment.
+Such models combine perception, planning, and control within a unified framework, making them an attractive research direction.
+Another topic we would like to address concerns the control abstraction used by the policy.
+Throughout this thesis, policies deployed in Gazebo output collective thrust and body rates, which are subsequently converted into motor commands by the PX4 mixer.
+When the requested commands exceed the physical limits of the vehicle, the mixer redistributes the motor thrusts through a desaturation algorithm (see Appendix~\ref{...}).
+This intermediate control layer may limit the achievable performance, and it would therefore be interesting to investigate whether directly commanding the motors can improve agility and exploit the full actuation capabilities of the platform.
+The results of this thesis also suggest that direct model-based optimization requires more sophisticated optimization strategies to remain competitive in complex racing scenarios.
+Future work could investigate hybrid approaches that combine differentiable simulation with value-function thus avoiding the greedy behavior observed.
+
+Finally, recent work~\cite{...} has shown that automatically generating diverse racing tracks during training substantially improves policy generalization.
+Incorporating a procedural environment generator into the proposed simulator would allow policies to be trained on a much broader distribution of racing scenarios rather than overfitting to a single track.
+This framework could be further extended by introducing static and dynamic obstacles, enabling the learned policy not only to race efficiently but also to perform obstacle avoidance in previously unseen environments.

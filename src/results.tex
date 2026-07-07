@@ -40,13 +40,12 @@ The performance of the proposed method is compared against standard model-free \
 \section{Surrogate Gradient Analysis}\label{sec:sur_grad}
 In this section, we analyze the effect of using surrogate gradients during the policy optimization process.
 The gradient is backpropagated from the loss function to the policy parameters through the chain rule.
-As discussed in \autoref{sec:diff-opt}, the gradients are computed numerically from the computational graph.
+As discussed in \autoref{sec:diff-opt}, the gradients are computed numerically from a computational graph.
 Certain operations, such as \autoref{eq:motspd}, can be highly sensitive to small perturbations, leading to unstable gradients and making the optimization process more difficult.
-
 This behaviour can be observed in \autoref{fig:gradients}, where the loss and gradient norm are plotted against the training steps for two different approaches: a simplified backpropagated model that omits motor dynamics, and the full model including the motor dynamics.
 At the beginning of training, both approaches exhibit similar behavior.
 However, the full model eventually converges to a suboptimal solution and fails to track the trajectory successfully.
-By analyzing the gradient norm of the full model, larger oscillations can be observed, which we believe are responsible for the unstable optimization and suboptimal convergence.
+By analyzing the gradient norm of the full model, larger oscillations can be observed, which we believe are the cause for the unstable optimization and suboptimal convergence.
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/gradients/hypotheses.pdf}
@@ -433,7 +432,7 @@ As noted above, although both policies were trained with $30\ \%$ \ac{DR}, direc
 \end{figure}
 In contrast, since \ac{PPO} treats the quadrotor model as a black box and does not rely on it for the optimization process, it instead relies on a critic network that quantifies the value of a given state, see~\autoref{values}. 
 This appears to generalize better to unseen environments. 
-Since Gazebo is a higher-fidelity simulator than ours, based on these results we would expect only the \ac{PPO} policy to transfer to the real world.
+Based on these results we only expecte the \ac{PPO} policy to be able to transfer to a real world scneario.
 
 
 
@@ -449,7 +448,7 @@ While the adaptive policy selects these gains dynamically at each time step in t
     \mathbf{k}_R^{\min} &= (1, 1, 0.2), & \mathbf{k}_R^{\max} &= (16, 16, 2).
 \end{align*}
 
-Note that, contrary to \autoref{subsec:lvhr}, the gains different per axis (pitch, roll, yaw) and instead of commanidng body torques, the controller commands body rates such that \autoref{eq:geo_tau} becomes \autoref{geo-omega}.
+Note that, contrary to \autoref{subsec:lvhr}, the gains are different per axis (pitch, roll, yaw) and instead of commanidng body torques, the controller commands body rates such that \autoref{eq:geo_tau} becomes \autoref{geo-omega}.
 The commanded collective force and attitue $\mathbf{R}_{\text{cmd}}$ are computed in the same manner from the velocity commands.
 
 
@@ -538,8 +537,8 @@ The fixed policy has faster lap times and an $83.33\%$ of the laps were sucessfu
 
 We believe that this performance mismatch between our simulator and Gazebo is due to several unmodeled factors that we could not capture faithfully.
 In our simulator, we attempt to replicate the PX4 firmware.
-To mimic how the flight computer handles policy commands, we integrate the dynamics at $1000\ \mathrm{Hz}$, while the inner rate control loop in the PX4 software runs at $250\ \mathrm{Hz}$, and the policy commands at either $83\ \mathrm{Hz}$ or $125\ \mathrm{Hz}$.
-Following this approach, the policies transferred better; however, since we use a simplified rate controller for the simulator rather than the complete PX4 firmware, there coul be a model mismatch.
+To mimic how the flight computer handles policy commands, we integrate the dynamics at $1000\ \mathrm{Hz}$, while the inner rate control loop in the PX4 software runs at $250\ \mathrm{Hz}$, and the policy commands at $100\ \mathrm{Hz}$.
+Following this approach, the policies transferred better; however, since we use a simplified rate controller for the simulator rather than the complete PX4 firmware, model mismatches could still be present.
 Additionally, the adaptive geometric seems to be more aggressive yet sensitive to unmodeld effects of this kind.
 \begin{table}[H]
     \centering
