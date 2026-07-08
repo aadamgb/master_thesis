@@ -1,12 +1,13 @@
-\chapter{}
+\chapter{Supplementaries}
 
 \section{UAV Parameters}\label{apex-a300}
 The drone model that we use for this thesis is the a300 drone, which is the current agile platform for the MRS Group at FEE-CTU Prague.
-The UAV characteristics are described in the following table.
+The UAV characteristics are described in \autoref{a300}.
 
 \begin{table}[H]
   \centering
   \caption{Nominal parameters for the a300 drone.}
+  \label{a300}
   \begin{tabular}{l|c|c|c}
     \hline
     Symbol & Parameter & Value & Unit \\ \hline
@@ -40,7 +41,7 @@ As detailed in \autoref{sec:quad_model}, our simulator utilizes a simplified mod
 To maintain a computationally efficient and generalizable framework, we do not model battery depletion on thrust, complex aerodynamic effects, and the propellers rotational inertia. 
 While these unmodeled dynamics can cumulatively lead to a significant sim-to-real gap, we aim to address this mismatch through \ac{DR}.
 To validate the reliability of this simplified approach, we benchmark our simulator's behavior against Gazebo, a high-fidelity physics engine widely adopted by the robotics community. 
-Specifically, we utilize the UAV models provided by the MRS UAV System within the Gazebo environment as our baseline.
+Particularly, we utilize MRS UAV System~\cite{baca_mrs_2021} within the Gazebo.
 
 We separelty asses the respones of the body rates against a unit step, a variable amplitude and a variable frequency signals.
 \begin{figure}[H]
@@ -61,41 +62,42 @@ Minor discrepancies can be observed in the response of integration of the unit-s
 Similarly, the yaw reponses between simulators are close but there is some mismatch on the unit step and variable frequency signals can be appreciated.
 In our simulator we saturate the yaw rate to $\pm 3$ rad/s and the yaw acceleartion to $\pm 5$ rad/$s^2$ to match with Gazebo's. 
 
-Although we made every effort to match the responses and model to Gazebo, we believe that we could not fully capture the high-fidelity dynamics, which may have affected policy training performance.
+% Although we made every effort to match the responses and model to Gazebo, we believe that we could not fully capture the high-fidelity dynamics, which may have affected policy training performance.
 
 \section{Evaluation Criteria}\label{sec:eval_criteria}
 
-This section details the metrics and experimental framework used to evaluate the performance of the proposed differentiable physics approach against a model-free \ac{PPO}. 
-The evaluation is structured around three primary axes: training efficiency, performance in terms of lap time and success rate, and sim-to-sim transferability. 
+This section details the metrics used to evaluate our results. 
+The evaluation is structured around three primary axes: training/sample efficiency, performance; in terms of lap time and \ac{SR}, and \ac{S2S} transferability. 
 
 \subsection{Sample Efficiency}
 One of the central claims of this thesis is that leveraging analytical gradients from differentiable simulation significantly improves sample efficiency compared to standard model-free \ac{RL} algorithms.
 To evaluate this claim, the training convergence of the proposed differentiable physics approach is compared against \ac{PPO} trained on the same task, observation space, network architecture, and control abstraction.
-Sample efficiency is measured as the obtained mean reward against the simulated steps. 
+Sample efficiency is measured as the convergence of the obtained mean reward against the simulated steps. 
 We consider an optimization method more sample efficent than other if the mean reward converges for a lower number of simulation steps.
+Convergence is not strictly defined here; it is assessed qualitatively by inspecting the learning curves and noting when the mean reward stops increasing significantly.
 
 \subsection{Perfromance}
 \subsubsection{Lap Time and Succes Rate}
 
 Ultimately, the primary objective of \ac{ADR} is to traverse a sequence of gates as fast as possible.
 The metrics used to evaluate this objective are the lap time $T_f$ the gate \ac{SR} and the track \ac{SR}.
-The lap time $T_f$ is defined as the time elapsed from the start of the episode until the drone passes the final gate.
-The gate success rate is defined as the ratio of successfully passed gates $G_p$ to the total number of crossed gates $G$,
+The lap time $T_f$ is defined as the time elapsed from crossing the first gate to crossing it again.
+The gate \ac{SR} is defined as the ratio of successfully passed gates $G_p$ to the total number of crossed gates $G$,
 
 \begin{equation}
-    \mathit{SR}_{\text{gate}} = \frac{G_p}{G} \in [0, 1]
+    \mathit{SR}_{\text{gate}} = 100\cdot\frac{G_p}{G} \in [0, 100]\ \% 
 \end{equation}
-while the track success rate indicates how many of the laps performed did not have a single gate crash,
+while the track \ac{SR} indicates how many of the laps performed did not have a single gate crash,
 
 \begin{equation}
-    \mathit{SR}_{\text{track}} = \frac{L_c}{L} \in [0, 1]
+    \mathit{SR}_{\text{track}} = 100\cdot\frac{L_c}{L} \in [0, 100]\ \%
 \end{equation}
 where $L_c$ is the number of completed laps without a crash and $L$ is the total number of laps performed.
 
 
 \subsubsection{Root Mean Square Error}
 When a referene path is used, the performance metric utilized is to compute the \ac{RMSE} between the drone's state and the reference state.
-We evaluate a position \ac{RMSE},
+We consider only the position \ac{RMSE},
 \begin{equation}
   \mathrm{RMSE} = \sqrt{\frac{1}{N} \sum_{k=1}^N \left\|\mathbf{p}_k - \mathbf{p}^{\mathrm{ref}}_k\right\|_2^2 },
 \end{equation}
@@ -106,23 +108,25 @@ and velocity \ac{RMSE},
 
 \subsection{Transferability and Robustness}\label{subsec:transfer}
 
-Learned policies are prone to overfitting to the training environment and may fail to generalize when deployed under conditions that deviate from those seen during training, due to model mismatches and unmodeled effects.
+% Learned policies are prone to overfitting to the training environment and may fail to generalize when deployed under conditions that deviate from those seen during training, due to model mismatches and unmodeled effects.
 To assess transferability, the policies trained in the proposed differentiable simulator are evaluated in a high-fidelity simulation environment using the MRS UAV stack in Gazebo~\cite{baca_mrs_2021}.
-Since the differentiable physics and model-free \ac{RL} policies are optimized under different paradigms, the sim-to-sim performance gap is analyzed for each method, measuring the degradation in success rate $\mathit{SR}$ and lap time $T_f$ relative to the results obtained in the training simulator.
+Since the differentiable physics and model-free \ac{RL} policies are optimized under different paradigms, the \ac{S2S} performance gap is analyzed for each method, measuring the degradation in \ac{SR} and lap time $T_f$ relative to the results obtained in the training simulator.
+
 Additionally, robustness to external disturbances is evaluated by exposing the trained policies to wind perturbations during deployment, without any retraining or fine-tuning.
+The evaluation of robustnes is carried out in our simulation environemnt.
 
 
 
 % =======================================================
 \section{PX4 Mixing Logic}\label{px4-mixing}
-In this appendix section, we explain in further detail the how does the PX4 firmware map from collective thurst and body rate setpoints to the motor commands, and how does the mixer handle desaturation.
-Unlike we initially modeled in \autoref{ctbr-bad}, the PX4 rate conterller consists of a \ac{PID}, where the torque is computed as,
+In this appendix section, we explain in further detail the how does the PX4 firmware map from collective thurst and body rate setpoints to the motor commands~\cite{px4_ctrl}, and how does the mixer handle desaturation~\cite{px4_desat}.
+Unlike we initially modeled in \autoref{ctbr-bad}, the PX4 rate conterller consists of a \ac{PID}, where the torque is obtained as,
 
 \begin{equation}\label{px4-tau}
   \boldsymbol{\tau}_{\text{cmd}} = \mathbf{k_p} (\boldsymbol{\omega}_{\text{cmd}} - \boldsymbol{\omega}) + \mathbf{rate\_int} + \mathbf{k_d} \boldsymbol{\alpha} + \mathbf{k_{ff}} \boldsymbol{\omega}_{\text{cmd}}
 \end{equation}
 where $\boldsymbol{\omega}_\text{cmd}$ is computed as in \autoref{omega-cmd} and  $\boldsymbol{\alpha}$ is the dron's angular accelaration obtained from the \ac{IMU}.
-Since we do not model any sensors, we approximate the angular acceleration as $(\boldsymbol{\omega}_k - \boldsymbol{\omega}_{k-1}) / \Delta t$.
+Since we do not model any sensors, we approximate the angular acceleration as $ \alpha = (\boldsymbol{\omega}_k - \boldsymbol{\omega}_{k-1}) / \Delta t$.
 The gains of the rate controller are:
 
 \begin{table}[H]
@@ -144,7 +148,7 @@ The gains of the rate controller are:
 \begin{equation}
   \mathbf{rate\_int} += \text{max}(1 - (\frac{\boldsymbol{\omega}_{\text{cmd}} - \boldsymbol{\omega}}{400})^2,\ 0) \mathbf{k_i} (\boldsymbol{\omega}_{\text{cmd}} - \boldsymbol{\omega})\Delta t.
 \end{equation}
-Furthermore, the integral term is then clamped element-wise to remain within the configured integral limits,
+Furthermore, it is clamped element-wise to remain within the configured integral limits,
 
 \begin{equation}
   \mathbf{rate\_int} = \text{clip}(\mathbf{rate\_int},\ \mathbf{-lim\_int},\ \mathbf{lim\_int}).
@@ -153,10 +157,10 @@ And the collective throttle is directly given by the policy as,
 \begin{equation}
   throttle = u_0. 
 \end{equation}
-When mapping from wrench (collective force and torques) to motor commands, using \autoref{eq:simp_alloc}, the solution of the equation can include saturated the actuator setpoints or even negative thrust commands, since the motors are not reversible, hence the solution has to be desaturated.
-The PX4 firmware allows for three desaturation modes varyng on the value of the parameter MC\_AIRMODE, by deafult it is set to 0 which means that the airmode is disabled, if set to 1, airmode is enabled for pitch and roll and if set to 2, airmode is enabled for pitch roll and yaw.
+When mapping from wrench (collective force and torques) to motor commands, using \autoref{eq:simp_alloc}, the solution of the equation can include saturated the actuator setpoints or even negative thrust commands, since the motors are not reversible, the solution has to be desaturated.
+The PX4 firmware allows for three desaturation modes varying on the value of the parameter MC\_AIRMODE, by deafult it is set to 0 which means that the airmode is disabled, if set to 1, airmode is enabled for pitch and roll and if set to 2, airmode is enabled for pitch roll and yaw.
 
-As illustrated in \autoref{airmode}, if airmode is enabled, increase in thrust is allowed in order to keep the commanded torque.
+As illustrated in \autoref{airmode}, if airmode is enabled, increaseing the thrust is allowed in order to keep the commanded torques.
 \begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{fig/photos/airmode.png}
@@ -165,7 +169,7 @@ As illustrated in \autoref{airmode}, if airmode is enabled, increase in thrust i
 \end{figure}
 
 % with the commanded throttle and torques, the mixing to obtain the motor commands proceeds as follows.
-First, only the signs of the allocation matrix, \autoref{eq:simp_alloc} are used to obtain the motor setpoints, which for our quadrotor configuration Figure~\autoref{fig:mot_layout}, corresponds to:
+Desaturation is done in a normalized space $motor_i \in [0, 1]\ i = 1, \dots, 4$, so only the signs of the allocation matrix, \autoref{eq:simp_alloc}, are used to obtain the motor setpoints, which for our quadrotor configuration corresponds to:
 
 \begin{equation}
   \begin{aligned}
@@ -202,7 +206,7 @@ For each actuator $i$ with desaturation vector component $d_i \neq 0$, a candida
   \label{eq:desat_candidate}
 \end{equation}
 
-Actuators within the bounds are not candidates, since no correction is needed.
+Actuators within the bounds are not considered, since no correction is needed.
 Each $k_i$ is exactly the scalar gain that, if applied to, would place actuator $i$ inside its operating boundary. 
 The most extreme candidates in each direction are then retained,
 
@@ -228,7 +232,7 @@ Once the gain $k$ from \autoref{eq:desat_gain} is computed, if $k_1 > 0$ and onl
   \label{eq:desat_step1}
 \end{equation}
 
-Otherwise, the motor setpoints are corrected. 
+Otherwise, the motor setpoints are corrected, \autoref{eq:desat_step1}. 
 Since $k$ is a single scalar gain, conflicts in saturation can still exist, applying $k_1$ once does not, in general, bring every actuator inside the bounds and some actuators may remain saturated, or previously unsaturated actuators may now become sturated after the correction. 
 For this reason, the desaturation gain is recomputed on the updated setpoints $motor_i^\prime$, and a second, half-magnitude correction is applied,
 
@@ -244,5 +248,10 @@ The factor $\tfrac{1}{2}$ damps the correction to avoid overshooting the boundar
 In our simulation and at deployement in Gazebo, we selected MC\_AIRMODE=0, that is to say, airmode disabled, so first, the collective thrust is desaturated with only gains $k<0$.
 Then roll is desaturated followed by pitch, this time, allowing positive desaturation gains.
 Finally, the yaw is introduced to \autoref{mixing}, and yaw is desaturated followed by a last desaturation of the collecitve thrust, in case it gets saturated again after introducing yaw into the mixing.
+This procedure mimics the original implementation~\cite{px4_desat}.
 
 % When  restriction discarded $k_1$ in the first step (i.e. $k_1 = 0$ because only an increase was available and increases are not allowed), the second step is skipped entirely as well: no partial correction is applied along $\mathbf{d}$, and the saturation on that axis is left for the subsequent stages of the cascade (roll, pitch, and finally yaw) to resolve.
+
+
+\chapter{Attatchements}
+\todo{Attach/link to code and videos}

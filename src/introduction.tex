@@ -66,7 +66,7 @@ Moreover, yaw control authority is typically limited, and actuator saturation fu
 These problems are common in robotics, and a variety of methods have been proposed to address them.
 Learning-based methods, particularly those relying on using a \ac{NN}, are gaining popularity due to their low-latency inference and robustness to noise.
 Individual components of the navigation stack can be learned using \ac{NN}s.
-For instance, \ac{CNNs} can process \ac{VIO} data to detect gates, while \ac{MLPs}  are frquently used for planning and/or control.
+For instance, \ac{CNN}s can process \ac{VIO} data to detect gates, while \ac{MLP}s  are frquently used for planning and/or control.
 Combinations of multiple stages, such as perception and planning or planning and control, can also be learned jointly.
 In some cases, the entire pipeline is learned end-to-end \cite{hanover_autonomous_2024}.
 Learning-based approaches offer several advantages; however, training these models typically requires large amounts of data, and current optimization methods can be sample inefficient.
@@ -119,7 +119,7 @@ We aim to demonstrate that this approach is a promising avenue for research in r
 
 \section{Related Work}
 
-The evolution of \ac{ADR} has progressed from early academic benchmarks in the IROS competitions between 2016 and 2018 \cite{iros2016, iros2017, iros2018}, where drones reached speeds of only a few meters per second, to highly professionalized racing, where autonomous drones exceed 150~km/h and outperform professional human pilots.
+The evolution of \ac{ADR} has progressed from early academic benchmarks in the IROS competitions between 2016 and 2018 \cite{iros2016, iros2017}, where drones reached speeds of only a few meters per second, to highly professionalized racing, where autonomous drones exceed 150~km/h and outperform professional human pilots.
 % A major breakthrough occurred during the \textit{AlphaPilot} competition in 2019,  surpassed human champions.
 % These milestones were enabled by advances in perception, planning, control, and learning-based methods.
 

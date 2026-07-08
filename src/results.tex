@@ -174,7 +174,7 @@ Finally, in the current setup, augmenting the policy to output the gains of the 
 The gains are initialized with the same values used in the \ac{LVHR} policy, namely $k_v = 0.6$, $k_R = 0.2$, and $k_\omega = 0.05$.
 However, in this case, the policy outputs scaling factors between $0$ and $1$ that modulate these gains.
 
-As shown in \autoref{fig:lvhr-g-action}, the gains remain relatively constant throughout the trajectory, raising the question of whether the feature justified in the current setup.
+As shown in \autoref{fig:lvhr-g-action}, the gains remain almost constant throughout the trajectory, raising the question of whether the feature justified in the current setup.
 Nevertheless, it is difficult to draw definitive conclusions from this experiment, since the evaluated trajectory remains far from optimal and the actuators operate well below saturation for most of the flight.
 Further investigation is conducted in \autoref{adapt_gains}, as we believe this approach could be beneficial in more aggressive flight regimes or under varying operating conditions, potentially providing advantages over fixed-gain geometric controllers.
 % As discussed in~\cite{boufrioua_gain_2022}, ``it is widely known that this controller design approach provides better stability and performance results for slowly varying parameters''~\cite{rugh_analytical_1991}.
@@ -252,7 +252,7 @@ In Appendix~\ref{sim-val} we test some simple signlas both in our simulator and 
     \begin{tabular}{ccc}
     \hline
 RMSE  & Ground Truth  & Passthrough \\ \hline
-Position [m]  & $1.215 \pm 0.18$ & $1.54 \pm 0.012$ \\
+Position [m]  & $1.415 \pm 0.18$ & $1.94 \pm 0.12$ \\
 Velocity [m/s]  & $0.982 \pm 0.08$ & $1.03 \pm 0.076$ \\ \hline
 \end{tabular}
 \end{table}

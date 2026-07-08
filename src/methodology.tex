@@ -68,7 +68,7 @@ Finally, $\mathbf{J}$ is the diagonal inertia matrix, $\tau_m$ is the motor time
 
 In the body frame $\mathcal{B}$, the individual motor thrusts $T_i, \ i=1,..,4$, are assumed to be perpendicular to the $\{\hat{\mathbf{b}}_1,\hat{\mathbf{b}}_2\}$ plane.
 The magnitudes of collective thrust $F_T$, and body torques $\boldsymbol{\tau}^\mathcal{B}$, can be obtained from \autoref{eq:simp_alloc}.
-To be strictly rigourous, the torques produced by the rotor's angular acceleration and gyroscopic effects should be accounted for, nonetheless, these effects can be neglected ~\cite{sun_comparative_2024} and the mapping simplifies to,
+To be strictly rigourous, the torques produced by the rotor's angular acceleration and gyroscopic effects should be accounted for, nonetheless, these effects can be neglected ~\cite{sun_comparative_2024}, and the mapping simplifies to,
 
 
 
@@ -159,7 +159,7 @@ When the \ac{SRT} control mode is choosen, the only transformation to be applied
 Therefore, the transformation is as simple as,
 
 \begin{equation}
-    T_{\text{cmd},i} = u_i \left( T_{\text{max}}- T_{\text{min}} \right) + T_{\text{min}}, \quad i = 1, 2, 3, 4.
+    T_{\text{cmd},i} = u_i \left( T_{\text{max}}- T_{\text{min}} \right) + T_{\text{min}}, \quad i = 1, \dots, 4.
 \end{equation}
 
 
@@ -191,7 +191,7 @@ When the \ac{CTBR} control mode is selected, the normalized outputs of the polic
     T_{c, \text{cmd}} = u_1  (T_{\text{max}} - T_{\text{min}}) + T_{\text{min}} 
 \end{equation}
 \begin{equation}\label{omega-cmd}
-    \omega_{i, \text{cmd}} = (2u_{i+1} - 1)  \omega_{i, \text{max}}, \quad i \in \{1, 2, 3\}
+    \omega_{i, \text{cmd}} = (2u_{i+1} - 1)  \omega_{i, \text{max}}, \quad i = 1, 2, 3
 \end{equation}
 
 \noindent where $\omega_{i, \text{max}}$ indicates the maximum body rate of the respective axis, (roll, pitch, yaw).
@@ -207,7 +207,7 @@ Given the commanded collective thrust and torques, the motor thursts can be obta
 The highest level of abstraction that has been implemented consists on commanding \ac{LVHR}. With this control mode, the policy outputs are scaled as,
 
 \begin{equation}\label{eq:geo_vel}
-    v_{i, \text{cmd}} = (2u_{i} - 1)  v_{i, \text{max}}, \quad i \in \{1, 2, 3\}
+    v_{i, \text{cmd}} = (2u_{i} - 1)  v_{i, \text{max}}, \quad i = 1, 2, 3
 \end{equation}
 \begin{equation}\label{eq:geo_omega}
     \omega_{3, \text{cmd}} = \dot{\eta}_{\text{cmd}} = (2u_{4} - 1)  \dot{\eta}_{ \text{max}}
@@ -332,7 +332,7 @@ Remeber that the policy outputs are constrained from zero to one so the policy o
 
 \section{Training Task} \label{sec:tasks}
 
-The training objectivs considered for this thesis aim to provide an approximate solution to the \ac{OCPs}, formulated in \autoref{sec:simpmin-OCP}.
+The training objectivs considered for this thesis aim to provide an approximate solution to the \ac{OCP}s, formulated in \autoref{sec:simpmin-OCP}.
 % To adress these problems, we use the proposed learning framework detailed in \autoref{sec:sim_frame}.
 Unlike traditional solvers that rely on \ac{QP} or model-free \ac{RL} which treats the system's dynamics as a black-box, we leverage the simulator's automatic differentiation enginge to compute the analytical gradient from the cost function to the policy parameters.
 

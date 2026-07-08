@@ -6,21 +6,21 @@
 In this thesis, we develop a differentiable simulation framework for autonomous drone racing, with a particular focus on the control part of the racing pipeline.
 Rather than addressing the complete \ac{OCP}, we formulate drone racing as either a trajectory tracking task or a gate progress task.
 The proposed framework enables policy optimization through automatic differentiation and supports multiple control abstractions, ranging from direct motor commands to geometric controllers.
-To improve robustness and \ac{s2r} transfer, the simulator incorporates \ac{DR} and a surrogate gradient formulation that mitigates the degradation of gradient quality introduced by complex quadrotor dynamics.
+To improve robustness and \ac{s2r} transfer, the simulator incorporates \ac{DR} and a surrogate gradient formulation that mitigates the degradation of gradient quality introduced by the complex quadrotor dynamics.
 Using this framework, we evaluate the different control abstractions in terms of tracking performance, sample efficiency, robustness to external disturbances, and transferability in both simulation and a real-world experiment.
 Finally, we compare our direct model-based optimization approach based on \ac{BPTT} against the standard model-free \ac{RL} algorithm \ac{PPO}, and investigate the performance of a novel auto-tuned geometric controller.
 
 In \autoref{sec:sur_grad}, we show that using a simplified dynamics model during backpropagation improves the quality of the gradients, leading to more effective policy optimization.
-In \autoref{subsec:sample_eff}, we find that the velocity controllers operating on the special orthogonal group $SO(3)$ converge $\mathbf{3\times}$ faster than the \ac{CTBR} controller and $\mathbf{6\times}$ faster than the \ac{SRT} controller on the trajectory tracking task.
-Although the policy is trained using a curriculum that gradually increases the trajectory speed, the resulting performance remains suboptimal, achieving reliable tracking only up to approximately $60\%$ of the optimal racing trajectory, corresponding to a maximum speed of $10~\mathrm{m/s}$.
-Among the evaluated controllers, the \ac{CTBR} controller provides the best trade-off between tracking performance and robustness to external disturbances.
+In \autoref{subsec:sample_eff}, we find that the velocity controllers operating on the special orthogonal group $SO(3)$ converge $\mathbf{3\times}$ faster than the \ac{CTBR} controller and $\mathbf{6\times}$ faster than the \ac{SRT} controller on the trajectory tracking task, showing that a higher level of controll abstraction increases the training efficency.
+Although the policies for the trajectory tracking task are trained using curriculum on the trajectory speed, the resulting performance remains suboptimal, achieving reliable tracking only up to approximately $60\%$ of the optimal racing trajectory, which corresponds to a maximum speed of $10~\mathrm{m/s}$.
+Among the evaluated controllers, we find that the \ac{CTBR} controller provides the best trade-off between tracking performance and robustness to external disturbances.
 
 In Gazebo, the learned \ac{CTBR} policy achieves good transferability, obtaining position and velocity tracking errors of $1.215 \pm 0.18~\mathrm{m}$ and $0.982 \pm 0.08~\mathrm{m/s}$, respectively.
 But when deployed on a real UAV platform, the tracking performance degrades significantly, with position and velocity errors increasing to $6.11~\mathrm{m}$ and $4.25~\mathrm{m/s}$, respectively.
 It should be noted that several modeling inaccuracies existed at the time of the experiment: the simulator did not account for motor delay or aerodynamic drag, the implemented rate controller (\autoref{ctbr-bad}) differed substantially from the PX4 rate controller (\autoref{px4-mixing}), and the dynamics integration, inner control loop, and policy commands were all executed at $100~\mathrm{Hz}$ rather than their actual real-world implementation.
 Despite these modeling inaccuracies, a policy trained using our direct \ac{BPTT} optimization approach was successfully transferred to a real platform and achieved flight speeds of up to $10~\mathrm{m/s}$, demonstrating the effectiveness of \ac{DR} for \ac{s2r} transfer.
-These results also suggest that the trajectory tracking formulation excessively constrains the optimization process, limiting the exploration of alternative racing strategies when disturbances are present.
-For this reason, the remainder of this work adopts a gate progress formulation together with an improved simulator featuring a more accurate dynamics model, higher-fidelity implementation of the PX4 rate controller, integration of the dynamics at $1000\ \mathrm{Hz}$, inner control rate loop at $250\ \mathrm{Hz}$ and policy commands at $100\ \mathrm{Hz}$.
+We also find that the trajectory tracking formulation excessively constrains the optimization process, limiting the exploration of alternative racing strategies when disturbances or unmodeld effects are present.
+For this reason, the remainder of this work adopts a gate progress formulation together with an improved simulator featuring a more accurate dynamics model, higher-fidelity implementation of the PX4 rate controller, integration of the dynamics at $1000\ \mathrm{Hz}$, inner control rate loop at $250\ \mathrm{Hz}$ and policy commands at $100\ \mathrm{Hz}$, mathichg closer to the real deployement conditions.
 
 
 
@@ -28,7 +28,7 @@ For this reason, the remainder of this work adopts a gate progress formulation t
 Then, in \autoref{sec:mb-vs-mf}, we compare our direct model-based optimization approach based on \ac{BPTT} with the standard model-free \ac{RL} algorithm \ac{PPO}.
 For the simplified task of passing through a single gate, direct \ac{BPTT} optimization is approximately $\mathbf{5\times}$ more sample efficient than \ac{PPO}.
 However, when training on a complete drone racing track, direct \ac{BPTT} optimization exhibits greedy behavior and overfits to the simulator dynamics, completing only seven laps in Gazebo, of which only two are successful.
-In contrast, \ac{PPO} leverages an Actor--Critic architecture to estimate state values and optimize the policy independently of the dynamics model.
+In contrast, \ac{PPO} leverages an actor--critic architecture to estimate state values and optimize the policy independently of the dynamics model.
 As a result, \ac{PPO} achieves substantially better overall performance, robustness, and sim-to-simulation transferability, completing $55$ laps with a track success rate of $\mathbf{70.9\%}$.
 
 For this reason, we use \ac{PPO} to compare the proposed adaptive geometric controller with its fixed-gain counterpart in \autoref{adapt_gains}.
@@ -36,13 +36,13 @@ In simulation, the adaptive controller achieves lap times that are $\mathbf{0.36
 However, when deployed in Gazebo, the adaptive controller becomes less stable, resulting in a track success rate of only $\mathbf{43.47\%}$ and lap times that are $0.32~\mathrm{s}$ slower than those of the fixed-gain controller.
 These results indicate that directly learning the controller gains with a simple \ac{MLP} does not generalize well beyond the training environment.
 Inspection of the learned policy reveals that it frequently saturates the controller gains to their minimum and maximum values (\autoref{fig:lvhr-g-action-ppo}), a behavior that may be beneficial for velocity commands but can compromise the stability of the inner geometric controller.
-In contrast, the fixed-gain controller achieves a lap time of $\mathbf{3.09~\mathrm{s}}$ on the Eight track with a track \ac{SR} of $\mathbf{43.47\%}$, which is comparable to the results reported by \cite{ferede2025, green_bridging_2026,}, demonstrating that this approach could be used in real-world racing competitions.
+In contrast, the fixed-gain controller achieves a lap time of $\mathbf{3.09~\mathrm{s}}$ on the Eight track with a track \ac{SR} of $\mathbf{83.33\%}$, which is comparable to the results reported by \cite{ferede2025, green_bridging_2026,}, demonstrating that this policy could transfer to real-world racing competitions.
 
 Overall, the objectives defined in \autoref{KG} have been successfully addressed.
-Contrary to our initial hypothesis, direct policy optimization using \ac{BPTT} does not outperform standard model-free \ac{RL} in complex drone racing scenarios under our proposed framework.
-The gate progress formulation proves to be more suitable than trajectory tracking, as it provides greater flexibility for discovering efficient racing strategies under model uncertainties and external disturbances.
-The results also suggest that direct model-based optimization requires more sophisticated optimization methods, potentially combining differentiable simulation with value-function estimation, to overcome its greedy behavior and improve long-horizon decision making.
-Finally, while augmenting a geometric controller with learned adaptive gains is an appealing idea, our results indicate that a simple \ac{MLP} is insufficient to learn a robust gain scheduling policy, and that additional structure or regularization is likely required for this approach to generalize reliably.
+Contrary to our initial hypothesis, under our proposed framework, direct policy optimization using \ac{BPTT} does not outperform standard model-free \ac{RL} in complex drone racing scenarios.
+Then, the gate progress formulation proves to be more suitable than trajectory tracking, as it provides greater flexibility for discovering efficient racing strategies under model uncertainties and external disturbances.
+The results also suggest that direct model-based optimization requires more sophisticated optimization methods, potentially combining differentiable simulation with value-function estimation, to overcome the observed greedy behavior and improve long-horizon decision making.
+Finally, while augmenting a geometric controller with learned adaptive gains is an appealing idea, our results indicate that a simple \ac{MLP} is insufficient to learn a robust gain scheduling policy, and that additional structure is likely required for this approach to generalize reliably.
 
 
 
