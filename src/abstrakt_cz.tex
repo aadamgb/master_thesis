@@ -7,8 +7,15 @@
 \section*{Abstrakt}
 \vskip 0.5em
 
-\sloppy
-Výzkum na poli autonomních bezpilotních prostředků (UAV) se stal významným oborem mobilní robotiky.
+\todo{Check with someone czech :3}
+
+Model-free \ac{RL} výrazně zlepšilo výkon autonomního závodění dronů, avšak stále trpí nízkou efektivitou využití vzorků.
+Geometrické řízení poskytuje plynulost a agresivitu požadovanou při závodění, je však omezeno nutností ručního ladění regulačních zesílení.
+Tato diplomová práce zkoumá, zda může přímé \ac{BPTT} zvýšit efektivitu využití vzorků oproti standardnímu algoritmu \ac{PPO} při zachování srovnatelného výkonu a zda se naučená adaptivní zesílení mohou ukázat jako účinnější než pevně nastavená zesílení v geometrickém řízení.
+V prostředí PyTorch jsme vytvořili diferencovatelný simulátor kvadrokoptéry a porovnali různé trénovací úlohy i abstrakce řízení.
+Zjistili jsme, že \ac{BPTT} je ve scénáři s jedinou bránou až $\mathbf{5\times}$ efektivnější z hlediska využití vzorků, avšak vykazuje chamtivé chování a na kompletních závodních tratích nepřekonává algoritmus \ac{PPO}.
+Ani adaptivní zesílení v námi navržené formulaci nepřinesla lepší výsledky než zesílení pevně nastavená.
+Přesto řadič s pevnými zesíleními optimalizovaný pomocí \ac{PPO} dosahuje výkonu srovnatelného se současným stavem poznání (state of the art), čímž náš simulátor představuje vhodný základ pro další výzkum.
 
 \vskip 1em
 

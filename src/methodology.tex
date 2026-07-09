@@ -239,7 +239,7 @@ Then, the force vector is the \ac{UAV}'s mass times the commanded acceleration v
 
 
 
-To obtain the commanded body torques, the heading vector is obtained by projecting the heading angle into the world plane defined by span$\{\hat{e}_1, \hat{e}_2\}$ (see \autoref{ooo} (a)).
+To obtain the commanded body torques, the heading vector is obtained by projecting the heading angle into the world plane defined by span$\{\hat{e}_1, \hat{e}_2\}$ (see \autoref{ooo}.a).
 The heading vector, serves an auxiliary vector to compute $\mathbf{\hat{b}}_2$ and $\mathbf{\hat{b}}_1$. 
 
 \begin{equation} \mathbf{h} = \begin{bmatrix} \cos{\eta} & \sin{\eta} & 0 \end{bmatrix} ^\top \end{equation} 
@@ -254,7 +254,7 @@ The heading vector, serves an auxiliary vector to compute $\mathbf{\hat{b}}_2$ a
 
 \noindent In this way, the commanded orientation is defined by $\mathbf{R}_{\text{cmd}} = \begin{bmatrix}
     \hat{\mathbf{b}}_1 & \hat{\mathbf{b}}_2 & \hat{\mathbf{b}}_3
-\end{bmatrix}$ and the error between the commanded orientation and the current orientation (see \autoref{ooo} (b)) is computed as, 
+\end{bmatrix}$ and the error between the commanded orientation and the current orientation (see \autoref{ooo}.b) is computed as, 
 
 \begin{equation}\label{eq:atterr}
     \mathbf{e}_R = \frac{1}{2} \left( \mathbf{R}_{\text{cmd}}^\top \mathbf{R} - \mathbf{R}^\top \mathbf{R}_{\text{cmd}} \right)^\vee. 
@@ -265,18 +265,18 @@ The heading vector, serves an auxiliary vector to compute $\mathbf{\hat{b}}_2$ a
     \scalebox{0.9}{%
         \begin{minipage}{\textwidth}
             \centering
-            \subfloat[Projection of the drone's heading angle $\eta$. ]{
+            \subfloat[ ]{
                 \input{fig/tikz/drone_simp}
                 \label{fig:simp_drone}
             }
             \hfill
-            \subfloat[Representation of the $SO(3)$ rotation space.]{
+            \subfloat[]{
                 \input{fig/tikz/so3}
                 \label{fig:so3_sphere}
             }
         \end{minipage}
     }
-    \caption{Geometric interpretation of \eqref{eq:atterr}.}
+    \caption{\textbf{(a):} Projection of the drone's heading angle. \textbf{(b):} Representation of the $SO(3)$ rotation space. }
     \label{ooo}
 \end{figure}
 
