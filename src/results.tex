@@ -1,6 +1,6 @@
 %!TEX root = ../main.tex
 
-\chapter{Results \label{chap:results}}
+\chapter{Results}\label{chap:results}
 
 In this chapter, the results of our methodologhy are presented and evaluated.
 The defenitions of the assessment metrics used throughout the chapter can be found in Appendix~\ref{sec:eval_criteria}.
@@ -41,7 +41,7 @@ The performance of the proposed method is compared against standard model-free \
 In this section, we analyze the effect of using surrogate gradients during the policy optimization process.
 The gradient is backpropagated from the loss function to the policy parameters through the chain rule.
 As discussed in \autoref{sec:diff-opt}, the gradients are computed numerically from a computational graph.
-Certain operations, such as \autoref{eq:motspd}, can be highly sensitive to small perturbations, leading to unstable gradients and making the optimization process more difficult.
+Certain operations, such as \eqref{eq:motspd}, can be highly sensitive to small perturbations, leading to unstable gradients and making the optimization process more difficult.
 This behaviour can be observed in \autoref{fig:gradients}, where the loss and gradient norm are plotted against the training steps for two different approaches: a simplified backpropagated model that omits motor dynamics, and the full model including the motor dynamics.
 At the beginning of training, both approaches exhibit similar behavior.
 However, the full model eventually converges to a suboptimal solution and fails to track the trajectory successfully.
@@ -82,9 +82,9 @@ Despite their improved convergence speed, its woth noting that latter policies r
 To evaluate performance, the policies are further trained on a specific racing track.
 The selected track is commonly used in the literature, as it contains straight sections, high-curvature segments, and a split-S gate configuration, making it suitable for benchmarking agile flight performance.
 This circuit is commonly referred to as the UZH track, as it was designed by the University of Zurich.
-
-To generate trajectories passing through the gates, the time-optimal gate traversal planner proposed in~\cite{qin_time-optimal_2024} is used.
+To generate trajectories passing through the gates, the time-optimal gate traversal planner\footnote{The trajectory planner code can be found in: \url{https://github.com/FSC-Lab/TOGT-Planner}} proposed in~\cite{qin_time-optimal_2024} is used.
 The planner generates trajectories that account for both the gate geometry and the quadrotor dynamics.
+
 Training directly on the optimal trajectory consistently resulted in failure to track the reference.
 We hypothesize that the optimization becomes trapped in local minima, preventing the policy from converging to a stable solution.
 To facilitate learning, a curriculum-based training strategy is adopted.
@@ -92,35 +92,35 @@ Initially, the trajectory speed is scaled down to 10\% of the original reference
 Once an episode achieves an RMSE below $0.15$~m, the trajectory speed is increased by an additional 10\%.
 Using this approach, the policies are able to track the trajectory at up to 60\% of the original speed, which remains significantly below the optimal performance.
 This limitation requires further investigation, particularly regarding the design of the loss function and the neural network architecture.
-
-\autoref{tab:uzh_ca} and \autoref{fig:uzh_ca} present the tracking results of the four control abstractions on the UZH track at 60\% of the reference speed, where the policies achieve a maximum speed of 10 m/s.
-\begin{table}[H]
-    \centering
-    \caption{Position and Velocity \ac{RMSE} of the control abstractions, mean $\pm$ std over 5 runs.}
-    \label{tab:uzh_ca}
-    \begin{tabular}{ccccc}
-    \hline
-RMSE  & SRT  & CTBR & LVHR & LVHR+g \\ \hline
-Position [m]  & $0.225\pm 0.031$ & $0.334\pm 0.008$ & $\mathbf{0.132\pm 0.003}$ & $0.201\pm 0.003$  \\
-Velocity [m/s]  & $0.190\pm 0.002$ & $\mathbf{0.180\pm 0.002}$ & $0.219\pm 0.027$ & $0.224\pm 0.008$ \\ \hline
-\end{tabular}
-\end{table}
+In \autoref{tab:uzh_ca} and \autoref{fig:uzh_ca} we present the tracking results of the four control abstractions on the UZH track at 60\% of the reference speed, where the policies achieve a maximum speed of 10 m/s.
 
 
-The results presented in \autoref{fig:uzh_ca} and \autoref{tab:uzh_ca} indicate that the \ac{LVHR} control abstraction achieves the lowest position tracking error, while \ac{CTBR} obtains the lowest velocity tracking error.
-At this suboptimal speed, all policies achieve a \ac{SR} of 100\%, with no gate collisions occurring during the experiments.
-
-Furthermore, the policies exhibit broadly similar behavior.
-The collective thrust commands follow comparable patterns across all control abstractions.
-The \ac{SRT} and \ac{LVHR}+g policies appear to lag slightly behind the reference trajectory, whereas the \ac{CTBR} policy tends to move ahead of the reference and produces the most oscillatory control commands.
-Although the \ac{LVHR} policy achieves the best position tracking performance overall, its velocity tracking error increases significantly toward the end of the trajectory.
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/uzh-track/hypotheses.pdf}
     \caption{Tracking error of the different control abstractions for the UZH racing track.}
     \label{fig:uzh_ca}
 \end{figure}
+The results indicate that the \ac{LVHR} control abstraction achieves the lowest position tracking error, while \ac{CTBR} obtains the lowest velocity tracking error.
+At this suboptimal speed, all policies achieve a \ac{SR} of 100\%, with no gate collisions occurring during the experiments.
+Furthermore, the policies exhibit broadly similar behavior.
+The collective thrust commands follow comparable patterns across all control abstractions.
+The \ac{SRT} and \ac{LVHR}+g policies appear to lag slightly behind the reference trajectory, whereas the \ac{CTBR} policy tends to move ahead of the reference and produces the most oscillatory control commands.
+Although the \ac{LVHR} policy achieves the best position tracking performance overall, its velocity tracking error increases significantly toward the end of the trajectory.
 
+\begin{table}[H]
+    \centering
+    \caption{Position and Velocity \ac{RMSE} of the control abstractions, mean $\pm$ std over 5 runs.}
+    \label{tab:uzh_ca}
+    \begin{tabular}{ccc}
+    \hline
+Control Mode & Position [m] & Velocity [m/s] \\ \hline
+SRT  & $0.225\pm 0.031$ & $0.190\pm 0.002$ \\
+CTBR & $0.334\pm 0.008$ & $\mathbf{0.180\pm 0.002}$ \\
+LVHR & $\mathbf{0.132\pm 0.003}$ & $0.219\pm 0.027$ \\
+LVHR+g & $0.201\pm 0.003$ & $0.224\pm 0.008$ \\ \hline
+\end{tabular}
+\end{table}
 % \begin{table}[H]
 %     \centering
 %     \caption{Position and Velocity \ac{RMSE} of the control abstractions, mean $\pm$ std over 5 runs.}
@@ -134,7 +134,7 @@ Although the \ac{LVHR} policy achieves the best position tracking performance ov
 % \end{table}
 
 Analyzing the commands of each control abstraction individually reveals information in policy behavior.
-For the \ac{SRT} policy, in fig:srt-action it can be seen that the rotor commands follow a trend similar to the collective thrust profile shown in \autoref{fig:uzh_ca}.
+For the \ac{SRT} policy, in \autoref{fig:srt-action} it can be seen that the rotor commands follow a trend similar to the collective thrust profile shown in \autoref{fig:uzh_ca}.
 The policy successfully learns to rotate the quadrotor by generating differential thrust between the rotors.
 Around $12$~s, high-frequency oscillations can be observed in the commands; this interval corresponds to the split-S section of the track, where aggressive rotational maneuvers are required.
 
@@ -190,26 +190,8 @@ Further investigation is conducted in \autoref{adapt_gains}, as we believe this 
 % \newpage
 \subsection{Robustness}\label{subsec:robust}
 To evaluate the robustness of the different controllers, we simulate an external wind gust.
-We model it as a constant acceleration of value $8~\mathrm{m/s^2}$ acting on the positive $y$ world axis between $x\in[5,10]$.
+We model it as a constant acceleration of value $8~\mathrm{m/s^2}$ acting on the positive $y$ world axis between $x\in[5,10]$, (see \autoref{fig:uzh_dist}).
 
-
-
-
-% From \autoref{fig:uzh_dist} and \autoref{tab:uzh_ca_dist} it can  
-Comparing \autoref{tab:uzh_ca_dist} with \autoref{tab:uzh_ca} it can be observed that the tracking performance when considering external distrubances obiously degrades.
-Nonthless, the policies remain stable and are still capable of tracking the trajectory. 
-The control abstraction that remains the most robust is the \ac{CTBR} followed by \ac{LVHR}+g, \ac{SRT} and finally the \ac{LVHR} has the worst performance.
-\begin{table}[H]
-    \centering
-    \caption{Position and Velocity \ac{RMSE} of the controllers with external diturbance, mean $\pm$ std over 5 runs.}
-    \label{tab:uzh_ca_dist}
-    \begin{tabular}{ccccc}
-    \hline
-RMSE  & SRT  & CTBR & LVHR & LVHR+g \\ \hline
-Position [m]  & $1.229\pm 0.188$ & $\mathbf{0.508\pm 0.003}$ & $1.550\pm 0.292$ & $0.995\pm 0.036$  \\
-Velocity [m/s]  & $1.561\pm 0.151$ & $\mathbf{0.504\pm 0.002}$ & $1.568\pm 0.096$ & $0.726\pm 0.027$ \\ \hline
-\end{tabular}
-\end{table}
 
 \begin{figure}[H]
     \centering
@@ -217,6 +199,26 @@ Velocity [m/s]  & $1.561\pm 0.151$ & $\mathbf{0.504\pm 0.002}$ & $1.568\pm 0.096
     \caption{Tracking error of the different controllers with external disturbances.}
     \label{fig:uzh_dist}
 \end{figure}
+
+
+% From \autoref{fig:uzh_dist} and \autoref{tab:uzh_ca_dist} it can  
+Comparing \autoref{tab:uzh_ca_dist} with \autoref{tab:uzh_ca} it can be observed that the tracking performance when considering external distrubances clearly degrades.
+Nonethless, the policies remain stable and are still capable of tracking the trajectory. 
+The control abstraction that remains the most robust is the \ac{CTBR} followed by \ac{LVHR}+g, \ac{SRT} and finally the \ac{LVHR} has the worst performance.
+\begin{table}[H]
+    \centering
+    \caption{Position and Velocity \ac{RMSE} of the controllers with external diturbance, mean $\pm$ std over 5 runs.}
+    \label{tab:uzh_ca_dist}
+    \begin{tabular}{ccccc}
+    \hline
+Control Mode  & Position [m] & Velocity [m/s] \\ \hline
+SRT  & $1.229\pm 0.188$ & $1.561\pm 0.151$ \\
+CTBR & $\mathbf{0.508\pm 0.003}$ & $\mathbf{0.504\pm 0.002}$ \\
+LVHR & $1.550\pm 0.292$ & $1.568\pm 0.096$ \\
+LVHR+g & $0.995\pm 0.036$ & $0.726\pm 0.027$ \\ \hline
+\end{tabular}
+\end{table}
+
 
 \subsection{Transferability}
 
@@ -264,11 +266,11 @@ Overall, the policy is able to track this trajectory achieveing speeds up to $10
 \section{Real World Validation}\label{sec:realworld}
 
 On the 16th of April 2026, during the MRS testing campaign, we conducted a real-world flight experiment.
-At that stage, the simulator was still on an early phase of development; actuator dynamics and aerodynamic drag were not yet modeled, and policy training relied on ground-truth state information.
+At this time, the simulator was still on an early phase of development; actuator dynamics and aerodynamic drag were not yet modeled, the \ac{CTBR} contoller did not exactly match the PX4 firmware, and policy training relied on ground-truth state information.
 As a result, there was a significant mismatch between the simulator and real flight conditions.
 This led to poor trajectory tracking performance, with position and velocity \ac{RMSE} values of $6.11~\mathrm{m}$ and $4.25~\mathrm{m/s}$, respectively.
-Although the overall performance was limited, \autoref{fig:real-world} shows that the general shape of the trajectory was still preserved.
-This suggests that \ac{DR} contributed positively to policy transferability in real-world conditions.
+Although the overall performance is limited, \autoref{fig:real-world} shows that the general shape of the trajectory is still preserved.
+This suggests that \ac{DR} contributes positively to policy transferability in real-world conditions.
 Additionally, the experiment provided valuable insights and data that were later used to improve the simulator.
 % RMSE: 6.11020 m | RMSE: 4.25100 m  | Max Speed: 8.11 m/s
 
@@ -279,7 +281,7 @@ Additionally, the experiment provided valuable insights and data that were later
     \label{fig:real-world}
 \end{figure}
 
-Since with the trajectory tracking task we have achieved suboptimal performance, we shift focus to the gate progress task, \autoref{gate-prog} , in the following sections. 
+Since with the trajectory tracking task we have achieved suboptimal performance, in the following sections, we shift focus to the gate progress task, \autoref{gate-prog}. 
 This task is commonly used in drone racing and has demonstrated champion-level performance by enabling the policy to explore and adapt better than a fixed, time-parameterized trajectory, see~\cite{songreaching2023}.
 
 \section{Model-Free and Model-Based evaluation}\label{sec:mb-vs-mf}
@@ -308,11 +310,12 @@ To analyze the sample efficency we plot the mean reward over the parallel enviro
 
 
 
-We can observe that for the simple one gate set-up, both policies converge to a reward of around $4.0$.
+In \autoref{fig:eprew}, we can observe that for the simple one gate set-up, both policies converge to a reward of around $4.0$.
 However, the \ac{BPTT} policy converges in around $0.5\times 10^{6}$ steps while the \ac{PPO} policy around $2.5\times 10^{6}$ steps.
 Making the \ac{BPTT} method $\mathbf{5x}$ more sample efficent in this simple scenario.
-Nonthless, analyzing the more challenging "\textit{eight}" figure track, the \ac{PPO} policy significantly outperforms the \ac{BPTT} policy.
-The former achieves a maximum reward of $63.4$ with a smooth policy updates while the former does not surpass $50.2$ and peresnts high variance.
+Nonethless, analyzing the more challenging Eight figure track, the \ac{PPO} policy significantly outperforms the \ac{BPTT} policy.
+The former achieves a maximum reward of $63.4$ with smooth policy updates while the former does not surpass $50.2$ and peresnts high variance on the reward.
+Altough, both are optimized with a learing rate of $\alpha = 3\times 10^{-4}$.
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/sample-eff-opt2/hypotheses.pdf}
@@ -321,18 +324,27 @@ The former achieves a maximum reward of $63.4$ with a smooth policy updates whil
 \end{figure}
 We belive that this difference in the maximum achieved reward is due to the relative simplicity of our \ac{BPTT} implementation compared to the actor-critic architecture and robust optimization scheme of \ac{PPO}.
 
-The \ac{BPTT} policy is optimized by backpropagating gradients directly through the differentiable simulator, using a single feedforward network with no value functio.
+The \ac{BPTT} policy is optimized by backpropagating gradients directly through the differentiable simulator, using a single feedforward network with no value function.
 While this direct approach shows higher sample efficency for a simple scenario, when introudicng multiple gates the optimal gate-traversal sequence is less smooth.
 This increases the risk of accumulatiing of bias at the truncation boundaries, causing the policy to converge prematurely to a local optimum.
+It also appears more greedy, since the optimization is performed over a horizon of only 100 steps and therefore does not fully account for long-horizon reward.
+
+% \todo{Heatmap plot with x:lr and y: H ??, to show best combination for eight track?}
+\begin{figure}[H]
+    \centering
+    \includegraphics{fig/plots/heatmap/hypotheses.pdf}
+    \caption{}
+    \label{heatmap}
+\end{figure}
 
 In contrast, \ac{PPO} levereages a critic network that maps the value of a given state, reduceing the variance of the advantage estimates used to update the actor.
 Furthermore, the clipped surrogate objective constrains each policy update to remain within a trust region.
 Combined with multiple epochs of minibatch stochastic gradient updates per rollout, this yields more conservative and robust policy updates than the single-step gradient descent used in our \ac{BPTT} implementation.
 
 \subsection{Performance}\label{perf}
-In this case, we measure performance in terms of lap time and \ac{SR} over 5 runs for both policies for the "\textit{eight}" figure track.
+In this case, we measure performance in terms of lap time and \ac{SR} over 5 runs for both policies for the Eight figure track.
 To measure the best-case scenario we trained both policies with a simplified quadrotor model, not taking into account drag, motor delay, external diturbances or domain randomization and the control mode used is \ac{SRT}.
-Note that this policies would not transfer to a real world-sencario, but this results present the highest achivable performance under ideal conditions.
+Note that this policies would not transfer to a real world-sencario, but this results present the highest achivable performance under the mentioned ideal conditions.
 
 \begin{table}[H]
     \centering
@@ -357,11 +369,15 @@ Note that this policies would not transfer to a real world-sencario, but this re
 
 
 In \autoref{tab:perf} we see that both policies perform the 5 laps without a single crash.
-And higher episode mean reward from maximizing gate progress, \autoref{fig:eprew}, directly translates to faster lap times, with the \ac{PPO} policy around $0.8\,\mathrm{s}$ faster on avarage.
-This results of the \ac{PPO} policy closely match the ones from ~\cite{ferede2025}.
+% And higher episode mean reward from maximizing gate progress, \autoref{fig:eprew}, directly translates to faster lap times, with the \ac{PPO} policy around $0.8\,\mathrm{s}$ faster on avarage.
+This result of the \ac{PPO} policy closely matches the work of ~\cite{ferede2025}.
 Then, \autoref{fig:8} shows that the \ac{BPTT} policy takes sharper turns than the \ac{PPO} policy, which can indicate a greedier optimization approach.
 
 
+Next, we perform the same experiment but we add drag, motor delay and a 30 \% of \ac{DR} and we use the \ac{CTBR} controller.
+In \autoref{tab:perf-ctbr}, it can be seen that the lap times increase for both policies, particularly the \ac{PPO} policy. 
+However, the sucess rates remain perfect in our simulated environment.
+We will use these results to asses the policies transferability to Gazebo, as mentioned earliear, the \ac{SRT} policies can not be depoyed in Gazebo.
 
 \begin{table}[H]
     \centering
@@ -374,12 +390,6 @@ Then, \autoref{fig:8} shows that the \ac{BPTT} policy takes sharper turns than t
     
 \end{tabular}    \label{tab:perf-ctbr}
 \end{table}
-
-Next, we perform the same experiment but we add drag, motor delay and a 30 \% of \ac{DR} and we use the \ac{CTBR} controller.
-In \autoref{tab:perf-ctbr}, it can be seen that the lap times increase for both policies, particularly the \ac{PPO} policy. 
-However, the sucess rates remain perfect in our simulated environment.
-We will use these results to asses the policies transferability to Gazebo, as mentioned earliear, the \ac{SRT} policies can not be depoyed in Gazebo.
-
 
 % \todo{Add value plots?}
 
@@ -423,10 +433,10 @@ PPO & $3.23 \pm 0.18 $ & 94.5 & 70.9 & 24.71 \\ \hline
 
 
 Observing \autoref{tab:geo-adapt-fixed} and \autoref{fig:lap_times_ctbr}, we find that \ac{BPTT} policy transfers poorly, it completes only seven laps, of which only two are successful, with a mean lap time of $7.21\ \mathrm{s}$ (an increase of $162.2\ \%$ relative to the simulator mean). In contrast, the \ac{PPO} policy degrades by only $24.71\ \%$ and maintains a higher track \ac{SR} of $70.9\ \%$, indicating superior transfer performance for \ac{PPO} compared to direct \ac{BPTT}.
-As noted above, although both policies were trained with $30\ \%$ \ac{DR}, direct \ac{BPTT} appears to be more prone to overfitting to the training quadrotor model, achieving worse performance when model mimatch can be present.
+As noted above, although both policies were trained with $30\ \%$ \ac{DR}, direct \ac{BPTT} appears to be more prone to overfitting to the training quadrotor model, achieving worse performance when model mismatches can be present.
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.5]{fig/photos/value_landscape_comparison.png}
+    \includegraphics[scale=0.51]{fig/photos/value_landscape_comparison.png}
     \caption{Value gradients computed by the critic network for the first two gates.}
     \label{values}
 \end{figure}
@@ -435,6 +445,7 @@ This appears to generalize better to unseen environments.
 Based on these results we only expecte the \ac{PPO} policy to be able to transfer to a real world scneario.
 
 
+% \newpage
 
 \section{Fixed Gains Versus Adaptive Gains} \label{adapt_gains}
 
@@ -448,7 +459,7 @@ While the adaptive policy selects these gains dynamically at each time step in t
     \mathbf{k}_R^{\min} &= (1, 1, 0.2), & \mathbf{k}_R^{\max} &= (16, 16, 2).
 \end{align*}
 
-Note that, contrary to \autoref{subsec:lvhr}, the gains are different per axis (pitch, roll, yaw) and instead of commanidng body torques, the controller commands body rates such that \autoref{eq:geo_tau} becomes \autoref{geo-omega}.
+Note that, contrary to \autoref{subsec:lvhr}, the gains are different per axis (pitch, roll, yaw) and instead of commanidng body torques, the controller commands body rates such that \eqref{eq:geo_tau} becomes \eqref{geo-omega}.
 The commanded collective force and attitue $\mathbf{R}_{\text{cmd}}$ are computed in the same manner from the velocity commands.
 
 
@@ -463,7 +474,6 @@ Where,
      \boldsymbol{\omega}_{\text{ff}} = \mathbf{R}^\top \mathbf{R}_{\text{cmd}}\boldsymbol{\dot{\eta}}_{\text{cmd}}.
 \end{equation}
 This modification showed more stability during training and deployment.
-
 \subsection{Sample Efficency}
 Investigating the sample efficency of the fixed gains and adaptive gains geometric controllers, we can se in \autoref{fig:samp-eff-geo} that the former converges at atound 30 million steps while the latter at around 70 million.
 The fixed gain controller achieves a maximum reward of 53.29 while the adaptive achieves a maximum reward of 60.12.

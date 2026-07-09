@@ -1,6 +1,6 @@
 %!TEX root = ../main.tex
 
-\chapter{Preliminaries \label{pre}}
+\chapter{Preliminaries }\label{pre}
 This chapter covers relevant theory on which this thesis is built. 
 First, in \autoref{sec:ocp} we explain what is an \ac{OCP} and we formulate the \ac{OCP} for \ac{ADR}.
 Then, in \autoref{sec:classical} and \autoref{sec:learned}, we cover some classical and learning-based approaches to adress the \ac{OCP}.
@@ -28,7 +28,7 @@ In general, a nonlinear discrete-time \ac{OCP} can be formulated as the optimiza
 \end{equation}
 
 
-\noindent Where
+\noindent Where,
 \begin{itemize}
 \item[] $N$ is the final discrete time,
 \item[] $\boldsymbol{x}_k \in \mathbb{R}^n$ is the state at the discrete time $k \in \mathbb{Z}$,
@@ -55,7 +55,7 @@ Since the main objective is to complete a lap through the racing track as fast a
 
 The racing track restrictions, i.e. passing through a sequence of gates while avoiding
 obstacles, can be introduced as hard constraints under the set of permitted states
-$\mathcal{X}_k$ as
+$\mathcal{X}_k$ as,
 
 \begin{equation}
     \mathcal{X}_k = \left\{ \boldsymbol{x}_k \in \mathbb{R}^n \;\middle|\;
@@ -77,19 +77,19 @@ $\mathcal{X}_k$ as
 \end{itemize}
 
 \subsection{Simplified Minimum-Time Optimal Control Problem}~\label{sec:simpmin-OCP}
-The problem formulation (\autoref{subsec:minOCP}) is inherently complex, as it requires simultaneously solving for an optimal trajectory that clears all gates and avoids obstacles while determining the optimal control sequence achievable within the vehicle's dynamics and actuator constraints.
+This problem formulation (\autoref{subsec:minOCP}) is inherently complex, as it requires simultaneously solving for an optimal trajectory that clears all gates and avoids obstacles while determining the optimal control sequence achievable within the vehicle's dynamics and actuator constraints.
 To make the problem more tractable, this thesis either assumes that an optimal reference trajectory or path is provided a priori, or relaxes the condition to maximize gate progress instead.
-Consequently, the \acp{OCP} addressed hereafter focus on trajectory tracking or gate progress optimization, formulated as follows:
+Consequently, the \acp{OCP} addressed hereafter focus on trajectory tracking or gate progress optimization, which we formulate as follows:
 
 \subsubsection{Trajectory Tracking}
-In the trajectory tracking \ac{OCP}, the objective is to find the optimal control sequence $\mathbf{U}$ that minimizes the error between a given reference state $\boldsymbol{x}_k^{\text{ref}}$ and the current system state $\boldsymbol{x}_k$, subject to dynamics, actuator, and state constraints.
+For the trajectory tracking \ac{OCP}, the objective is to find the optimal control sequence $\mathbf{U}$ that minimizes the error between a given reference state $\boldsymbol{x}_k^{\text{ref}}$ and the current system state $\boldsymbol{x}_k$, subject to dynamics, actuator, and state constraints.
 While this simplifies the optimization significantly it comes at the cost of reduced robustness.
 By assuming the trajectory is fixed, the system cannot re-optimize the path to accommodate state constraints or environmental changes, effectively limiting the drone's agility compared to a unified spatial-temporal optimization.
 
 \begin{equation}
 \begin{aligned}
  & \underset{\mathbf{U}}{\text{minimize}} & & \sum_{k=0}^{N-1} \left\| \boldsymbol{x}_k - 
-        \boldsymbol{x}_k^{\text{ref}} \right\|_{\mathbf{Q}}^{2} \\%+         \left\| \boldsymbol{u}_k \right\|_{\mathbf{R}}^{2} \\
+        \boldsymbol{x}_k^{\text{ref}} \right\|_{2}^{\mathbf{Q}} \\%+         \left\| \boldsymbol{u}_k \right\|_{\mathbf{R}}^{2} \\
  & \text{subject to} & & \boldsymbol{x}_{k+1} = \mathbf{f}_{k}(\boldsymbol{x}_{k}, 
         \boldsymbol{u}_{k}), \quad k = 0, \dots, N-1, \\
 & & & \boldsymbol{u}_{k} \in \mathcal{U}_{k}, \quad k = 0, \dots, N-1, \\
@@ -113,7 +113,7 @@ This allows the controller to dynamically adjust to the current vehicle's state 
 
 
 \section{Classical Control Methods}\label{sec:classical}
-Given the \ac{OCP} formulated in last sections, by solving a quadratic program, a trajectory of control inputs that minimizes the cost function can be obtained.
+Given the \ac{OCP} formulated in the last sections, by solving a quadratic program, a trajectory of control inputs that minimizes the cost function can be obtained.
 However, in this direct approach, the control is open-loop.
 Henece it is not robust to external disturbances and model mistmaches. 
 In the classical literature, a well stablished approach that adresses this issue is to use \ac{MPC}.
@@ -128,12 +128,12 @@ However, in this section we give an overview of \ac{MPC} and \ac{DFBC} as we fin
 Reciding horizion control or also known as \ac{MPC} is a direct approach to solving an \ac{OCP}.
 The key idea behind this method is to solve the control problem for a given prediction horizion of $N_p$ steps.
 As a solution we obtain the control inputs that minimize the cost function for that horizion, nonetheless we only take $N_c \sim$ 2 or 3 steps,  of those controls and discard the rest.
-Then, we solve again the control problem with the updated states, and repeat the process.  
+Then, we solve again the control problem with the updated states, and repeat the process  (see \autoref{mpc}).  
 
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/mpc/hypotheses.pdf}
-    \caption{Example of regulation using model predictive control (example from~\cite{hurakModelPredictive}).}
+    \caption{Example of regulation for two states using model predictive control (example from~\cite{hurakModelPredictive}).}
     \label{mpc}
 \end{figure}
 
@@ -172,17 +172,17 @@ and from Euler equation, we get the rotational dynamics,
 \begin{equation}
     \boldsymbol{\tau} = \mathbf{J}\boldsymbol{\dot{\omega}}  + \boldsymbol{\omega} \times \mathbf{J} \boldsymbol{\omega} 
 \end{equation} 
-where $\mathbf{J}$ is the inertia matrix and $\boldsymbol{\dot{\omega}}$ are the body angluar rates. The first derivative of \autoref{trans_dyn} gives,
+where $\mathbf{J}$ is the inertia matrix and $\boldsymbol{\dot{\omega}}$ are the body angluar rates. The first derivative of \eqref{trans_dyn} gives,
 \begin{equation}\label{trans_dyn_der}
     m \dddot{r} = \dot{T_c}_1 \hat{\mathbf{b}}_3 + \boldsymbol{\omega} \times u_1 \hat{\mathbf{b}}_3.
 \end{equation}
-The change in collective thurst $\dot{T_c}$ corresponds to the projection $\dot{T_c} = \hat{\mathbf{b}}_3 \cdot m \dddot{\mathbf{r}}$, substituiting in \autoref{trans_dyn_der},
+The change in collective thurst $\dot{T_c}$ corresponds to the projection $\dot{T_c} = \hat{\mathbf{b}}_3 \cdot m \dddot{\mathbf{r}}$, substituiting in \eqref{trans_dyn_der},
 we can obtain the vector $\mathbf{h}_{\omega} = \boldsymbol{\omega}\times \hat{\mathbf{b}}_3$,
 \begin{equation}
     \mathbf{h}_{\omega} = \frac{m}{u_1} (\ddot{\mathbf{r}} - (\hat{\mathbf{b}}_3 \cdot \ddot{\mathbf{r}})\hat{\mathbf{b}}_3)
 \end{equation}
 which allows to obtain the angular velocities.
-To completely define the quadrotor's state we need the angular accelerations $\dot{\boldsymbol{\omega}}$ which can be obtained from the second derivative of \autoref{trans_dyn}.
+To completely define the quadrotor's state we need the angular accelerations $\dot{\boldsymbol{\omega}}$ which can be obtained from the second derivative of \eqref{trans_dyn}.
 Hence, the control inputs are function of the flat outputs as $u_1 = T_c = m ||\mathbf{t}||$, and $[u_2, u_3, u_4]^\top = \boldsymbol{\tau}$.
 
 This property is exploited in \autoref{subsec:lvhr} to determine the attitude of the quadrotor and design a geometric controller. 
@@ -239,7 +239,7 @@ In this framework, policy optimization methods aim to find the optimal parameter
 \subsubsection{Proximal Policy Optimization}
 This policy optimization method was introduced in 2017 in \cite{ppo} and has become a standard algorithm in \ac{RL}.
 The algorithm adresses instability issues present in policy gradient methods.
-Differentiating \autoref{opt_theta} gives,
+Differentiating \eqref{opt_theta} gives,
 \begin{equation}
     \nabla_{\theta}J(\theta) = \mathbb{E}_{s,a\sim\pi_{\theta}} [\nabla_{\theta} \log \pi_{\theta}(a|s)Q^{\pi}(s,a)].
 \end{equation}
@@ -328,10 +328,10 @@ The gradient of the cummulative stage cost function $J_k$ with respect to the ne
 the stage loss with respect to the state, $\frac{\partial \mathbf{x}_h}{\partial
 \mathbf{u}_{h-1}}$ encodes the change in the dynamics regarding the applied controls, and
 $\frac{\partial \mathbf{u}_{h-1}}{\partial \theta}$ is the gradient of the control output
-with respect to the policy parameters.
+with respect to the policy parameters, $B$ is the size of the batch (number of parallel environemnts) and $H$ is the optimization horizion (number of accumlated steps).
 Since the gradient is accumulated through time due to the recursive dependence of the state on previous states and control inputs, this procedure is known as \ac{BPTT}.
 To compute this gradient analytically, an automatic differentiation engine is used. 
-Many \ac{ML} frameworks, such as PyTorch~\cite{paszke_pytorch_2019}, TensorFlow~\cite{abadi_tensorflow_2016}, and JAX~\cite{jax2018github}, among others, provide autodiff capabilities. 
+Many \ac{ML} frameworks, such as PyTorch~\cite{paszke_pytorch_2019}, TensorFlow~\cite{abadi_tensorflow_2016}, and JAX~\cite{jax2018github}, among others, support automatic differentiation. 
 At present, JAX is regarded as a high-performance framework for numerical \ac{ML} computing. 
 However, for this simulator, PyTorch has been selected due to its intuitive interface, extensive documentation, and lower implementation complexity.
 
@@ -355,7 +355,6 @@ In PyTorch, this gradient is computed using a computational graph which is const
 Each mathematical operation is stored as a node in this graph.
 During backporopagation, PyTorch applies automatic differentiation to traverse the graph from the output back to the input and applying the chain rule to accumulate gradients.
 The computational graph shown in \autoref{fig:com-graph} represents this process and Algortihm~\ref{alg:backprop} presents the pesudocode.
-% \autoref{fig:com-graph} storing each operation is built, then the b
 In practice, the calculation of the gradient would be done simply by calling \textbf{u.backward()} in PyTorch.
 
 

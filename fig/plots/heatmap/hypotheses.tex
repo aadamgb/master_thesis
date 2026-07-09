@@ -1,0 +1,39 @@
+\documentclass{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{colormaps}
+
+\begin{document}
+\begin{tikzpicture}
+
+\begin{axis}[
+    name=plot2,
+    width=7.5cm,
+    height=6cm,
+    xlabel={$\alpha$},
+    ylabel={$H$},
+    colormap/viridis,
+    colorbar,
+    colorbar style={ylabel={Reward}},
+    point meta min=0,
+    point meta max=90,
+    tick align=outside,
+    view={0}{90},
+]
+
+\addplot3[
+    matrix plot*,
+    mesh/cols=4,
+    mesh/rows=5,
+    point meta=explicit,
+] table[
+    x=alpha,
+    y=H,
+    meta=reward,
+    col sep=comma,
+] {data/heatmap_long.csv};
+
+\end{axis}
+
+\end{tikzpicture}
+\end{document}

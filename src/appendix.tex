@@ -47,7 +47,7 @@ We separelty asses the respones of the body rates against a unit step, a variabl
 \begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{./fig/plots/omega-xy-val/hypotheses.pdf}
-  \caption{Pitch/Roll responses to unit step, variable amblitude and variable frequency signals.}
+  \caption{Pitch/Roll responses to; \textbf{Left}: Unit step signal. \textbf{Middle}:  Variable amblitude signal. \textbf{Rigth}: Variable frequency signal.}
   \label{fig:wx-y-val}
 \end{figure}
 For the pitch and roll responses, the behavior observed in Gazebo and in our simulator is consistent.
@@ -55,7 +55,7 @@ Minor discrepancies can be observed in the response of integration of the unit-s
 \begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{./fig/plots/omega-z-val/hypotheses.pdf}
-  \caption{Yaw response to unit step, variable amblitude and variable frequency signals.}
+  \caption{Yaw response to; \textbf{Left}: Unit step signal. \textbf{Middle}:  Variable amblitude signal. \textbf{Rigth}: Variable frequency signal.}
   \label{fig:wz-val}
 \end{figure}
 
@@ -125,7 +125,7 @@ Unlike we initially modeled in \autoref{ctbr-bad}, the PX4 rate conterller consi
 \begin{equation}\label{px4-tau}
   \boldsymbol{\tau}_{\text{cmd}} = \mathbf{k_p} (\boldsymbol{\omega}_{\text{cmd}} - \boldsymbol{\omega}) + \mathbf{rate\_int} + \mathbf{k_d} \boldsymbol{\alpha} + \mathbf{k_{ff}} \boldsymbol{\omega}_{\text{cmd}}
 \end{equation}
-where $\boldsymbol{\omega}_\text{cmd}$ is computed as in \autoref{omega-cmd} and  $\boldsymbol{\alpha}$ is the dron's angular accelaration obtained from the \ac{IMU}.
+where $\boldsymbol{\omega}_\text{cmd}$ is computed as in \eqref{omega-cmd} and  $\boldsymbol{\alpha}$ is the dron's angular accelaration obtained from the \ac{IMU}.
 Since we do not model any sensors, we approximate the angular acceleration as $ \alpha = (\boldsymbol{\omega}_k - \boldsymbol{\omega}_{k-1}) / \Delta t$.
 The gains of the rate controller are:
 
@@ -157,7 +157,7 @@ And the collective throttle is directly given by the policy as,
 \begin{equation}
   throttle = u_0. 
 \end{equation}
-When mapping from wrench (collective force and torques) to motor commands, using \autoref{eq:simp_alloc}, the solution of the equation can include saturated the actuator setpoints or even negative thrust commands, since the motors are not reversible, the solution has to be desaturated.
+When mapping from wrench (collective force and torques) to motor commands, using \eqref{eq:simp_alloc}, the solution of the equation can include saturated the actuator setpoints or even negative thrust commands, since the motors are not reversible, the solution has to be desaturated.
 The PX4 firmware allows for three desaturation modes varying on the value of the parameter MC\_AIRMODE, by deafult it is set to 0 which means that the airmode is disabled, if set to 1, airmode is enabled for pitch and roll and if set to 2, airmode is enabled for pitch roll and yaw.
 
 As illustrated in \autoref{airmode}, if airmode is enabled, increaseing the thrust is allowed in order to keep the commanded torques.
@@ -232,7 +232,7 @@ Once the gain $k$ from \autoref{eq:desat_gain} is computed, if $k_1 > 0$ and onl
   \label{eq:desat_step1}
 \end{equation}
 
-Otherwise, the motor setpoints are corrected, \autoref{eq:desat_step1}. 
+Otherwise, the motor setpoints are corrected, \eqref{eq:desat_step1}. 
 Since $k$ is a single scalar gain, conflicts in saturation can still exist, applying $k_1$ once does not, in general, bring every actuator inside the bounds and some actuators may remain saturated, or previously unsaturated actuators may now become sturated after the correction. 
 For this reason, the desaturation gain is recomputed on the updated setpoints $motor_i^\prime$, and a second, half-magnitude correction is applied,
 
@@ -247,11 +247,11 @@ The factor $\tfrac{1}{2}$ damps the correction to avoid overshooting the boundar
 
 In our simulation and at deployement in Gazebo, we selected MC\_AIRMODE=0, that is to say, airmode disabled, so first, the collective thrust is desaturated with only gains $k<0$.
 Then roll is desaturated followed by pitch, this time, allowing positive desaturation gains.
-Finally, the yaw is introduced to \autoref{mixing}, and yaw is desaturated followed by a last desaturation of the collecitve thrust, in case it gets saturated again after introducing yaw into the mixing.
+Finally, the yaw is introduced to \eqref{mixing}, and yaw is desaturated followed by a last desaturation of the collecitve thrust, in case it gets saturated again after introducing yaw into the mixing.
 This procedure mimics the original implementation~\cite{px4_desat}.
 
 % When  restriction discarded $k_1$ in the first step (i.e. $k_1 = 0$ because only an increase was available and increases are not allowed), the second step is skipped entirely as well: no partial correction is applied along $\mathbf{d}$, and the saturation on that axis is left for the subsequent stages of the cascade (roll, pitch, and finally yaw) to resolve.
 
 
-\chapter{Attatchements}
+\chapter{Attachments}
 \todo{Attach/link to code and videos}
