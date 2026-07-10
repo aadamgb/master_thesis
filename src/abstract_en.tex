@@ -27,11 +27,11 @@
 
 
 Model-free \ac{RL} has advanced drone racing performance but remains sample inefficient.
-Geometric control offers the smoothness and aggressiveness racing demands, but at the cost of being limited by manual gain tuning. 
-This thesis investigates whether direct \ac{BPTT} can improve sample efficiency over standard \ac{PPO} while matching its performance, and whether learned adaptive gains can outperform fixed ones in geomeric control. 
-We build in PyTorch a differentiable quadrotor simulator and compare two trainig tasks and four control abstractions. 
-We find that \ac{BPTT} is up to $\mathbf{5\times}$ more sample efficient on a single gate scenario but performs greedily and fails to outperform PPO on full racing tracks.
-Adaptive gains likewise do not outperform fixed ones with our formulation. 
+Geometric control offers the smoothness and aggressiveness that racing demands, but it is limited by manual gain tuning. 
+This thesis investigates whether direct \ac{BPTT} can improve sample efficiency over standard \ac{PPO} while matching its performance, and whether learned adaptive gains can outperform fixed ones in geometric control. 
+We build a differentiable quadrotor simulator in PyTorch and compare two training tasks and four control strategies. 
+We find that \ac{BPTT} is up to $\mathbf{5\times}$ more sample efficient in a single-gate scenario, but it behaves greedily and fails to outperform \ac{PPO} on full racing tracks.
+Adaptive gains likewise do not outperform fixed ones in our formulation. 
 However, a fixed-gain controller optimized with \ac{PPO} still matches state-of-the-art results, establishing our simulator as a foundation for further research.
 
 

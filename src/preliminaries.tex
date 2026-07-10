@@ -1,20 +1,20 @@
 %!TEX root = ../main.tex
 
 \chapter{Preliminaries }\label{pre}
-This chapter covers relevant theory on which this thesis is built. 
-First, in \autoref{sec:ocp} we explain what is an \ac{OCP} and we formulate the \ac{OCP} for \ac{ADR}.
-Then, in \autoref{sec:classical} and \autoref{sec:learned}, we cover some classical and learning-based approaches to adress the \ac{OCP}.
-Finally, in \autoref{sec:diff-opt} we explain how automatic differentiation can be used to optimize a control policy. 
+This chapter covers relevant theory on which this thesis is built.
+First, in \autoref{sec:ocp} we explain what an \ac{OCP} is and we formulate the \ac{OCP} for \ac{ADR}.
+Then, in \autoref{sec:classical} and \autoref{sec:learned}, we cover some classical and learning-based approaches to address the \ac{OCP}.
+Finally, in \autoref{sec:diff-opt} we explain how automatic differentiation can be used to optimize a control policy.
 
 \section{Optimal Control Problem} \label{sec:ocp} 
-According to \cite{sussmann_300_1997}, optimal control was born in 1687 in the Netherlands when Johan Bernoulli published his solution to the brachystochrone problem.
-Optimal control can be regarded as an extension of calculus of variations, with the aim of finidng a control policy that minimizes a cost function.
+According to \cite{sussmann_300_1997}, optimal control was born in 1687 in the Netherlands when Johan Bernoulli published his solution to the brachistochrone problem.
+Optimal control can be regarded as an extension of the calculus of variations, with the aim of finding a control policy that minimizes a cost function.
 In this section, we formulate optimal control problems related to this thesis.
 % We refer the reader to~\cite{lewis_optimal_2012}
 
 
 \subsection{General Discrete-Time Optimal Control Problem}
-In general, a nonlinear discrete-time \ac{OCP} can be formulated as the optimization of a running cost (or loss) function $L_{k}()$, plus a terminal cost function $\phi()$, subject to the system's dynamics $\mathbf{f}_k()$, and the set of permitted states $\mathcal{X}_k$, and controls $\mathcal{U}_k$. 
+In general, a nonlinear discrete-time \ac{OCP} can be formulated as the optimization of a running cost (or loss) function $L_{k}()$, plus a terminal cost function $\phi()$, subject to the system's dynamics $\mathbf{f}_k()$, and the sets of permitted states $\mathcal{X}_k$, and controls $\mathcal{U}_k$.
 
 
 \begin{equation}
@@ -31,8 +31,8 @@ In general, a nonlinear discrete-time \ac{OCP} can be formulated as the optimiza
 \noindent Where,
 \begin{itemize}
 \item[] $N$ is the final discrete time,
-\item[] $\boldsymbol{x}_k \in \mathbb{R}^n$ is the state at the discrete time $k \in \mathbb{Z}$,
-\item[] $\boldsymbol{u}_k \in \mathbb{R}^m$ is the control at the discrete time $k \in \mathbb{Z}$,
+\item[] $\boldsymbol{x}_k \in \mathbb{R}^n$ is the state at discrete time $k \in \mathbb{Z}$,
+\item[] $\boldsymbol{u}_k \in \mathbb{R}^m$ is the control at discrete time $k \in \mathbb{Z}$,
 \item[] $\mathbf{X} = [\boldsymbol{x}_{0}, \dots, \boldsymbol{x}_{N}]$ is the trajectory of states,
 \item[] $\mathbf{U} = [\boldsymbol{u}_{0}, \dots, \boldsymbol{u}_{N-1}]$ is the trajectory of control actions.
 
@@ -51,6 +51,7 @@ Since the main objective is to complete a lap through the racing track as fast a
 & & & \boldsymbol{u}_{k} \in \mathcal{U}_{k}, \quad k = 0, \dots, N-1, \\
 & & & \boldsymbol{x}_{k} \in \mathcal{X}_{k}, \quad k = 0, \dots, N,
 \end{aligned}
+\label{ocp-eq}
 \end{equation}
 
 The racing track restrictions, i.e. passing through a sequence of gates while avoiding
@@ -63,6 +64,7 @@ $\mathcal{X}_k$ as,
         \boldsymbol{p}_k \notin \mathcal{O}_j, \quad
         \forall\, j \in \{1, \dots, M\}
     \right\},
+    \label{const-eq}
 \end{equation}
 
 \noindent where,
@@ -77,14 +79,14 @@ $\mathcal{X}_k$ as,
 \end{itemize}
 
 \subsection{Simplified Minimum-Time Optimal Control Problem}~\label{sec:simpmin-OCP}
-This problem formulation (\autoref{subsec:minOCP}) is inherently complex, as it requires simultaneously solving for an optimal trajectory that clears all gates and avoids obstacles while determining the optimal control sequence achievable within the vehicle's dynamics and actuator constraints.
-To make the problem more tractable, this thesis either assumes that an optimal reference trajectory or path is provided a priori, or relaxes the condition to maximize gate progress instead.
-Consequently, the \acp{OCP} addressed hereafter focus on trajectory tracking or gate progress optimization, which we formulate as follows:
+The problem formulation of \eqref{ocp-eq} is inherently complex, as it requires simultaneously solving for an optimal trajectory that clears all gates and avoids obstacles while determining the optimal control sequence achievable within the vehicle's dynamics and actuator constraints.
+To make the problem more tractable, this thesis either assumes that an optimal reference trajectory or path is provided a priori, or relaxes the optimization constraints \eqref{const-eq} by indirectly including them in the cost function.
+Consequently, the \acp{OCP} addressed hereafter focus on trajectory tracking or gate-progress optimization problems, which we formulate as follows:
 
 \subsubsection{Trajectory Tracking}
-For the trajectory tracking \ac{OCP}, the objective is to find the optimal control sequence $\mathbf{U}$ that minimizes the error between a given reference state $\boldsymbol{x}_k^{\text{ref}}$ and the current system state $\boldsymbol{x}_k$, subject to dynamics, actuator, and state constraints.
-While this simplifies the optimization significantly it comes at the cost of reduced robustness.
-By assuming the trajectory is fixed, the system cannot re-optimize the path to accommodate state constraints or environmental changes, effectively limiting the drone's agility compared to a unified spatial-temporal optimization.
+For the trajectory tracking \ac{OCP}, \eqref{tt-ocp}, the objective is to find the optimal control sequence $\mathbf{U}$ that minimizes the error between a given reference state $\boldsymbol{x}_k^{\text{ref}}$ and the current system state $\boldsymbol{x}_k$, subject to dynamics and actuator constraints.
+While this significantly simplifies the optimization, it comes at the cost of reduced adaptability.
+By assuming the trajectory is fixed, the system cannot re-optimize the path to accommodate environmental disturbances or additional constrains, effectively limiting the drone's agility compared to a unified spatial-temporal optimization.
 
 \begin{equation}
 \begin{aligned}
@@ -95,13 +97,15 @@ By assuming the trajectory is fixed, the system cannot re-optimize the path to a
 & & & \boldsymbol{u}_{k} \in \mathcal{U}_{k}, \quad k = 0, \dots, N-1, \\
 & & & \boldsymbol{x}_{k} \in \mathcal{X}_{k}, \quad k = 0, \dots, N,
 \end{aligned}
+\label{tt-ocp}
 \end{equation}
+Note that the states can be weighted with the matrix $\mathbf{Q}$ to prioritize some states over others.
 
 
 \subsubsection{Gate Progress}
-An alternative objective to reduce the complexity without sacrifiyng much on robsutness is to optimize the progress toward the target gate position.
-Unlike trajectory tracking, which imposes a strict temporal constraint for every spatial coordinate, the gate progress \ac{OCP} leaves the path and speed toward the gate as a decision variables. 
-This allows the controller to dynamically adjust to the current vehicle's state providing more flexibility.
+An alternative objective to reduce the complexity without sacrificing much adaptability is to optimize the progress toward the target gate.
+Unlike trajectory tracking, which imposes a strict temporal constraint for every spatial coordinate, the gate progress \ac{OCP} leaves the path and speed toward the gate as decision variables.
+This allows the controller to dynamically adjust to the current vehicle state, providing more flexibility.
 
 \begin{equation}\begin{aligned}
 & \underset{\mathbf{U}}{\text{minimize}} & & \sum_{k=1}^{N} \left(  \left\| \mathbf{p}_{k}^\mathcal{W} - \mathbf{p}_{g_k}^\mathcal{W} \right\|_2 - \left\| \mathbf{p}_{k-1}^\mathcal{W} - \mathbf{p}_{g_k}^\mathcal{W} \right\|_2 \right) \\
@@ -113,22 +117,21 @@ This allows the controller to dynamically adjust to the current vehicle's state 
 
 
 \section{Classical Control Methods}\label{sec:classical}
-Given the \ac{OCP} formulated in the last sections, by solving a quadratic program, a trajectory of control inputs that minimizes the cost function can be obtained.
-However, in this direct approach, the control is open-loop.
-Henece it is not robust to external disturbances and model mistmaches. 
-In the classical literature, a well stablished approach that adresses this issue is to use \ac{MPC}.
-Another common control approach introduced in~\cite{mellinger_minimum_2011} is \ac{DFBC}, "The states and the inputs can be written as algebraic functions of four carefully selected flat outputs and their derivatives"~\cite{mellinger_minimum_2011}.
-Leveraging this property, motors command can be directly obtained from a given trajectory to be tracked.
+Given the \ac{OCP} formulated in the previous sections, solving a quadratic program yields a trajectory of control inputs that minimizes the cost function.
+However, with this direct approach the control is open-loop and hence not robust to external disturbances and model mismatches.
+In the classical literature, two well established approaches address this issue; \ac{MPC} and \ac{DFBC} .
+% Another common control approach introduced in~\cite{mellinger_minimum_2011} is \ac{DFBC}: "The states and the inputs can be written as algebraic functions of four carefully selected flat outputs and their derivatives"~\cite{mellinger_minimum_2011}.
+% Leveraging this property, motor commands can be directly obtained from a given trajectory to be tracked.
 
-Many other quadrotor control methods are well stablished on the lituerature, ranging from \ac{PID} cotnrollers, Linear Quadratic Regulators (LQR), $\mathcal{L}_2$ adaptive control, $H_\infty$ norm minimization, $\mu$-sythesis and many others, each with their own advatages and disatvantages. 
+Many other standard quadrotor control methods exist in the literature, ranging from \ac{PID} controllers, Linear Quadratic Regulators (LQR), $\mathcal{L}_2$ adaptive control, $H_\infty$ norm minimization, $\mu$-synthesis and many others, each with their own advantages and disadvantages.
 However, in this section we give an overview of \ac{MPC} and \ac{DFBC} as we find them the most relevant for this thesis.
 
 
 \subsection{Model Predictive Control}
-Reciding horizion control or also known as \ac{MPC} is a direct approach to solving an \ac{OCP}.
-The key idea behind this method is to solve the control problem for a given prediction horizion of $N_p$ steps.
-As a solution we obtain the control inputs that minimize the cost function for that horizion, nonetheless we only take $N_c \sim$ 2 or 3 steps,  of those controls and discard the rest.
-Then, we solve again the control problem with the updated states, and repeat the process  (see \autoref{mpc}).  
+Receding horizon control, also known as \ac{MPC}, is a direct approach to solving an \ac{OCP}.
+The key idea behind this method is to solve the control problem for a given prediction horizon of $N_p$ steps.
+As a solution we obtain the control inputs that minimize the cost function for that horizon; nonetheless we only take $N_c \sim 2$ or $3$ of those controls and discard the rest.
+Then we solve the control problem again with the updated states and repeat the process (see \autoref{mpc}).
 
 \begin{figure}[H]
     \centering
@@ -137,12 +140,11 @@ Then, we solve again the control problem with the updated states, and repeat the
     \label{mpc}
 \end{figure}
 
-The main advatage of this method is that it reamains robust to disturbnaces and handles well constrains on the control inputs and states.
-However, it is computationally coslty and can present numerical convergence issues.
+The main advantage of this method is that it remains robust to disturbances and handles constraints on the control inputs and states well.
+However, it is computationally costly and can present numerical convergence issues.
 
 
 
-% \todo{Don't dive deep in these, just comment relevant stuff}
 \subsection{Differential Flatness Based Control}
 As shown in \cite{mellinger_minimum_2011}, the quadrotor's state and control inputs can be expressed as algebraic function of carefully selected flat outputs.
 Choosing the position of the center of mass $\mathbf{r} = [r_x, r_y, r_z]^\top$ and its heading angle $\eta$ as outputs, the quadorotor's $\mathbf{\hat{b}}_3$ unit vector has the same direction as its thrust vector which corresponds to its acceleration,
@@ -186,27 +188,16 @@ To completely define the quadrotor's state we need the angular accelerations $\d
 Hence, the control inputs are function of the flat outputs as $u_1 = T_c = m ||\mathbf{t}||$, and $[u_2, u_3, u_4]^\top = \boldsymbol{\tau}$.
 
 This property is exploited in \autoref{subsec:lvhr} to determine the attitude of the quadrotor and design a geometric controller. 
+
+
 \section{Learning-Based Methods}\label{sec:learned}
-Learning-based approaches can be understood as optimization methods in which the optimization process is done by intereacting with the environment~\cite{huang_model-based_2020}.
-There are two main types of \ac{RL}, model-based and model-free, each have with their own advantages and drawbacks.
-Next, we give an overview model-free and model-based \ac{RL} and the most relevant algorithms in the literature for each.
-% \subsection{Neural Networks?}
+Learning-based approaches can be understood as optimization methods in which the optimization process is done by interacting with the environment~\cite{huang_model-based_2020}.
+There are two main types of \ac{RL}, model-based and model-free, each has its own advantages and drawbacks.
+Next, we give an overview of model-free and model-based \ac{RL}, and the most relevant algorithms in the literature for each.
+
 \subsection{Model-Free Reinforcement Learning}
-In model-free \ac{RL}, the transition dynamics of the environment are not explicitly used by the optimization algorithms. Instead, the policy is optimized by gathering experience through interaction with the environment, typically utilizing first-order policy gradient methods. 
-Next, we review three model-free \ac{RL} approaches; Q-Learning, and two Policy Optimization methods; Policy Gradient and \ac{PPO}.
-% \subsubsection{Q-Learning}
-% In Q-Learning the idea is to map the values of the possible actions given the current state and store those values into a table.
-% Druing training, Bellman's equation is used to update the values of the Q-table, and when training has converged an optimal policy $\pi^*$ has been found since dor each state the table indicates the best action~\cite{Sutton1998}.
-% \begin{equation}
-%     \pi^*(s) = \arg\max_a Q^*(s,a)
-% \end{equation}
-% Q-Learning is a formulation of \ac{DP}, for smiple scenarios such us finindg the optimal policy to exit a maze it works, howerver for more complex environments it is computationally coslty and and unfesible approach.
-% To relax the computational cost, \ac{DQN} was proposed in~\cite{mnih_playing_nodate}, where instead of storing the values in a Q table, a neural network is optimized to approximate the values.
-
-
-% In model-free \ac{RL}, neither the environment model nor the agent dynamics are explicitly considered during the optimization process.
-% Instead, the policy is optimized by collecting data through interactions with the environment.
-% The two main approaches for doing this are Q-learning and policy optimization.
+In model-free \ac{RL}, the transition dynamics of the environment are not explicitly used by the optimization algorithms. Instead, the policy is optimized by gathering experience through interaction with the environment, typically utilizing first-order policy-gradient methods.
+Next, we review three model-free \ac{RL} approaches: Q-learning and two policy optimization methods: policy gradient and \ac{PPO}.
 
 \subsubsection{Q-Learning}
 
@@ -217,11 +208,9 @@ Once training converges, an optimal policy $\pi^*$ can be obtained, since the Q-
 \begin{equation}
     \pi^*(s) = \arg\max_a Q^*(s,a)
 \end{equation}
-
 Q-learning can be interpreted as a formulation of \ac{DP}.
 For simple problems, such as finding the optimal strategy to escape a maze, this approach performs well.
 However, for high-dimensional or complex environments, storing and updating the Q-table becomes computationally infeasible.
-
 To overcome this limitation, \ac{DQN} was introduced in~\cite{mnih_playing_nodate}.
 Instead of explicitly storing the Q-values in a table, a neural network is trained to approximate the action-value function.
 
@@ -233,29 +222,29 @@ These parameters are optimized with respect to an objective function $J(\theta)$
 \begin{equation}\label{opt_theta}
     J(\theta^*) = \arg \max_{\theta} \mathbb{E}_{\tau \sim \pi_\theta} \left[ R(\tau) \right]
 \end{equation}
-
 In this framework, policy optimization methods aim to find the optimal parameters $\theta^*$ such that the resulting policy $\pi_{\theta}(a|s)$ selects actions $a \in \mathcal{A}$ for states $s \in \mathcal{S}$ that maximize the expected return over trajectories $\tau = \{s_0, a_0, s_1, a_1, \dots\}$.
 
 \subsubsection{Proximal Policy Optimization}
 This policy optimization method was introduced in 2017 in \cite{ppo} and has become a standard algorithm in \ac{RL}.
-The algorithm adresses instability issues present in policy gradient methods.
+The algorithm addresses instability issues present in policy gradient methods.
 Differentiating \eqref{opt_theta} gives,
 \begin{equation}
     \nabla_{\theta}J(\theta) = \mathbb{E}_{s,a\sim\pi_{\theta}} [\nabla_{\theta} \log \pi_{\theta}(a|s)Q^{\pi}(s,a)].
 \end{equation}
-In practice, $Q^\pi$ is replaced by an advantage estimate $A^\pi$ to reduce variance.
-Using this vanilla gradient can lead to excecissve parameter updates that destabilize the policy.
-Previously, this issue was adressed in \cite{schulman_trust_2017} where the authors introduce the \ac{TRPO} which fixes a hard KL-divergence constrain.
-Note that KL-divergence measures the difference between two data distributions $D_{KL}(P \| Q) = \mathbb{E}_{x} \log \frac{P(x)}{Q(x)}$.
+% In practice, $Q^\pi$ is replaced by an advantage estimate $A^\pi$ to reduce variance.
+% Using this vanilla gradient can lead to excecissve parameter updates that destabilize the policy.
+Using this vanilla gradient can lead to excessive parameter updates that destabilize the policy.
+Previously, this issue was addressed in \cite{schulman_trust_2017}, where the authors introduce the \ac{TRPO} which fixes a hard KL-divergence constraint.
+Note that KL-divergence measures the difference between two probability distributions: $D_{KL}(P \| Q) = \mathbb{E}_{x} \log \frac{P(x)}{Q(x)}$.
 \begin{equation}
 \begin{aligned}
 & \underset{\theta}{\text{maximize}} & & \mathbb{E} \left[ \frac{\pi_{\theta}(a_t|s_t)}{\pi_{\theta_{old}}(a_t|s_t)} A_t \right] \ \\
 & \text{subject to} & & D_{KL} (\pi_{\theta_{old}} | \pi_{\theta}) \leq \delta.
 \end{aligned}
+\label{trpo}
 \end{equation}
-
-However, this method involves the calculation of the Hessian, a second-order derivative matrix that is computationally costly to obtain.
-Instead of imposing a hard constrain the authors of \cite{ppo} propose two relaxation methods.
+However, \eqref{trpo}, involves the calculation of the Hessian, a second-order derivative matrix that is computationally costly to obtain.
+Instead of imposing a hard constraint, the authors of \cite{ppo} propose two relaxation methods.
 \begin{enumerate}
     \item \textbf{Adaptive KL Penalty Coefficient}
     
@@ -271,49 +260,48 @@ Instead of imposing a hard constrain the authors of \cite{ppo} propose two relax
     \begin{equation}
         L^{CLIP}(\theta) = \hat{\mathbb{E}}_{t} \left[ \min\left(r_t(\theta) \hat{A}_t, \text{clip}(r_t(\theta), 1 - \epsilon, 1 + \epsilon) \hat{A}_t\right) \right]
     \end{equation}
-    where epsilon is a hyperparameter.
+    where $\epsilon$ is a hyperparameter.
 \end{enumerate}
-The authors claim that the clipped surrogate objective approach performs better. \ac{PPO} is usually implemented as an actor-critic algorithm a loss term for the critic, $L_t^{VF}(\theta)$, is incorporated, and to encourage exploration, an entropy bonus, $S[\pi_\theta](s_t)$ , is added. 
+The authors claim that the clipped surrogate objective approach performs better, \ac{PPO} is usually implemented as an actor-critic algorithm so a loss term for the critic, $L_t^{VF}(\theta)$, is incorporated, and to encourage exploration an entropy bonus, $S[\pi_\theta](s_t)$, is added.
 
-Hence, the final PPO loss is,
+\noindent Hence, the final PPO loss is formulated as,
 
 \begin{equation}
-L_t^{CLIP+VF+S}(\theta) = \hat{\mathbb{E}}_t \left[ L_t^{CLIP}(\theta) - c_1 L_t^{VF}(\theta) + c_2 S[\pi_\theta](s_t) \right]   
+L_t^{CLIP+VF+S}(\theta) = \hat{\mathbb{E}}_t \left[ L_t^{CLIP}(\theta) - c_1 L_t^{VF}(\theta) + c_2 S[\pi_\theta](s_t) \right],   
 \end{equation}
 where $c_1$ and $c_2$ are weighting factors.
 
 \subsection{Model-Based Reinforcement Learning}
-Model-based \ac{RL} uses infromation of a model to optimize the policy parameters.
-The model can be predifined, or it can be learned by a \ac{NN} from an experience buffer. 
+Model-based \ac{RL} uses information from a model to optimize the policy parameters.
+The model can be predefined, or it can be learned by a \ac{NN} from an experience buffer.
 
-\subsubsection{Given The Model}
-When the model is know, that is to say, the state equation $\mathbf{x}_{k+1} = f(\mathbf{x}_{k}, \mathbf{u}_{k})$.
-The \ac{RL} architecture can be straightforward, the gradient from the cost function $J$ to the policy parameters can be computed directly by appliyng the chain rule. 
-And the policy is optimized backproagating through time the accumulated gradient.
-In section \autoref{sec:diff-opt}, we explain in more detail how the optimization porcess works as this is the method we use in our methodology to learn the drone racing policies.
+\subsubsection{Given the Model}
+When the model is known, i.e., the state equation $\mathbf{x}_{k+1} = f(\mathbf{x}_{k}, \mathbf{u}_{k})$ is available, the \ac{RL} architecture can be straightforward: the gradient from the cost function $J$ to the policy parameters can be computed directly by applying the chain rule.
+The policy is then optimized by backpropagating the accumulated gradient through time.
+In \autoref{sec:diff-opt} we explain in more detail how the optimization process works, as this is the method we use to learn the drone racing policies.
 
-Having knowledge of the model increseas the sample efficeny. 
-However, if the model is not suitable, errors can accumulate leading to suboptimal performance. 
-A perfect model is not necessary, but it has to capture the important behaviours of the system.
-Additionally, \ac{NN}s tend to overfit to the training data distribution. 
-To prevent ovrefitting, it is recommended to radnomize model parameters, as we explain in \autoref{sec:DR}.
-\subsubsection{Learn The Model}
-An alternative approach involves learning the state transition dynamics directly from environmental interactions to estimate the state equation $\hat{\mathbf{x}}_{k+1} = \hat{f}_\theta(\mathbf{x}_k, \mathbf{u}_k)$. 
+Having knowledge of the model increases sample efficiency.
+However, if the model is not suitable, errors can accumulate, leading to suboptimal performance.
+A perfect model is not necessary, but it must capture the important behaviours of the system.
+Additionally, \ac{NN}s tend to overfit to the training data distribution.
+To prevent overfitting, it is recommended to randomize model parameters, as we explain in \autoref{sec:DR}.
+\subsubsection{Learn the Model}
+An alternative approach involves learning the state transition dynamics directly from environmental interactions to estimate the state equation $\hat{\mathbf{x}}_{k+1} = \hat{f}_\theta(\mathbf{x}_k, \mathbf{u}_k)$.
 A notable framework in this domain is the Dreamer architecture \cite{hafner_mastering_2024}.
-Rather than modeling the world in the raw observation space, Dreamer utilizes an encoder to map observations $\mathbf{o}_k$ into stochastic latent representations $\mathbf{z}_k$. 
-The system’s dynamics are then captured by a recurrent state-space model: $\mathbf{h}_{k+1} = f(\mathbf{h}_k, \mathbf{z}_k, \mathbf{u}_k)$. 
+Rather than modelling the world in the raw observation space, Dreamer utilizes an encoder to map observations $\mathbf{o}_k$ into stochastic latent representations $\mathbf{z}_k$.
+The system's dynamics are then captured by a recurrent state-space model: $\mathbf{h}_{k+1} = f(\mathbf{h}_k, \mathbf{z}_k, \mathbf{u}_k)$.
 This approach offers two primary advantages: the recurrent state provides essential temporal memory, while the mapping to a stochastic latent space facilitates the processing of high-dimensional inputs, such as raw images.
 
-Once the world model is learned, an actor-critic agent can be trained in the learned environment. 
+Once the world model is learned, an actor-critic agent can be trained in the learned environment.
 This paradigm shares conceptual similarities with \ac{MPC}, as it allows the agent to account for the impact of current actions on future states.
-% In \cite{verraest_skydreamer_2025}, the authors employ a similar architecture to train an \ac{ADR} policy that maps pixels directly to motor commands.
-% Their method demonstrated champion-levlel performance; however, a drawback of this method is its sample inefficiency, as the authors report that training can require up to 50 hours.
+
+\newpage
 
 \section{Differentiable Optimization} \label{sec:diff-opt}
 
-Under the paradigm of differentiable optimization, we no longer treat the quadrotor model as a "black-box".
+Under the paradigm of differentiable optimization, we no longer treat the quadrotor model as a black-box.
 The main idea of this thesis is to leverage an automatic differentiation engine to compute the exact analytical gradient of the cumulative loss $J$ with respect to the control policy network parameters $\theta$.
-In this section, we provide an overview on how the optimization process works.
+In this section, we provide an overview on this optimization process works.
 
 \subsection{Computational Graph and Backpropagation}
 The gradient of the cummulative stage cost function $J_k$ with respect to the network parameters $\theta$ is given by the chain rule as,
@@ -324,11 +312,11 @@ The gradient of the cummulative stage cost function $J_k$ with respect to the ne
     \frac{\partial \mathbf{x}_h}{\partial \mathbf{u}_{h-1}}
     \frac{\partial \mathbf{u}_{h-1}}{\partial \theta}
 \end{equation}
-\noindent where $\frac{\partial \mathcal{L}_h}{\partial \mathbf{x}_h}$ is the gradient of
+\noindent where $B$ is the size of the batch (number of parallel environemnts) and $H$ is the optimization horizion (number of accumlated steps), $\frac{\partial \mathcal{L}_h}{\partial \mathbf{x}_h}$ is the gradient of
 the stage loss with respect to the state, $\frac{\partial \mathbf{x}_h}{\partial
 \mathbf{u}_{h-1}}$ encodes the change in the dynamics regarding the applied controls, and
 $\frac{\partial \mathbf{u}_{h-1}}{\partial \theta}$ is the gradient of the control output
-with respect to the policy parameters, $B$ is the size of the batch (number of parallel environemnts) and $H$ is the optimization horizion (number of accumlated steps).
+with respect to the policy parameters.
 Since the gradient is accumulated through time due to the recursive dependence of the state on previous states and control inputs, this procedure is known as \ac{BPTT}.
 To compute this gradient analytically, an automatic differentiation engine is used. 
 Many \ac{ML} frameworks, such as PyTorch~\cite{paszke_pytorch_2019}, TensorFlow~\cite{abadi_tensorflow_2016}, and JAX~\cite{jax2018github}, among others, support automatic differentiation. 
@@ -343,7 +331,7 @@ However, for this simulator, PyTorch has been selected due to its intuitive inte
 \end{figure}
 
 
-To illustrate how gradients are computed, consider the next function $f(x, y) = y(xy)^2$. Its gradient is
+To underestand how the gradients are computed, consider the next function $f(x, y) = y(xy)^2$. Its gradient is
  $\nabla f = \begin{bmatrix}
     \frac{\partial f}{\partial x} & \frac{\partial f}{\partial y}
 \end{bmatrix} = \begin{bmatrix}
@@ -354,15 +342,15 @@ To illustrate how gradients are computed, consider the next function $f(x, y) = 
 In PyTorch, this gradient is computed using a computational graph which is constructed during the forward pass.
 Each mathematical operation is stored as a node in this graph.
 During backporopagation, PyTorch applies automatic differentiation to traverse the graph from the output back to the input and applying the chain rule to accumulate gradients.
-The computational graph shown in \autoref{fig:com-graph} represents this process and Algortihm~\ref{alg:backprop} presents the pesudocode.
+The computational graph shown in \autoref{fig:com-graph} represents this process and \refalg{alg:backprop} presents the pesudocode.
 In practice, the calculation of the gradient would be done simply by calling \textbf{u.backward()} in PyTorch.
 
 
 \begin{algorithm}
 \caption{Example Backpropagation for the function $u(x,y) = y(xy)^2$}
 
-% \small
 \begin{algorithmic}
+\Large
 \Require $x \in \real, \ y \in \real$
 \Ensure $\frac{\partial u}{\partial x},\ \frac{\partial u}{\partial y}$
 
@@ -389,12 +377,9 @@ In practice, the calculation of the gradient would be done simply by calling \te
 \label{alg:backprop}
 \end{algorithm}
 
-% \todo{Explain the surrogate gradient thing!!!}
+
 Adittionally, PyTorch allows to custimoize the computational graph in a manner that the forward and backward pass do not need to be identical.
 This is known as gradient shaping or surrogate gradient, and we use this feature in our methodologhy to skip the motor dynamics.
-
-% As shown in \autoref{fig:cool-diagram}, this feature is leveraged to skip the motor dynamics during the backward pass.
-% This is done to obtain cleaner gradients since the derivative of \autoref{eq:motspd} is very sensitive due to the small values of the constant $a_0\sim 10^{-7}$ and the square root.
 
 \subsection{Optimization Process}
 Given the gradient $\nabla_\theta J$ computed via \ac{BPTT} the policy parameters are updated using the Adaptive Moment Estimation (Adam) optimizer~\cite{kingma_adam_2017}.

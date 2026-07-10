@@ -10,13 +10,15 @@
     name=plot2,
     width=7.5cm,
     height=6cm,
+    xmode=log,
+    ymode=log,
     xlabel={$\alpha$},
     ylabel={$H$},
     colormap/viridis,
     colorbar,
     colorbar style={ylabel={Reward}},
     point meta min=0,
-    point meta max=90,
+    point meta max=50,
     tick align=outside,
     view={0}{90},
 ]
@@ -24,7 +26,7 @@
 \addplot3[
     matrix plot*,
     mesh/cols=4,
-    mesh/rows=5,
+    mesh/rows=6,
     point meta=explicit,
 ] table[
     x=alpha,
