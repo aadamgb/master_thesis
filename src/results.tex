@@ -208,7 +208,7 @@ Comparing \autoref{fig:transfer} with \autoref{fig:uzh_ca}, it can be observed t
 Particularly, the positon tracking performance degrades by a factor of $2.78\times$, and the velocity $1.95\times$ (considering ground-truth state estimation). 
 In \refapp{sim-val}, we test some simple signals both in our simulator and in Gazebo, and we observe that there is a small mismatch in the responses, which contributes to an increase in the tracking error.
 This mismatch could be mainly due to how we initially implemented the rate controller in \autoref{ctbr-bad}, which does not align with the PX4 rate controller \refapp{px4-mixing}.
-In \autoref{sec:mb-vs-mf} we correct this implementation.
+In \autoref{sec:mb-vs-mf} we correct this issue.
 
 \begin{table}[H]
     \centering
@@ -224,7 +224,7 @@ Velocity [m/s]  & $0.982 \pm 0.08$ & $1.03 \pm 0.076$ \\ \hline
 
 % Analyzing the tracking errors from \autoref{tab:uzh_gazbo}, we see that they are comparable to those in \autoref{tab:uzh_ca_dist}.
 % We observe higher errors with the passthrough state estimator as expected.
-Overall, the policy is able to track this trajectory, achieving speeds up to $10\ \mathrm{m/s}$ even with model mismatches present between simulators.
+Overall, the policy is able to track this trajectory, achieving speeds up to $10\ \mathrm{m/s}$ even with significant model mismatches between simulators.
 % \newpage
 \section{Real World Validation}\label{sec:realworld}
 
@@ -279,7 +279,7 @@ However, the \ac{BPTT} policy converges in around $0.5\times 10^{6}$ steps while
 making the \ac{BPTT} method $\mathbf{5x}$ more sample efficient in this simple scenario.
 Nonetheless, analyzing the more challenging Eight figure track, the \ac{PPO} policy significantly outperforms the \ac{BPTT} policy.
 The \ac{PPO} policy achieves a maximum reward of $63.4$ with smooth policy updates, while \ac{BPTT} does not surpass $50.2$ and presents high variance in the reward.
-Although both are optimized with a learning rate of $\alpha = 3\times 10^{-4}$.
+Although both are optimized with a learning rate of $\alpha = 3\times 10^{-3}$.
 \begin{figure}[H]
     \centering
     \includegraphics{fig/plots/sample-eff-opt2/hypotheses.pdf}
@@ -291,8 +291,8 @@ We believe that this difference in the maximum achieved reward is due to the rel
 The \ac{BPTT} policy is optimized by backpropagating gradients directly through the differentiable simulator, using a single feedforward network with no value function.
 While this direct approach shows higher sample efficiency for a simple scenario, when introducing multiple gates the optimization space is less smooth.
 This increases the risk of converging prematurely to a local optimum.
-Additionally, the \ac{BPTT} policy appears to be optimized greedily, since the optimization is performed over a horizon of only 100 steps and therefore does not fully account for long-horizon reward.
-We select the optimization horizon $H=100$ and learning rate $\alpha=3\times10^{-4}$ based on the experimental result depicted in \autoref{heatmap}, since this combination provides the highest mean episode reward.
+Additionally, the \ac{BPTT} policy appears to be optimized greedily, since the optimization is performed over a horizon of only 50 steps and therefore does not fully account for long-horizon reward.
+We select the optimization horizon $H=50$ and learning rate $\alpha=3\times10^{-3}$ based on the experimental result depicted in \autoref{heatmap}, since this combination provides the highest mean episode reward.
 % \todo{Heatmap plot with x:lr and y: H ??, to show best combination for eight track?}
 \begin{figure}[H]
     \centering

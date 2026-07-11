@@ -16,7 +16,7 @@ Although the policies for the trajectory tracking task are trained using curricu
 Among the evaluated controllers, we find that the \ac{CTBR} controller provides the best trade-off between tracking performance and robustness to external disturbances.
 
 In Gazebo, the learned \ac{CTBR} policy achieves good transferability, obtaining position and velocity tracking errors of $1.215 \pm 0.18~\mathrm{m}$ and $0.982 \pm 0.08~\mathrm{m/s}$, respectively.
-But when deployed on a real UAV platform, the tracking performance degrades significantly, with position and velocity errors increasing to $6.11~\mathrm{m}$ and $4.25~\mathrm{m/s}$, respectively.
+But when deployed on a real UAV platform, the tracking performance degrades significantly, with position and velocity errors increasing to $6.11~\mathrm{m}$ and $4.25~\mathrm{m/s}$.
 % It should be noted that several modeling inaccuracies existed at the time of the experiment: the simulator did not account for motor delay or aerodynamic drag, the implemented rate controller (\autoref{ctbr-bad}) differed substantially from the PX4 rate controller (\autoref{px4-mixing}), and the dynamics integration, inner control loop, and policy commands were all executed at $100~\mathrm{Hz}$ rather than their actual real-world implementation.
 It should be noted that several modeling inaccuracies existed at the time of the experiment.
 Despite these modeling inaccuracies, a policy trained using our direct \ac{BPTT} optimization approach was successfully transferred to a real platform and achieved flight speeds of up to $10~\mathrm{m/s}$, demonstrating the effectiveness of \ac{DR} for \ac{s2r} transfer.

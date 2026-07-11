@@ -34,7 +34,7 @@ Trajectory planning can be computationally demanding, making efficient approache
 The final stage of the pipeline is \textbf{control}.
 With the planned trajectory, the goal is to obtain the control inputs to track it with minimal error.
 This task is challenging due to the highly nonlinear dynamics of the quadrotor.
-Additionally, the system is underactuated, with only four out of the six \ac{DOFs} directly controllable.
+Additionally, the system is underactuated, with only four out of the six \ac{dof} directly controllable.
 Moreover, yaw control authority is typically limited, and actuator saturation further constrains performance.
 
 These problems are common in robotics, and a variety of methods have been proposed to address them.
@@ -45,7 +45,7 @@ Combinations of multiple stages, such as perception and planning or planning and
 In some cases, the entire pipeline is learned end-to-end \cite{hanover_autonomous_2024}.
 Learning-based approaches offer several advantages; however, training these models typically requires large amounts of data, and current optimization methods can be sample inefficient.
 Since collecting such data in real-world settings is often impractical, simulated environments that approximate real-world distributions are used, enabling thousands of parallel training instances.
-Recent research hasexplored the use of \ac{ADEs} supported by \ac{ML} frameworks such as \cite{paszke_pytorch_2019,jax2018github,abadi_tensorflow_2016} to propagate gradients from a cost function to \ac{NN} parameters.
+Recent research hasexplored the use of \ac{ADE} supported by \ac{ML} frameworks such as \cite{paszke_pytorch_2019,jax2018github,abadi_tensorflow_2016} to propagate gradients from a cost function to \ac{NN} parameters.
 This approach significantly improves sample efficiency~\cite{zhang_back_2025} and avoids treating the quadrotor dynamics as a black box.
 In this thesis, we investigate this direction. We focus on the use of differentiability to learn the control component.
 We aim to demonstrate that this approach is a promising avenue for research in robotics.
@@ -113,7 +113,7 @@ This way, they propose an algorithm based on the Metropolis-Hastings sampling \c
 The trajectory is divded in segments with similar height gradients and minimum time of 2 s per segment. 
 Their approach showed an increase on trajectory tracking succes comparted to another automatic gain tuning method based on genetic algorithms~\cite{khuwaja_pid_2018}.
 
-In \autoref{fig:rl_tax} we classify some of these related works according to the type of \ac{RL} methods they use.
+In \autoref{fig:rl_tax} we classify some of these related works according to which type of \ac{RL} they use.
 
 \section{Objectives and Structure}
 

@@ -124,7 +124,6 @@ Unlike how we initially modeled it in \autoref{ctbr-bad}, the PX4 rate controlle
 \begin{equation}\label{px4-tau}
   \boldsymbol{\tau}_{\text{cmd}} = \mathbf{k_p} (\boldsymbol{\omega}_{\text{cmd}} - \boldsymbol{\omega}) + \mathbf{rate\_int} + \mathbf{k_d} \boldsymbol{\alpha} + \mathbf{k_{ff}} \boldsymbol{\omega}_{\text{cmd}}
 \end{equation}
-where $\boldsymbol{\omega}_\text{cmd}$ is computed as in \eqref{omega-cmd} and  $\boldsymbol{\alpha}$ is the dron's angular accelaration obtained from the \ac{IMU}.
 where $\boldsymbol{\omega}_\text{cmd}$ is computed as in \eqref{omega-cmd} and $\boldsymbol{\alpha}$ is the drone's angular acceleration obtained from the \ac{IMU}.
 Since we do not model any sensors, we approximate the angular acceleration as $ \alpha = (\boldsymbol{\omega}_k - \boldsymbol{\omega}_{k-1}) / \Delta t$.
 The gains of the rate controller are:
@@ -180,15 +179,6 @@ Desaturation is done in a normalized space, $motor_i \in [0, 1]\ i = 1, \dots, 4
     \label{mixing}
   \end{aligned}
 \end{equation}
-
-% \begin{equation}
-%   \begin{aligned}
-%     motor\_1 &= u_0 - \tau_{b_1} - \tau_{b_2} \\
-%     motor\_2 &= u_0 - \tau_{b_1} + \tau_{b_2} \\
-%     motor\_3 &= u_0 + \tau_{b_1} + \tau_{b_2} \\
-%     motor\_4 &= u_0 + \tau_{b_1} - \tau_{b_2}
-%   \end{aligned}
-% \end{equation}
 
 Note that if MC\_AIRMODE is 0 or 1, the yaw torques are not yet included in the mixing. 
 The mixing of pitch and roll is prioritized and then the yaw is mixed.
