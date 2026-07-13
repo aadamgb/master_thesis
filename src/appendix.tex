@@ -85,12 +85,12 @@ The lap time $T_f$ is defined as the time elapsed from crossing the first gate t
 The gate \ac{SR} is defined as the ratio of successfully passed gates $G_p$ to the total number of crossed gates $G$,
 
 \begin{equation}
-    \mathit{SR}_{\text{gate}} = 100\cdot\frac{G_p}{G} \in [0, 100]\ \% 
+    \mathit{SR}_{\text{gate}} = 100\cdot\frac{G_p}{G} \in [0, 100]\ \%, 
 \end{equation}
 while the track \ac{SR} indicates how many of the laps performed did not have a single gate crash,
 
 \begin{equation}
-    \mathit{SR}_{\text{track}} = 100\cdot\frac{L_c}{L} \in [0, 100]\ \%
+    \mathit{SR}_{\text{track}} = 100\cdot\frac{L_c}{L} \in [0, 100]\ \%,
 \end{equation}
 where $L_c$ is the number of completed laps without a crash and $L$ is the total number of laps performed.
 
@@ -122,7 +122,7 @@ In this appendix section, we explain in further detail how the PX4 firmware maps
 Unlike how we initially modeled it in \autoref{ctbr-bad}, the PX4 rate controller consists of a \ac{PID}, where the torque is obtained as,
 
 \begin{equation}\label{px4-tau}
-  \boldsymbol{\tau}_{\text{cmd}} = \mathbf{k_p} (\boldsymbol{\omega}_{\text{cmd}} - \boldsymbol{\omega}) + \mathbf{rate\_int} + \mathbf{k_d} \boldsymbol{\alpha} + \mathbf{k_{ff}} \boldsymbol{\omega}_{\text{cmd}}
+  \boldsymbol{\tau}_{\text{cmd}} = \mathbf{k_p} (\boldsymbol{\omega}_{\text{cmd}} - \boldsymbol{\omega}) + \mathbf{rate\_int} + \mathbf{k_d} \boldsymbol{\alpha} + \mathbf{k_{ff}} \boldsymbol{\omega}_{\text{cmd}},
 \end{equation}
 where $\boldsymbol{\omega}_\text{cmd}$ is computed as in \eqref{omega-cmd} and $\boldsymbol{\alpha}$ is the drone's angular acceleration obtained from the \ac{IMU}.
 Since we do not model any sensors, we approximate the angular acceleration as $ \alpha = (\boldsymbol{\omega}_k - \boldsymbol{\omega}_{k-1}) / \Delta t$.
@@ -172,10 +172,10 @@ Desaturation is done in a normalized space, $motor_i \in [0, 1]\ i = 1, \dots, 4
 
 \begin{equation}
   \begin{aligned}
-    motor\_1 &= u_0 - \tau_{b_1} - \tau_{b_2} - \tau_{b_3} \\
-    motor\_2 &= u_0 - \tau_{b_1} + \tau_{b_2} + \tau_{b_3} \\
-    motor\_3 &= u_0 + \tau_{b_1} + \tau_{b_2} - \tau_{b_3} \\
-    motor\_4 &= u_0 + \tau_{b_1} - \tau_{b_2} + \tau_{b_3}
+    motor\_1 &= u_0 - \tau_{b_1} - \tau_{b_2} - \tau_{b_3}, \\
+    motor\_2 &= u_0 - \tau_{b_1} + \tau_{b_2} + \tau_{b_3}, \\
+    motor\_3 &= u_0 + \tau_{b_1} + \tau_{b_2} - \tau_{b_3}, \\
+    motor\_4 &= u_0 + \tau_{b_1} - \tau_{b_2} + \tau_{b_3}.
     \label{mixing}
   \end{aligned}
 \end{equation}
@@ -185,13 +185,13 @@ The mixing of pitch and roll is prioritized and then the yaw is mixed.
 The desaturation cascade starts with the collective thrust.
 And the desaturation algorithm consists of two steps.
 The algorithm takes the motor setpoints and the desaturation vector, which is the sign of the corresponding row of the allocation matrix (i.e., first row for collective thrust, second for pitch, ...). Then, the desaturation gain is computed as follows. 
-For each actuator $i$ with desaturation vector component $d_i \neq 0$, a candidate gain $k_i$ is computed only if that actuator's setpoint $m_i$ violates its bounds $[motor_i^{min}, motor_i^{max}]$
+For each actuator $i$ with desaturation vector component $d_i \neq 0$, a candidate gain $k_i$ is computed only if that actuator's setpoint $m_i$ violates its bounds $[motor_i^{min}, motor_i^{max}]$,
 
 \begin{equation}
   k_i =
   \begin{cases}
-    \dfrac{motor_i^{min} - motor_i}{d_i}, & \text{if } motor_i < motor_i^{min} \\[8pt]
-    \dfrac{motor_i^{max} - motor_i}{d_i}, & \text{if } motor_i > motor_i^{max}
+    \dfrac{motor_i^{min} - motor_i}{d_i}, & \text{if } motor_i < motor_i^{min}, \\[8pt]
+    \dfrac{motor_i^{max} - motor_i}{d_i}, & \text{if } motor_i > motor_i^{max}.
   \end{cases}
   \label{eq:desat_candidate}
 \end{equation}
@@ -202,7 +202,7 @@ The most extreme candidates in each direction are then retained,
 
 \begin{equation}
   k_{min} = \min\left(0,\ \min_i k_i\right), \qquad
-  k_{max} = \max\left(0,\ \max_i k_i\right)
+  k_{max} = \max\left(0,\ \max_i k_i\right),
   \label{eq:desat_extremes}
 \end{equation}
 and the final desaturation gain is their sum,
@@ -228,7 +228,7 @@ For this reason, the desaturation gain is recomputed on the updated setpoints $m
 
 \begin{equation}
   k_2 = \dfrac{1}{2}\,k(\text{motor}_i^{\prime}), \qquad
-  motor_i^{\prime\prime} = motor_i^\prime + k_2 d_i, \qquad \forall i
+  motor_i^{\prime\prime} = motor_i^\prime + k_2 d_i, \qquad \forall i.
   \label{eq:desat_step2}
 \end{equation}
 

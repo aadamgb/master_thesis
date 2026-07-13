@@ -10,7 +10,7 @@ In this chapter we introduce the reader to the sport of \ac{ADR}, its associated
 Finally, we provide an overview of the structure and objectives of this thesis.
 \section{Background}
 
-\lettrine[lines=2,lhang=0.2]{\textbf{\Huge A}}{DR} has emerged as a compelling platform in robotics to develop and deploy novel control techniques in real-world scenarios.
+\lettrine[lines=2,lhang=0.2]{\textbf{\Huge A}}{DR} has emerged as a compelling platform in robotics to develop and deploy novel control techniques in real world scenarios.
 The aim of this sport is to navigate through a sequence of gates in minimum time (see \autoref{a2rl}), pushing the platform’s capabilities to their limits~\cite{hanover_autonomous_2024}.
 To maintain the platform light and agile, the hardware is kept minimal; a typical \ac{ADR} drone consists of a quadrotor equipped with an RGB camera, an \ac{IMU}, an onboard computer, a flight controller, brushless \ac{DC} motors with propellers, and an \ac{ESC} all powered by a \ac{LiPo} battery~\cite{hert_mrs_2023,foehn_agilicious_2022}.
 
@@ -44,7 +44,7 @@ For instance, \ac{CNN}s can process \ac{VIO} data to detect gates, while \ac{MLP
 Combinations of multiple stages, such as perception and planning or planning and control, can also be learned jointly.
 In some cases, the entire pipeline is learned end-to-end \cite{hanover_autonomous_2024}.
 Learning-based approaches offer several advantages; however, training these models typically requires large amounts of data, and current optimization methods can be sample inefficient.
-Since collecting such data in real-world settings is often impractical, simulated environments that approximate real-world distributions are used, enabling thousands of parallel training instances.
+Since collecting such data in real world settings is often impractical, simulated environments that approximate real world distributions are used, enabling thousands of parallel training instances.
 Recent research hasexplored the use of \ac{ADE} supported by \ac{ML} frameworks such as \cite{paszke_pytorch_2019,jax2018github,abadi_tensorflow_2016} to propagate gradients from a cost function to \ac{NN} parameters.
 This approach significantly improves sample efficiency~\cite{zhang_back_2025} and avoids treating the quadrotor dynamics as a black box.
 In this thesis, we investigate this direction. We focus on the use of differentiability to learn the control component.
@@ -60,7 +60,7 @@ We aim to demonstrate that this approach is a promising avenue for research in r
 
 \section{Related Work}
 
-The evolution of \ac{ADR} has progressed from early academic benchmarks in the IROS competitions between 2016 and 2018 \cite{iros2016, iros2017}, where drones reached speeds of only a few meters per second, to highly professionalized racing, where autonomous drones can exceed speeds of $150\ \mathrm{km/h}$ and outperform professional human pilots (see \autoref{fig:introo}).
+The evolution of \ac{ADR} has progressed from early academic benchmarks in the IROS competitions between 2016 and 2018 \cite{iros2016, iros2017}, where drones reached speeds of only a few meters per second, to highly professionalized racing, where autonomous drones can exceed speeds of $150\, \mathrm{km/h}$ and outperform professional human pilots (see \autoref{fig:introo}).
 
 \begin{figure}[H]
     \centering
@@ -96,7 +96,7 @@ Additionally, they deploy the policy simultaneously on different drones and obse
 Another differentiable simulation framework is introduced in \cite{zhang_diffaero_2025}, which has inspired the simulator design used in this work.
 The simulator supports different training tasks such as hovering, position control, and obstacle avoidance; all tasks are differentiable and the simulator supports parallel environment execution for faster data collection.
 Similarly, \cite{heeg_learning_2025} presents an efficient differentiable quadrotor framework implemented in JAX~\cite{jax2018github} for learning hover stabilization from visual features, and compares \ac{BPTT} optimization against standard \ac{PPO}.
-Building on this line of work, \cite{pan_learning_2026, ren_learning_2026} demonstrate real-time policy adaptation using real-world data, leveraging the improved sample efficiency of differentiable methods.
+Building on this line of work, \cite{pan_learning_2026, ren_learning_2026} demonstrate real-time policy adaptation using real world data, leveraging the improved sample efficiency of differentiable methods.
 
 
 \begin{figure}[H]
@@ -110,7 +110,7 @@ Building on this line of work, \cite{pan_learning_2026, ren_learning_2026} demon
 On the other hand, another research direction relevant for this thesis, aims to answer the question of how to tune the gains of a given controller to achieve optimal performance.
 The authors of \cite{loquercio_autotune_2022} show that the faster a trajectory to be tracked is, the more sensitive is the tracking performance to the controller gains.
 This way, they propose an algorithm based on the Metropolis-Hastings sampling \cite{metropolis_equation_1953}, to tune the gains of a \ac{MPC} controller for different segements of a trajectory.
-The trajectory is divded in segments with similar height gradients and minimum time of 2 s per segment. 
+The trajectory is divded in segments with similar height gradients and minimum time of $2\, \mathrm{s}$ per segment. 
 Their approach showed an increase on trajectory tracking succes comparted to another automatic gain tuning method based on genetic algorithms~\cite{khuwaja_pid_2018}.
 
 In \autoref{fig:rl_tax} we classify some of these related works according to which type of \ac{RL} they use.
@@ -120,7 +120,7 @@ In \autoref{fig:rl_tax} we classify some of these related works according to whi
 The primary objective of this thesis is to create a differentiable quadrotor simulator.
 We aim to backpropagate gradients from a given cost function to the \ac{NN} parameters to autonomously command a drone, in the context of \ac{ADR}.
 Additionally, we propose a control architecture where a low-level geometric controller accepts velocity and heading-rate commands from the \ac{NN} and maps them to wrench (collective force and torques) setpoints.
-Moreover, we augment the policy so that it can tune its inner $\mathrm{SO}(3)$ geometric controller by outputting the controller gains, and we compare this to the fixed-gains baseline.
+Moreover, we augment the policy so that it can tune its inner $\mathrm{SO}(3)$ geometric controller by outputting the controller gains, and we compare this to the fixed gains baseline.
 
 As secondary objectives, we perform an evaluation of the policy network in Gazebo utilizing the MRS UAV ecosystem~\cite{baca_mrs_2021}, and we test the controller on a real platform.
 Furthermore, we perform a comparative study between different control modalities, and between model-free and model-based optimization methods.
@@ -128,6 +128,8 @@ Furthermore, we perform a comparative study between different control modalities
 \centering
 \caption{Thesis objectives.}
 % \small
+% increase table rule thickness
+\setlength{\arrayrulewidth}{1.1pt}
 \begin{tabular}{|cc l|}
 \hline
 % \multicolumn{2}{|c|}{\textbf{Gap}}     & \textbf{Description} \\ \hline
@@ -136,17 +138,17 @@ Furthermore, we perform a comparative study between different control modalities
 \\ \hline
 \multicolumn{1}{|l}{} & Obj-1.1 & Create a differentiable quadrotor simulator.
 \\ 
-\multicolumn{1}{|l}{} & Obj-1.2 & Train a \ac{NN} that outputs velocity and heading commands. 
+\multicolumn{1}{|l}{} & Obj-1.2 & Train a \ac{NN} that outputs velocity and heading rate commands. 
 \\ 
 \multicolumn{1}{|l}{} & Obj-1.3 & Augment the \ac{NN} to output adaptive gains for the $\mathrm{SO}(3)$ controller.                          \\ \hline
 
 \rowcolor{blue!25} 
  \multicolumn{2}{|l}{} & \textbf{Secondary Objectives} 
 \\ \hline
-\multicolumn{1}{|l}{} & Obj-2.1 & Asses the transferability of the policies to other environments.  \\
-\multicolumn{1}{|l}{} & Obj-2.2 & Evaluate how other control modalities compare to each other.                  \\
-\multicolumn{1}{|l}{} & Obj-2.3 & Compare model-based optimization against model-free. \\
-\multicolumn{1}{|l}{} & Obj-2.4 & Evaluate the fixed gains and adaptive gains geometric controllers. 
+\multicolumn{1}{|l}{} & Obj-2.1 & Assess the transferability of the policies to other environments.  \\
+\multicolumn{1}{|l}{} & Obj-2.2 & Evaluate how other control modalities compare with each other.                  \\
+\multicolumn{1}{|l}{} & Obj-2.3 & Compare model-based optimization with model-free optimization. \\
+\multicolumn{1}{|l}{} & Obj-2.4 & Evaluate the fixed gain and adaptive gain geometric controllers. 
 
 \\ \hline
 
@@ -161,7 +163,7 @@ In \autoref{meth} we present the methodology: the learning environment, the quad
 In \autoref{chap:results} we show and analyze the results of our method and perform comparative studies.
 We analyze the effect of different control abstractions on sample efficiency and trajectory-tracking performance.
 Then, we compare \ac{BPTT} against \ac{PPO} on the gate-progress task.
-We study the effect of our implementation decisions on transferability to Gazebo and to a real-world platform.
+We study the effect of our implementation decisions on transferability to Gazebo and to a real world platform.
 In \autoref{chap:conclusion} we discuss the results and provide a conclusion.
 Finally, in \autoref{chap:fut_dir} we state our future research directions.
 

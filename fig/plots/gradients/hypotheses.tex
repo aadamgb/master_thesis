@@ -20,17 +20,18 @@
     xmin=0,
     xmax={2.5*10^7},
     ymin=-8.2,
-    xlabel={Steps},
+    xlabel={Step},
     ylabel={Loss},
     legend pos=south east,
+    legend style={font=\footnotesize},
     % title={Continuous Reward},
 ]
 
 
 \addplot[tabblue, line width=1pt]
-table[x=Step, y expr=-\thisrow{Loss}, col sep=comma] {data/metrics_ctbr_simple.csv}; \addlegendentry{simple}
+table[x=Step, y expr=-\thisrow{Loss}, col sep=comma] {data/metrics_ctbr_simple.csv}; \addlegendentry{Simple}
 \addplot[tabred, line width=1pt]
-table[x=Step, y expr=-\thisrow{Loss}, col sep=comma] {data/metrics_ctbr_full.csv}; \addlegendentry{full}
+table[x=Step, y expr=-\thisrow{Loss}, col sep=comma] {data/metrics_ctbr_full.csv}; \addlegendentry{Full}
 \end{axis}
 
 

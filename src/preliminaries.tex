@@ -23,7 +23,7 @@ In general, a nonlinear discrete-time \ac{OCP} can be formulated as the optimiza
 & \underset{\mathbf{X},\ \mathbf{U}}{\text{minimize}} & & \left( \phi(\boldsymbol{x}_{N}, N) + \sum_{k=0}^{N-1} L_{k}(\boldsymbol{x}_{k}, \boldsymbol{u}_{k}) \right) \\
 & \text{subject to} & & \boldsymbol{x}_{k+1} = \mathbf{f}_{k}(\boldsymbol{x}_{k}, \boldsymbol{u}_{k}), \quad k = 0, \dots, N-1, \\
 & & & \boldsymbol{u}_{k} \in \mathcal{U}_{k}, \quad k = 0, \dots, N-1, \\
-& & & \boldsymbol{x}_{k} \in \mathcal{X}_{k}, \quad k = 0, \dots, N,
+& & & \boldsymbol{x}_{k} \in \mathcal{X}_{k}, \quad k = 0, \dots, N.
 \end{aligned}
 \end{equation}
 
@@ -49,7 +49,7 @@ Since the main objective is to complete a lap through the racing track as fast a
  & \underset{\mathbf{U},\ N}{\text{minimize}} & & \qquad \qquad \sum_{k=0}^{N-1} 1 \\
  & \text{subject to} & & \boldsymbol{x}_{k+1} = \mathbf{f}_{k}(\boldsymbol{x}_{k}, \boldsymbol{u}_{k}), \quad k = 0, \dots, N-1, & \\
 & & & \boldsymbol{u}_{k} \in \mathcal{U}_{k}, \quad k = 0, \dots, N-1, \\
-& & & \boldsymbol{x}_{k} \in \mathcal{X}_{k}, \quad k = 0, \dots, N,
+& & & \boldsymbol{x}_{k} \in \mathcal{X}_{k}, \quad k = 0, \dots, N.
 \end{aligned}
 \label{ocp-eq}
 \end{equation}
@@ -95,7 +95,7 @@ By assuming the trajectory is fixed, the system cannot re-optimize the path to a
  & \text{subject to} & & \boldsymbol{x}_{k+1} = \mathbf{f}_{k}(\boldsymbol{x}_{k}, 
         \boldsymbol{u}_{k}), \quad k = 0, \dots, N-1, \\
 & & & \boldsymbol{u}_{k} \in \mathcal{U}_{k}, \quad k = 0, \dots, N-1, \\
-& & & \boldsymbol{x}_{k} \in \mathcal{X}_{k}, \quad k = 0, \dots, N,
+& & & \boldsymbol{x}_{k} \in \mathcal{X}_{k}, \quad k = 0, \dots, N.
 \end{aligned}
 \label{tt-ocp}
 \end{equation}
@@ -111,7 +111,7 @@ This allows the controller to dynamically adjust to the current vehicle state, p
 & \underset{\mathbf{U}}{\text{minimize}} & & \sum_{k=1}^{N} \left(  \left\| \mathbf{p}_{k}^\mathcal{W} - \mathbf{p}_{g_k}^\mathcal{W} \right\|_2 - \left\| \mathbf{p}_{k-1}^\mathcal{W} - \mathbf{p}_{g_k}^\mathcal{W} \right\|_2 \right) \\
 & \text{subject to} & & \boldsymbol{x}_{k+1} = \mathbf{f}_{k}(\boldsymbol{x}_{k}, \boldsymbol{u}_{k}), \quad k = 0, \dots, N-1, \\
 & & & \boldsymbol{u}_{k} \in \mathcal{U}_{k}, \quad k = 0, \dots, N-1, \\
-& & & \boldsymbol{x}_{k} \in \mathcal{X}_{k}, \quad k = 0, \dots, N,
+& & & \boldsymbol{x}_{k} \in \mathcal{X}_{k}, \quad k = 0, \dots, N.
 \end{aligned}
 \end{equation}
 
@@ -149,30 +149,30 @@ However, it is computationally costly and can present numerical convergence issu
 As shown in \cite{mellinger_minimum_2011}, the quadrotor's state and control inputs can be expressed as algebraic function of carefully selected flat outputs.
 Choosing the position of the center of mass $\mathbf{r} = [r_x, r_y, r_z]^\top$ and its heading angle $\eta$ as outputs, the quadorotor's $\mathbf{\hat{b}}_3$ unit vector has the same direction as its thrust vector which corresponds to its acceleration,
 \begin{equation}
-    \mathbf{t} = \ddot{\mathbf{r}} + [0, 0, g]^\top
+    \mathbf{t} = \ddot{\mathbf{r}} + [0, 0, g]^\top,
 \end{equation}
 \begin{equation}
     \mathbf{\hat{b}}_3 = \frac{\mathbf{t}}{||\mathbf{t}||}.
 \end{equation}
 From the heading angle, the heading vector $\mathbf{h}$ can be obtained, and subsequently the $\mathbf{\hat{b}_2}$ and $\mathbf{\hat{b}_1}$ axis,
 \begin{equation}
-    \mathbf{h} = [\cos \eta, \sin \eta, 0]^\top
+    \mathbf{h} = [\cos \eta, \sin \eta, 0]^\top,
 \end{equation}
 \begin{equation}
-    \mathbf{\hat{b}}_2 = \frac{\mathbf{\hat{b}}_3 \times \mathbf{h}}{||\mathbf{\hat{b}}_3 \times \mathbf{h}||}
+    \mathbf{\hat{b}}_2 = \frac{\mathbf{\hat{b}}_3 \times \mathbf{h}}{||\mathbf{\hat{b}}_3 \times \mathbf{h}||},
 \end{equation}
 \begin{equation}
-     \mathbf{\hat{b}}_1 =  \mathbf{\hat{b}}_2  \times  \mathbf{\hat{b}}_3 
+     \mathbf{\hat{b}}_1 =  \mathbf{\hat{b}}_2  \times  \mathbf{\hat{b}}_3, 
 \end{equation}
 which defines the attitude of the drone, $\mathbf{R(\phi,\theta,\psi) = [\mathbf{\hat{b}}_1, \mathbf{\hat{b}}_2, \mathbf{\hat{b}}_3]}$. 
 From Newton's equation of motion we have that the translational dynamics are,
 \begin{equation}\label{trans_dyn}
-    m \ddot{r} = -mg \hat{\mathbf{e}}_3 + T_c \hat{\mathbf{b}}_3
+    m \ddot{r} = -mg \hat{\mathbf{e}}_3 + T_c \hat{\mathbf{b}}_3,
 \end{equation}
 and from Euler equation, we get the rotational dynamics,
 
 \begin{equation}
-    \boldsymbol{\tau} = \mathbf{J}\boldsymbol{\dot{\omega}}  + \boldsymbol{\omega} \times \mathbf{J} \boldsymbol{\omega} 
+    \boldsymbol{\tau} = \mathbf{J}\boldsymbol{\dot{\omega}}  + \boldsymbol{\omega} \times \mathbf{J} \boldsymbol{\omega}, 
 \end{equation} 
 where $\mathbf{J}$ is the inertia matrix and $\boldsymbol{\dot{\omega}}$ are the body angluar rates. The first derivative of \eqref{trans_dyn} gives,
 \begin{equation}\label{trans_dyn_der}
@@ -181,7 +181,7 @@ where $\mathbf{J}$ is the inertia matrix and $\boldsymbol{\dot{\omega}}$ are the
 The change in collective thurst $\dot{T_c}$ corresponds to the projection $\dot{T_c} = \hat{\mathbf{b}}_3 \cdot m \dddot{\mathbf{r}}$, substituiting in \eqref{trans_dyn_der},
 we can obtain the vector $\mathbf{h}_{\omega} = \boldsymbol{\omega}\times \hat{\mathbf{b}}_3$,
 \begin{equation}
-    \mathbf{h}_{\omega} = \frac{m}{u_1} (\ddot{\mathbf{r}} - (\hat{\mathbf{b}}_3 \cdot \ddot{\mathbf{r}})\hat{\mathbf{b}}_3)
+    \mathbf{h}_{\omega} = \frac{m}{u_1} (\ddot{\mathbf{r}} - (\hat{\mathbf{b}}_3 \cdot \ddot{\mathbf{r}})\hat{\mathbf{b}}_3),
 \end{equation}
 which allows to obtain the angular velocities.
 To completely define the quadrotor's state we need the angular accelerations $\dot{\boldsymbol{\omega}}$ which can be obtained from the second derivative of \eqref{trans_dyn}.
@@ -239,7 +239,7 @@ Note that KL-divergence measures the difference between two probability distribu
 \begin{equation}
 \begin{aligned}
 & \underset{\theta}{\text{maximize}} & & \mathbb{E} \left[ \frac{\pi_{\theta}(a_t|s_t)}{\pi_{\theta_{old}}(a_t|s_t)} A_t \right] \ \\
-& \text{subject to} & & D_{KL} (\pi_{\theta_{old}} | \pi_{\theta}) \leq \delta.
+& \text{subject to} & & D_{KL} (\pi_{\theta_{old}} | \pi_{\theta}) \leq \delta
 \end{aligned}
 \label{trpo}
 \end{equation}
@@ -250,7 +250,7 @@ Instead of imposing a hard constraint, the authors of \cite{ppo} propose two rel
     
     The cost function becomes,
     \begin{equation}
-        L^{KLPEN}(\theta) = \hat{\mathbb{E}}_{t} \left[ \frac{\pi_{\theta}(a_t | s_t)}{\pi_{\theta_{old}}(a_t | s_t)} \hat{A}_t - \beta \text{KL}[\pi_{\theta_{old}}(\cdot | s_t), \pi_{\theta}(\cdot | s_t)] \right]
+        L^{KLPEN}(\theta) = \hat{\mathbb{E}}_{t} \left[ \frac{\pi_{\theta}(a_t | s_t)}{\pi_{\theta_{old}}(a_t | s_t)} \hat{A}_t - \beta \text{KL}[\pi_{\theta_{old}}(\cdot | s_t), \pi_{\theta}(\cdot | s_t)] \right],
     \end{equation}
 
     where $\beta$ controls the weight of the penalization when the new update deviates too much from the old policy parameters. \\
@@ -260,7 +260,7 @@ Instead of imposing a hard constraint, the authors of \cite{ppo} propose two rel
     \begin{equation}
         L^{CLIP}(\theta) = \hat{\mathbb{E}}_{t} \left[ \min\left(r_t(\theta) \hat{A}_t, \text{clip}(r_t(\theta), 1 - \epsilon, 1 + \epsilon) \hat{A}_t\right) \right]
     \end{equation}
-    where $\epsilon$ is a hyperparameter.
+    Where $\epsilon$ is a hyperparameter.
 \end{enumerate}
 The authors claim that the clipped surrogate objective approach performs better, \ac{PPO} is usually implemented as an actor-critic algorithm so a loss term for the critic, $L_t^{VF}(\theta)$, is incorporated, and to encourage exploration an entropy bonus, $S[\pi_\theta](s_t)$, is added.
 
@@ -310,7 +310,7 @@ The gradient of the cummulative stage cost function $J_k$ with respect to the ne
     \frac{1}{B}\frac{1}{H} \sum_{i=1}^{B} \sum_{h=k}^{k+H-1}
     \frac{\partial \mathcal{L}_h}{\partial \mathbf{x}_h}
     \frac{\partial \mathbf{x}_h}{\partial \mathbf{u}_{h-1}}
-    \frac{\partial \mathbf{u}_{h-1}}{\partial \theta}
+    \frac{\partial \mathbf{u}_{h-1}}{\partial \theta},
 \end{equation}
 \noindent where $B$ is the size of the batch (number of parallel environemnts) and $H$ is the optimization horizion (number of accumlated steps), $\frac{\partial \mathcal{L}_h}{\partial \mathbf{x}_h}$ is the gradient of
 the stage loss with respect to the state, $\frac{\partial \mathbf{x}_h}{\partial
@@ -354,21 +354,21 @@ In practice, the calculation of the gradient would be done simply by calling \te
 \Require $x \in \real, \ y \in \real$
 \Ensure $\frac{\partial u}{\partial x},\ \frac{\partial u}{\partial y}$
 
-\State \textbf{--- Forward Pass (Build Computational Graph) ---}
+\State \textbf{--- Forward Pass {\footnotesize (Build Computational Graph)} ---}
 % \State $x \gets \texttt{tensor}(1.0,\ \texttt{requires\_grad=True})$ \Comment{Leaf node}
 % \State $y \gets \texttt{tensor}(2.0,\ \texttt{requires\_grad=True})$ \Comment{Leaf node}
-\State $z \gets x \times y$ \Comment{Node: \texttt{MulBackward}}
-\State $w \gets z^2$ \Comment{Node: \texttt{PowBackward}}
-\State $u \gets w \times y$ \Comment{Output Node: \texttt{MulBackward}}
+\State $z \gets x \times y$ \Comment{{\footnotesize Node: \texttt{MulBackward}}}
+\State $w \gets z^2$ \Comment{{\footnotesize Node: \texttt{PowBackward}}}
+\State $u \gets w \times y$ \Comment{{\footnotesize Output Node: \texttt{MulBackward}}}
 
-\State \textbf{--- Backward Pass (Reverse-Mode Autodiff) ---}
+\State \textbf{--- Backward Pass {\footnotesize (Reverse-Mode Autodiff)} ---}
 \State Initialize $\frac{\partial u}{\partial u} \gets 1$
-\State $\frac{\partial u}{\partial w} \gets \frac{\partial u}{\partial u} \cdot y = 1 \cdot 2 = 2$ \Comment{Backprop through $u = w \cdot y$}
-\State $\frac{\partial u}{\partial y} \mathrel{+}= \frac{\partial u}{\partial u} \cdot w = 1 \cdot 4 = 4$ \Comment{Accumulate $y$ gradient from this node}
-\State $\frac{\partial u}{\partial z} \gets \frac{\partial u}{\partial w} \cdot 2z = 2 \cdot 2 = 4$ \Comment{Backprop through $w = z^2$}
-\State $\frac{\partial u}{\partial x} \gets \frac{\partial u}{\partial z} \cdot y = 4 \cdot 2 = 8$ \Comment{Backprop through $z = x \cdot y$} 
+\State $\frac{\partial u}{\partial w} \gets \frac{\partial u}{\partial u} \cdot y = 1 \cdot 2 = 2$ \Comment{{\footnotesize Backprop through $u = w \cdot y$}}
+\State $\frac{\partial u}{\partial y} \mathrel{+}= \frac{\partial u}{\partial u} \cdot w = 1 \cdot 4 = 4$ \Comment{{\footnotesize Accumulate $y$ gradient from this node}}
+\State $\frac{\partial u}{\partial z} \gets \frac{\partial u}{\partial w} \cdot 2z = 2 \cdot 2 = 4$ \Comment{{\footnotesize Backprop through $w = z^2$}}
+\State $\frac{\partial u}{\partial x} \gets \frac{\partial u}{\partial z} \cdot y = 4 \cdot 2 = 8$ \Comment{{\footnotesize Backprop through $z = x \cdot y$}} 
 
-\State $\frac{\partial u}{\partial y} \mathrel{+}= \frac{\partial u}{\partial z} \cdot x = 4 \cdot 1 = 4$ \Comment{Accumulate $y$ gradient from this node}
+\State $\frac{\partial u}{\partial y} \mathrel{+}= \frac{\partial u}{\partial z} \cdot x = 4 \cdot 1 = 4$ \Comment{{\footnotesize Accumulate $y$ gradient from this node}}
 
 \State \textbf{--- Results ---}
 \State $\frac{\partial u}{\partial x} = 16,\quad \frac{\partial u}{\partial y} = 4 + 4 + 4 = 12$
@@ -387,7 +387,7 @@ Adam is a variant of \ac{GD}.
 In standard \ac{GD} the model parameters are updated proportionnally to the gradient in its opposite direction,
 
 \begin{equation}
-    \theta_{k+1} = \theta_k - \alpha\nabla_\theta J_k
+    \theta_{k+1} = \theta_k - \alpha\nabla_\theta J_k,
 \end{equation}
 where $\alpha$ inidcates the learning rate. 
 The main disatvantages of standard \ac{GD} is that near the optimum, the gradient decreases requiring more steps to converge and, that each parameter is updated equally.
@@ -400,20 +400,20 @@ Adam solves this issues by combining two other variations of \ac{GD}: Momentum a
 Adam unifies these two concepts through the first and second moment estimates, $m$ and $v_k$ respectively, which are updated as,
 
 \begin{equation}
-    m_k = \beta_1 m_{k-1} + (1-\beta_1)\nabla_\theta J_{k-1}
+    m_k = \beta_1 m_{k-1} + (1-\beta_1)\nabla_\theta J_{k-1},
 \end{equation}
 \begin{equation}
-    v_k = \beta_2 v_{k-1} + (1-\beta_2)(\nabla_\theta J_{k-1})^2
+    v_k = \beta_2 v_{k-1} + (1-\beta_2)(\nabla_\theta J_{k-1})^2,
 \end{equation}
 where $\beta_1$ and $\beta_2$ are hyperparameters usually set to $0.9$ and $0.999$ respectively. Since both moments are initialized at zero $m_0 = v_0 = 0$, the estimates are biased towards zero in the early iterations of training.
 For this reason, each moment is normalized to,
 
 \begin{equation}
-    \hat{m}_t = \frac{m_t}{1 - \beta_1^k} \qquad \hat{v}_t = \frac{v_t}{1 - \beta_2^k}.
+    \hat{m}_t = \frac{m_t}{1 - \beta_1^k}, \qquad \hat{v}_t = \frac{v_t}{1 - \beta_2^k}.
 \end{equation}
 The final prameter update is given by,
 \begin{equation}
-    \theta_{k+1} = \theta_k - \alpha\, \frac{\hat{m}_k}{\sqrt{\hat{v}_t} + \epsilon}
+    \theta_{k+1} = \theta_k - \alpha\, \frac{\hat{m}_k}{\sqrt{\hat{v}_t} + \epsilon},
     \label{eq:adam}
 \end{equation}
 where $\epsilon \ll 1$ is a small constant introduced for numerical stability.

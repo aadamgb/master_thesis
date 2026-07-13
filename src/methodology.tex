@@ -20,21 +20,21 @@ The kinematics and dynamics of the quadcopter can be described by the following 
 
 \begin{minipage}{0.4\textwidth}
 \begin{equation}
-  \dot{\mathbf{p}}^{\mathcal{W}} = \mathbf{v}^{\mathcal{W}}
+  \dot{\mathbf{p}}^{\mathcal{W}} = \mathbf{v}^{\mathcal{W}},
 \end{equation}
 \begin{equation}
-    \dot{\mathbf{q}}^{\mathcal{W}} = \tfrac{1}{2}\ \mathbf{q}^{\mathcal{W}} \odot \begin{bmatrix} 0 \\ \boldsymbol{\omega}^{\mathcal{B}} \end{bmatrix}
+    \dot{\mathbf{q}}^{\mathcal{W}} = \tfrac{1}{2}\ \mathbf{q}^{\mathcal{W}} \odot \begin{bmatrix} 0 \\ \boldsymbol{\omega}^{\mathcal{B}} \end{bmatrix},
 \end{equation}
 \begin{equation}
-    \dot{\mathbf{v}}^{\mathcal{W}} = \frac{\mathbf{R}(\mathbf{q})}{m} \left( \mathbf{F}_T^{\mathcal{B}} + \mathbf{F}_D^{\mathcal{B}} \right) + \mathbf{g}^{\mathcal{W}}
+    \dot{\mathbf{v}}^{\mathcal{W}} = \frac{\mathbf{R}(\mathbf{q})}{m} \left( \mathbf{F}_T^{\mathcal{B}} + \mathbf{F}_D^{\mathcal{B}} \right) + \mathbf{g}^{\mathcal{W}},
 \end{equation}
 \end{minipage}%
 \begin{minipage}{0.5\textwidth}
 \begin{equation}
-    \dot{\boldsymbol{\omega}}^{\mathcal{B}} = \mathbf{J}^{-1} \left( \boldsymbol{\tau}^{\mathcal{B}} - \boldsymbol{\omega}^{\mathcal{B}} \times \mathbf{J} \boldsymbol{\omega}^{\mathcal{B}} \right)
+    \dot{\boldsymbol{\omega}}^{\mathcal{B}} = \mathbf{J}^{-1} \left( \boldsymbol{\tau}^{\mathcal{B}} - \boldsymbol{\omega}^{\mathcal{B}} \times \mathbf{J} \boldsymbol{\omega}^{\mathcal{B}} \right),
 \end{equation}
 \begin{equation}
-  \dot{\mathbf{\Omega}} = \frac{1}{\tau_{\mathrm{m}}} \left(\mathbf{\Omega}_{\text{cmd}} - \mathbf{\Omega}\right)
+  \dot{\mathbf{\Omega}} = \frac{1}{\tau_{\mathrm{m}}} \left(\mathbf{\Omega}_{\text{cmd}} - \mathbf{\Omega}\right).
 \end{equation}
 \end{minipage}
 
@@ -108,7 +108,7 @@ To complete the quadrotor model, the aerodynamic drag force $\mathbf{F}^{\mathca
 Other aerodynamic effects, such as rotational drag and ground interaction, are neglected.
 The drag force is expressed as,
 \begin{equation}
-    \mathbf{F}^{\mathcal{B}}_D = -\tfrac{1}{2}\rho \|\mathbf{v}^{\mathcal{B}}\| \mathbf{C}_D \mathbf{A} \mathbf{v}^{\mathcal{B}}
+    \mathbf{F}^{\mathcal{B}}_D = -\tfrac{1}{2}\rho \|\mathbf{v}^{\mathcal{B}}\| \mathbf{C}_D \mathbf{A} \mathbf{v}^{\mathcal{B}},
 \end{equation}
 where $\rho$ denotes the air density, $\mathbf{A} = \mathrm{diag}(A_{b1}, A_{b2}, A_{b3})$ represents the reference area along each body axis, and $\mathbf{C_D} = \mathrm{diag}(C_{D_{b1}}, C_{D_{b2}}, C_{D_{b3}})$  is a diagonal matrix of non-dimensional drag coefficients.
 The velocity must be expressed in the body frame, obtained as $\mathbf{v}^{\mathcal{B}} = \mathbf{R}(\mathbf{q})^\top \mathbf{v}^{\mathcal{W}}$.
@@ -162,17 +162,17 @@ In particular, the mapping in \eqref{eq:motspd} produces large variations in the
 When the \ac{CTBR} control mode is selected, the normalized outputs of the policy $\boldsymbol{u} \in [0, 1]\in \real^4$, are scaled as follows,
 
 \begin{equation}
-    T_{c, \text{cmd}} = u_1  (T_{\text{max}} - T_{\text{min}}) + T_{\text{min}} 
+    T_{c, \text{cmd}} = u_1  (T_{\text{max}} - T_{\text{min}}) + T_{\text{min}}, 
 \end{equation}
 \begin{equation}\label{omega-cmd}
-    \omega_{i, \text{cmd}} = (2u_{i+1} - 1)  \omega_{i, \text{max}}, \quad i = 1, 2, 3
+    \omega_{i, \text{cmd}} = (2u_{i+1} - 1)  \omega_{i, \text{max}}, \quad i = 1, 2, 3,
 \end{equation}
 
 \noindent where $\omega_{i, \text{max}}$ indicates the maximum body rate of the respective axis, (roll, pitch, yaw).
 After scaling the angluar rates, they are converted to torque values:
 
 \begin{equation}
-    \boldsymbol{\tau}_\text{cmd} = k_p \frac{(\boldsymbol{\omega_{\text{cmd}}} - \boldsymbol{\omega})}{dt} J    
+    \boldsymbol{\tau}_\text{cmd} = k_p \frac{(\boldsymbol{\omega_{\text{cmd}}} - \boldsymbol{\omega})}{dt} J.    
 \end{equation}
 Additionally, a proportional gain $k_p$ can be introduced to adjust the stiffness of the conversion.
 Given the commanded collective thrust and torques, the motor thrusts can be obtained from \eqref{eq:simp_alloc}, and the same procedure described in \autoref{sec:srt} is applied during the forward and backward passes.
@@ -184,10 +184,10 @@ This initial formulation of the \ac{CTBR} controller is used in \autoref{sec:ca_
 The highest level of abstraction that has been implemented consists of commanding \ac{LVHR}. With this control mode, the policy outputs are scaled as follows,
 
 \begin{equation}\label{eq:geo_vel}
-    v_{i, \text{cmd}} = (2u_{i} - 1)  v_{i, \text{max}}, \quad i = 1, 2, 3
+    v_{i, \text{cmd}} = (2u_{i} - 1)  v_{i, \text{max}}, \quad i = 1, 2, 3,
 \end{equation}
 \begin{equation}\label{eq:geo_omega}
-    \dot{\eta}_{\text{cmd}} = (2u_{4} - 1)  \dot{\eta}_{ \text{max}}
+    \dot{\eta}_{\text{cmd}} = (2u_{4} - 1)  \dot{\eta}_{ \text{max}},
 \end{equation}
 
 \noindent where $\eta$ denotes the heading angle and $v_{i,\text{cmd}}$ represents the commanded linear velocity along each body axis. 
@@ -197,7 +197,7 @@ The transformations proceed in the following manner.
 
 First, the acceleration vector is computed as,
 \begin{equation}
-    \mathbf{a}_{\text{cmd}} = k_v (\mathbf{v}_{\text{cmd}} - \mathbf{v}) + g \mathbf{\hat{e}}_3
+    \mathbf{a}_{\text{cmd}} = k_v (\mathbf{v}_{\text{cmd}} - \mathbf{v}) + g \mathbf{\hat{e}}_3,
 \end{equation}
 
 \noindent where $k_v$ is a proportional gain on the velocity. 
@@ -267,7 +267,7 @@ Then, the factor $\frac{1}{2}$ ensures consistency with the standard definition 
 Additionally, an error in the angular velocity of the rotation is introduced as,
 
 \begin{equation}\label{eq:geo_ang}
-    \mathbf{e}_{\boldsymbol{\omega}} = \boldsymbol{\omega} - \mathbf{R}^\top \mathbf{R}_{\text{cmd}}\boldsymbol{\omega}_{\text{cmd}}
+    \mathbf{e}_{\boldsymbol{\omega}} = \boldsymbol{\omega} - \mathbf{R}^\top \mathbf{R}_{\text{cmd}}\boldsymbol{\omega}_{\text{cmd}},
 \end{equation}
 where $\boldsymbol{\omega}_{\text{cmd}} = \begin{bmatrix}
     0 & 0 & \dot{\eta}_{\text{cmd}}\end{bmatrix}^\top$. 
@@ -278,7 +278,7 @@ For this reason, as explained in \cite{lee_geometric_2010}, $\dot{\mathbf{R}}_{\
 Finally, the torque is set by,
 
 \begin{equation}\label{eq:geo_tau}
-    \boldsymbol{\tau}_\textbf{cmd} = - k_R \mathbf{e}_\textbf{R} - k_\omega \mathbf{e}_{\boldsymbol{\omega}} + \boldsymbol{\omega}  \times \mathbf{J}\boldsymbol{\omega} - \mathbf{J} ( \hat{\boldsymbol{\omega}} \mathbf{R}^\top \mathbf{R}_{\text{cmd}} \boldsymbol{\omega}_{\text{cmd}} - \mathbf{R}^\top \mathbf{R}_{\text{cmd}} \dot{\boldsymbol{\omega}}_{\text{cmd}} )
+    \boldsymbol{\tau}_\textbf{cmd} = - k_R \mathbf{e}_\textbf{R} - k_\omega \mathbf{e}_{\boldsymbol{\omega}} + \boldsymbol{\omega}  \times \mathbf{J}\boldsymbol{\omega} - \mathbf{J} ( \hat{\boldsymbol{\omega}} \mathbf{R}^\top \mathbf{R}_{\text{cmd}} \boldsymbol{\omega}_{\text{cmd}} - \mathbf{R}^\top \mathbf{R}_{\text{cmd}} \dot{\boldsymbol{\omega}}_{\text{cmd}} ),
 \end{equation}
 where gyroscopic and feedforward terms are added to the rotation and rotational speed errors.
 The \textit{hat map} $\hat{\cdot} \colon \mathbb{R}^3 \to \mathfrak{so}(3)$ is defined by the condition that $\hat{x} y = x \times y$ for all $x, y \in \mathbb{R}^3$.
@@ -296,10 +296,10 @@ Thus, when this control mode is selected, the policy outputs are the same as in 
 Recall that the policy outputs are constrained between zero and one, so they are scaled to the minimum and maximum allowed gains selected by the user,
 
 \begin{equation}
-    k_v^{\text{cmd}} = k_v^{\text{min}} + u_5 \left(k_v^{\text{max}} - k_v^{\text{min}}\right)
+    k_v^{\text{cmd}} = k_v^{\text{min}} + u_5 \left(k_v^{\text{max}} - k_v^{\text{min}}\right),
 \end{equation}
 \begin{equation}
-    k_R^{\text{cmd}} = k_R^{\text{min}} + u_6 \left(k_R^{\text{max}} - k_R^{\text{min}}\right)
+    k_R^{\text{cmd}} = k_R^{\text{min}} + u_6 \left(k_R^{\text{max}} - k_R^{\text{min}}\right),
 \end{equation}
 \begin{equation}
     k_{\omega_{b_{3}}}^{\text{cmd}} = k_{\omega_{b_{3}}}^{\text{min}} + u_7 \left(k_{\omega_{b_{3}}}^{\text{max}} - k_{\omega_{b_{3}}}^{\text{min}}\right).
@@ -324,7 +324,7 @@ The stage loss at each timestep $k$, denoted as $\mathcal{L}(\mathbf{x}_k^\text{
 \lambda_p \|\mathbf{p}_k^\text{ref} - \mathbf{p}_k\|_2 +
 \lambda_v \|\mathbf{v}_k^\text{ref} - \mathbf{v}_k\|_2 +
 \lambda_a \left(1 - \mathbf{\hat{b}}_{3,k} \cdot \mathbf{z}_k \right) +
-\lambda_\omega \|\boldsymbol{\omega}_k\|_2^2
+\lambda_\omega \|\boldsymbol{\omega}_k\|_2^2,
 \end{equation}
  where $\lambda_{()}$ are the weighting factors. The desired thrust direction $\mathbf{z}_k$ is defined as,
 
@@ -335,7 +335,7 @@ The stage loss at each timestep $k$, denoted as $\mathcal{L}(\mathbf{x}_k^\text{
 Since the simulator is batched, i.e., multiple environments run in parallel, the total cumulative cost over the horizon is defined as,
 
 \begin{equation}\label{cum-cost}
-J_k = \frac{1}{B}\frac{1}{H} \sum_{i=1}^{B} \sum_{h=k}^{k+H-1} \mathcal{L}\big(\mathbf{x}_{h,i}^\text{ref}, \mathbf{x}_{h,i}\big)
+J_k = \frac{1}{B}\frac{1}{H} \sum_{i=1}^{B} \sum_{h=k}^{k+H-1} \mathcal{L}\big(\mathbf{x}_{h,i}^\text{ref}, \mathbf{x}_{h,i}\big),
 \end{equation}
 where $k$ denotes the initial timestep of the current horizon, $H$ is the horizon length, and $B$ is the number of parallel environments.
 At the end of each horizon, the gradient of the cumulative cost in \eqref{cum-cost} with respect to the policy parameters is backpropagated through time for optimization, as described in \autoref{sec:diff-opt}.
@@ -415,7 +415,7 @@ Additionally, we penalize high body rates to encourage stability during early tr
 
 Note that the gate progress is expressed in the gate frame.
 We define the gate plane in such a manner that the $\hat{\mathbf{g}}_2$ axis is the normal and the drones are always behind the gate, i.e., in the negative $\hat{\mathbf{g}}_2$ direction.
-Given the gate position and orientation in the world frame, the \ac{UAV}'s relative position with respect to the gate is computed as
+Given the gate position and orientation in the world frame, the \ac{UAV}'s relative position with respect to the gate is computed as,
 
 \begin{equation}
     \mathbf{p}^{\mathcal{G}} = \mathbf{R}_{\mathcal{G}}^\top \left( \mathbf{p}^\mathcal{W} - \mathbf{p}^\mathcal{W}_{\text{gate}} \right).
@@ -438,7 +438,7 @@ When environments are terminated, their loss is not accumulated.
 \begin{equation}
     \label{eq:condition}
     \quad \quad
-    \left| p^\mathcal{G}_{\hat{g}_1} \right| < \frac{w}{2}
+    \left| p^\mathcal{G}_{\hat{g}_1} \right| \leq \frac{w}{2}
     \quad \wedge \quad
     \left| p^\mathcal{G}_{\hat{g}_3} \right| \leq \frac{h}{2}
 \end{equation}
@@ -499,7 +499,7 @@ At the start of every training episode, a new environment insance is created by 
 Therefore, the policy will interact with a new \ac{POMDP} environment, i.e. a new domain $\mathcal{D}_{\boldsymbol{\xi}}$. 
 This way, data from a vareity of environments that otherwise would reamain unexplored can be collected. 
 
-During training, the neural network weights and biases $\theta$ are optimized to minimize the expected loss across a distribution of randomized domains~\cite{weng2019DR}.
+During training, the neural network weights and biases are optimized to minimize the expected loss across a distribution of randomized domains~\cite{weng2019DR}.
 With the aim of finding the optimal, $\theta^*$ that will lead to the optimal policy $\pi_{\theta}^*$.
 As illustrated in \autoref{domains}, the policy is exposed to a variety of domains to promote generalization and improve robustness, increasing the likelihood of successful transfer to the real environment. 
 However, this strategy further reduces the sample efficiency of \ac{RL} and increases training time. 
@@ -537,6 +537,7 @@ The randomization configuration used in this project is,
 \begin{equation}
     \boldsymbol{\xi} = \begin{bmatrix} m & \mathbf{J} & \mathbf{l} & \beta &\mathbf{c_{tf}} &\boldsymbol{\tau}_m& \boldsymbol{\eta}_m & \mathbf{C}_D & \rho \end{bmatrix}.
 \end{equation}
+\vspace{1cm}
 
 
 \begin{figure}[H]
@@ -596,13 +597,14 @@ Once all these parameters are set, training proceeds as follows:
 \caption{Training procedure for differentiable policy optimization.}
 \label{alg:training}
 \begin{algorithmic}[1]
+\algrenewcommand\algorithmiccomment[1]{\hfill{\footnotesize\(\triangleright\)~#1}}
 
-\Require Training task $\mathrm{env} \in \{\mathrm{tt},\ \mathrm{gp}\}$,
-         control mode $\mathrm{cm} \in \{\mathrm{srt},\ \mathrm{ctbr},\ \mathrm{lvhr},\ \mathrm{lvhr{+}g}\}$,
+\Require Training task $\mathrm{env} \in \{\mathrm{tt},\, \mathrm{gp}\}$,
+         control mode $\mathrm{cm} \in \{\mathrm{srt},\, \mathrm{ctbr},\, \mathrm{lvhr},\, \mathrm{lvhr{+}g}\}$,
          batch size $B$, episodes $N$, steps $K$, horizon $H$,
-         learning rate $\alpha$, simulation step $\Delta t = 0.01\,\mathrm{s}$, other hyperparams...
+         learning rate $\alpha$, simulation step $\Delta t $, other hyperparams...
 
-\State \textbf{Initialize} policy $\pi_\theta$, controller $g_{\mathrm{cm}}$, optimizer
+\State \textbf{Initialize} policy $\pi_\theta$, controller $g_{\mathrm{cm}()}$, optimizer...
 
 \For{$n = 1, \dots, N$}
     \State Sample domain parameters $\boldsymbol{\xi}^{(i)} \sim p(\boldsymbol{\xi})$ for $i = 1, \dots, B$ \Comment{Domain randomization}
@@ -619,13 +621,13 @@ Once all these parameters are set, training proceeds as follows:
 
         \State $\mathrm{term}_k \gets \texttt{isTerminated}(\mathrm{env},\ \mathbf{x}_{k+1},\ \mathbf{x}_{k+1}^{\mathrm{ref}})$ \Comment{Task-dependent termination}
 
-        \State $J \mathrel{+}= \dfrac{1}{B}\displaystyle\sum_{i=1}^{B} \mathcal{L}_{\mathrm{env}}\!\bigl(\mathbf{x}_{k+1,i}^{\mathrm{ref}},\ \mathbf{x}_{k+1,i}\bigr)\cdot\mathbf{1}\!\left[\lnot\,\mathrm{term}_{k,i}\right]$
+        \State $J \mathrel{+}= \dfrac{1}{B}\displaystyle\sum_{i=1}^{B} \mathcal{L}_{\mathrm{env}}\!\bigl(\mathbf{x}_{k+1,i}^{\mathrm{ref}},\ \mathbf{x}_{k+1,i}\bigr)\cdot\mathbf{1}\!\left[\lnot\,\mathrm{term}_{k,i}\right]$ \Comment{Loss accumulation}
 
         \State Reset terminated environments: $\mathbf{x}_{k+1,i} \gets \mathbf{x}_{k+1,i}^{\mathrm{ref}}\ $ for all $i$ where $\mathrm{term}_{k,i}$
 
         \If{$(k + 1) \bmod H = 0$} \Comment{End of truncation window}
-            \State $\nabla_\theta J \gets \texttt{backward}\!\left(J / H\right)$ \Comment{BPTT through the computational graph}
-            \State $\theta \gets \texttt{Adam.step}(\theta,\ \nabla_\theta J,\ \alpha)$ \Comment{Parameter update}
+            \State $\nabla_\theta J \gets \texttt{backward}\!\left(J / H\right)$ \Comment{\ac{BPTT} through the computational graph}
+            \State $\theta \gets \texttt{Adam.step}(\theta,\ \nabla_\theta J,\ \alpha)$ \Comment{\ac{NN} parameters update}
             \State $\mathbf{x}_{k+1} \gets \mathbf{x}_{k+1}.\texttt{detach}()$ \Comment{Detach state to truncate graph}
             \State $J \gets 0$
         \EndIf
